@@ -9,11 +9,11 @@ int add(int i, int j) {
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(python_example, m) {
+PYBIND11_MODULE(endless_sky_bindings, m) {
     m.doc() = R"pbdoc(
-        Pybind11 example plugin
+        Endless Sky Bindings
         -----------------------
-        .. currentmodule:: python_example
+        .. currentmodule:: endless_sky_bindings
         .. autosummary::
            :toctree: _generate
            add
