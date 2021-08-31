@@ -13,18 +13,23 @@ __version__ = "0.0.1"
 ext_modules = [
     Pybind11Extension("endless_sky_bindings", [
             "lib.cpp",
-            "endless-sky/source/Angle.cpp",
-            "endless-sky/source/DataFile.cpp",
-            "endless-sky/source/DataNode.cpp",
-            "endless-sky/source/File.cpp",
-            "endless-sky/source/Files.cpp",
-            "endless-sky/source/Point.cpp",
-            "endless-sky/source/Random.cpp",
-            "endless-sky/source/text/Utf8.cpp",
             "endless-sky/tests/src/helpers/datanode-factory.cpp",
-        ],
-        libraries=['jpeg', 'SDL2'],
-        library_dirs=['/usr/local/opt/jpeg-turbo/lib'],
+        ] + sorted(
+            glob('endless-sky/source/*.cpp') +
+            glob('endless-sky/source/Text/*.cpp')
+        ),
+        libraries=[
+            'jpeg',
+            'SDL2',
+            'png',
+            'openal',
+            'mad',
+            ],
+        library_dirs=[
+            '/usr/local/opt/jpeg-turbo/lib',
+            '/usr/local/opt/openal-soft/lib',
+            '/usr/local/lib/'
+            ],
         include_dirs=[
             'endless-sky/tests/include',
             '/usr/local/opt/jpeg-turbo/include'
@@ -39,10 +44,6 @@ ext_modules = [
 # - ignore OPENGL_DEPRECATED on mac
 # - 
 """
-+ sorted(
-            glob('endless-sky/source/*.cpp') +
-            glob('endless-sky/source/Text/*.cpp')
-        ),
 """
 
 
