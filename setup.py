@@ -9,8 +9,12 @@ import sys
 __version__ = "0.0.1"
 
 ext_modules = [
-    Pybind11Extension("endless_sky_bindings",
-        ["main.cpp"],
+    Pybind11Extension("endless_sky_bindings", [
+            "main.cpp",
+            "./endless-sky/source/Angle.cpp",
+            "./endless-sky/source/Point.cpp",
+            "./endless-sky/source/Random.cpp"
+        ],
         define_macros = [('VERSION_INFO', __version__)],
         ),
 ]
