@@ -92,6 +92,8 @@ PYBIND11_MODULE(endless_sky_bindings, m) {
     m.def("RandomInt", py::overload_cast<>(&Random::Int));
     m.def("RandomInt", py::overload_cast<uint32_t>(&Random::Int));
 
+    py::class_<Ship, std::shared_ptr<Ship>>(m, "Ship")
+       .def(py::init<>());
 
 
 #ifdef VERSION_INFO

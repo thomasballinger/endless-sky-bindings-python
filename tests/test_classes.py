@@ -18,3 +18,6 @@ def test_DataNode():
     assert d.Token(0) == "ship"
     assert d.Token(1) == "hello"
     assert [x.Token(0) for x in list(d)] == ["key"]
+
+def test_Ship():
+    assert m.Ship();

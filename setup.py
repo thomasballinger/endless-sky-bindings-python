@@ -48,7 +48,7 @@ ext_modules = [
 
 
 setup(
-    name="endless_sky_bindings",
+    name="endless-sky-bindings",
     version=__version__,
     author="Thomas Ballinger",
     author_email="thomasballinger@gmail.com",
