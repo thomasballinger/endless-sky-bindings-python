@@ -20,4 +20,6 @@ def test_DataNode():
     assert [x.Token(0) for x in list(d)] == ["key"]
 
 def test_Ship():
-    assert m.Ship();
+    n = m.AsDataNode('ship Canoe\n\tattributes\n\t\tcategory "Transport"')
+    s = m.Ship(n)
+    assert s.ModelName() == 'Canoe'

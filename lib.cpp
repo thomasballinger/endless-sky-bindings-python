@@ -93,7 +93,24 @@ PYBIND11_MODULE(endless_sky_bindings, m) {
     m.def("RandomInt", py::overload_cast<uint32_t>(&Random::Int));
 
     py::class_<Ship, std::shared_ptr<Ship>>(m, "Ship")
-       .def(py::init<>());
+       .def(py::init<>())
+        .def(py::init<const DataNode&>())
+        .def("Name", &Ship::Name)
+        .def("ModelName", &Ship::ModelName)
+        .def("Description", &Ship::Description)
+        .def("Cost", &Ship::Cost)
+        .def("ChassisCost", &Ship::ChassisCost)
+        .def("Attributes", &Ship::Attributes)
+        .def("BaseAttributes", &Ship::BaseAttributes)
+        .def("Recharge", &Ship::Recharge)
+
+        .def("Place", &Ship::Place)
+        .def("SetName", &Ship::SetName)
+
+        .def("FinishLoading", &Ship::FinishLoading)
+
+        .def("FlightCheck", &Ship::FlightCheck);
+
 
 
 #ifdef VERSION_INFO
