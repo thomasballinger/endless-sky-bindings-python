@@ -1,5 +1,14 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
+
+// this has implications! see https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html?highlight=vector#automatic-conversion
+// convenience seems more important than speed for these bindings though
+//
+// default for the rest of the STL types
+#include <pybind11/stl.h>
+// some specific "opaque" types for which e.g. .append() actually updates both sides
+#include <pybind11/stl_bind.h>
+
 #include "endless-sky/source/Angle.h"
 #include "endless-sky/source/DataNode.h"
 #include "endless-sky/source/GameData.h"
@@ -66,11 +75,11 @@ PYBIND11_MODULE(endless_sky_bindings, m) {
         .def(py::self + py::self)
         .def(py::self += py::self)
         .def(py::self - py::self)
-        .def(py::self -= py::self)
         .def(-py::self)
         .def("Unit", &Angle::Unit)
         .def("Degrees", &Angle::Degrees)
         .def("Rotate", &Angle::Rotate);
+    // TODO why does -= (removed) give a warning?
 
     // source/Point
     py::class_<Point>(m, "Point")
@@ -82,6 +91,8 @@ PYBIND11_MODULE(endless_sky_bindings, m) {
     m.def("RandomSeed", &Random::Seed);
     m.def("RandomInt", py::overload_cast<>(&Random::Int));
     m.def("RandomInt", py::overload_cast<uint32_t>(&Random::Int));
+
+
 
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
