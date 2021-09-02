@@ -40,17 +40,16 @@ jobs:
     - name: Test
       run: pytest
 
-
-#TODO windows once other things are working
   build_windows:
     strategy:
       matrix:
         #python-version: ["3.5", "3.8", "3.9"]
-        python-version: ["3.9"]
+        python-version: ["3.8"]
 
     runs-on: windows-latest
 
     env:
+      DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\x86_64-w64-mingw32
       DIR_ESLIB: .\dev64
       AR: gcc-ar
 
@@ -78,6 +77,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Add requirements
+      shell: msys2 {0}
       run: python -m pip install --upgrade wheel setuptools
 
     - name: specify mingw compiler to setuptools
@@ -85,6 +85,7 @@ jobs:
         "[build]`ncompiler=mingw32`n" | Out-File -FilePath setup.cfg
 
     - name: Build and install
+      shell: msys2 {0}
       run: pip install --verbose .[test]
 
     - name: Test
