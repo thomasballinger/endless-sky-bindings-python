@@ -8,11 +8,11 @@ on:
       - main
 
 jobs:
-  build:
+  build_mac:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest, macos-latest, ubuntu-latest]
+        platform: [macos-latest]
         python-version: ["3.5", "3.8", "3.9"]
 
     runs-on: ${{ matrix.platform }}
@@ -21,6 +21,12 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: recursive
+
+    - name: Update Homebrew
+      run: brew update
+
+    - name: Install dependencies
+      run: brew install libmad libpng jpeg-turbo SDL2
 
     - uses: actions/setup-python@v2
       with:
@@ -35,25 +41,63 @@ jobs:
     - name: Test
       run: python tests/test.py
 
-  build-mingw64:
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
-    steps:
-    - uses: msys2/setup-msys2@v2
-      with:
-        update: true
-        install: >-
-          mingw-w64-x86_64-gcc
-          mingw-w64-x86_64-python-pip
+#TODO windows once other things are working
+#  build_windows:
+#   strategy:
+#     fail-fast: false
+#     matrix:
+#       platform: [windows-latest]
+#       python-version: ["3.5", "3.8", "3.9"]
 
+#   runs-on: ${{ matrix.platform }}
+
+#   steps:
+#   - uses: actions/checkout@v2
+#     with:
+#       submodules: recursive
+
+#   - uses: actions/setup-python@v2
+#     with:
+#       python-version: ${{ matrix.python-version }}
+
+#   - name: Add requirements
+#     run: python -m pip install --upgrade wheel setuptools
+
+#   - name: Build and install
+#     run: pip install --verbose .
+
+#   - name: Test
+#     run: python tests/test.py
+
+  build_linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest]
+        python-version: ["3.5", "3.8", "3.9"]
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
     - uses: actions/checkout@v2
       with:
         submodules: recursive
 
+    - name: Install dependencies
+      run: |
+        sudo rm /etc/apt/sources.list.d/* && sudo dpkg --clear-avail
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends libsdl2-dev libpng-dev libjpeg-turbo8-dev libopenal-dev libmad0-dev libglew-dev libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev uuid-dev
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Add requirements
+      run: python -m pip install --upgrade wheel setuptools
+
     - name: Build and install
-      run: pip install .
+      run: pip install --verbose .
 
     - name: Test
       run: python tests/test.py
