@@ -25,7 +25,7 @@ ext_modules = [
             "endless-sky/tests/src/helpers/datanode-factory.cpp",
         ] + sorted(
             glob('endless-sky/source/*.cpp') +
-            glob('endless-sky/source/Text/*.cpp')
+            glob('endless-sky/source/text/*.cpp')
         ),
         libraries=[
             "winmm",
