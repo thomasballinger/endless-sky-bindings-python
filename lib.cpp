@@ -1,3 +1,5 @@
+#define GL_SILENCE_DEPRECATION
+
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 
@@ -26,6 +28,22 @@ int add(int i, int j) {
 }
 
 namespace py = pybind11;
+
+
+template<typename T>
+void declare_set(py::module &m, std::string &typestr) {
+    using Class = Set<T>;
+    std::string pyclass_name = std::string("SetOf") + typestr + std::string("s");
+    py::class_<Class>(m, pyclass_name.c_str())
+        .def(py::init<>())
+        .def("size", &Class::size)
+        .def("__len__", [](const Class &s) { return s.size(); })
+        .def("__iter__", [](Class &s) {
+            return py::make_iterator(s.begin(), s.end());
+        }, py::keep_alive<0, 1>())
+        .def("Find", &Class::Find)
+        .def("Has", &Class::Find);
+}
 
 PYBIND11_MODULE(endless_sky_bindings, m) {
     m.doc() = R"pbdoc(
@@ -81,6 +99,21 @@ PYBIND11_MODULE(endless_sky_bindings, m) {
         .def("Rotate", &Angle::Rotate);
     // TODO why does -= (removed) give a warning?
 
+    // source/GameData
+    py::class_<GameData>(m, "GameData")
+        .def_static("BeginLoad", [](std::vector<std::string> argVec) {
+            // pybind11 doesn't do double pointers, so convert
+            std::vector<char *> cstrs;
+            cstrs.reserve(argVec.size() + 1);
+            for (auto &s : argVec) {
+                cstrs.push_back(const_cast<char *>(s.c_str()));
+            }
+            cstrs.push_back(NULL);
+            return GameData::BeginLoad(cstrs.data());
+        })
+	.def_static("CheckReferences", &GameData::CheckReferences)
+	.def_static("Ships", &GameData::Ships);
+
     // source/Point
     py::class_<Point>(m, "Point")
         .def(py::init<double,double>())
@@ -92,8 +125,13 @@ PYBIND11_MODULE(endless_sky_bindings, m) {
     m.def("RandomInt", py::overload_cast<>(&Random::Int));
     m.def("RandomInt", py::overload_cast<uint32_t>(&Random::Int));
 
+    // source/Set
+    std::string a = std::string("Ship");
+    declare_set<Ship>(m, a);
+
+    // source/Ship
     py::class_<Ship, std::shared_ptr<Ship>>(m, "Ship")
-       .def(py::init<>())
+        .def(py::init<>())
         .def(py::init<const DataNode&>())
         .def("Name", &Ship::Name)
         .def("ModelName", &Ship::ModelName)
