@@ -21,8 +21,6 @@ extra_compile_args=[
         ] if platform.system() == "Darwin" else [
         ]
 
-extra_link_args=['-static'] if platform.system() == "Windows" else []
-
 ext_modules = [
     Pybind11Extension("endless_sky_bindings", [
             "lib.cpp",
@@ -79,7 +77,6 @@ ext_modules = [
             '/usr/local/opt/jpeg-turbo/include',
         ],
         extra_compile_args=extra_compile_args,
-        extra_link_args=extra_link_args,
         define_macros=[('VERSION_INFO', __version__)],
         data_files=[
             (
