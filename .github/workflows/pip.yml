@@ -34,6 +34,10 @@ jobs:
     - name: Add requirements
       run: python -m pip install --upgrade wheel setuptools
 
+    - name: specify mingw compiler to setuptools
+      run: |
+        "[build]`ncompiler=minggw32`n" | Out-File -FilePath setup.cfg
+
     - name: Build and install
       run: pip install --verbose .[test]
 
