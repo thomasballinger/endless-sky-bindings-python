@@ -19,6 +19,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: recursive
 
     - uses: actions/setup-python@v2
       with:
@@ -47,6 +49,8 @@ jobs:
           mingw-w64-x86_64-python-pip
 
     - uses: actions/checkout@v2
+      with:
+        submodules: recursive
 
     - name: Build and install
       run: pip install .
