@@ -36,36 +36,34 @@ ext_modules = [
             "rpcrt4",
             "glew32.dll",
             "opengl32",
-        ] if platform.system() == "Windows" else [
+        ] if platform.system() == "Windows" else ([
             'jpeg',
             'SDL2',
             'png',
             'openal',
             'mad',
-            "uuid"
-            "GL",
-            "GLEW",
-        ],
-
+            #"GL",   # these don't seem available?
+            #"GLEW", # what's up with that?
+        ] + ([] if platform.system() == "Darwin" else ['uuid'])),
         library_dirs=[
+            './dev64/lib',
+            './dev64/bin', # which of these is correct?
+            './dev64/include'
+        ] if platform.system() == "Windows" else [
             # mac homebrew locations
             '/usr/local/opt/jpeg-turbo/lib', 
             '/usr/local/opt/openal-soft/lib',
             '/usr/local/lib/',
             # need linux locations here?
-            # windows
-            './dev64/lib',
-            './dev64/bin', # which of these is correct?
-            './dev64/include'
         ],
         include_dirs=[
+            './dev64/lib',
+        ] if platform.system() == "Windows" else [
             # mac homebrew locations
             'endless-sky/tests/include',
             '/usr/local/opt/jpeg-turbo/include',
-            # windows
-            './dev64/lib',
         ],
-        extras_compile_args=extra_compile_args,
+        extra_compile_args=extra_compile_args,
         define_macros=[('VERSION_INFO', __version__)],
     ),
 ]
@@ -79,6 +77,7 @@ setup(
     description="Python bindings for Endless Sky C++ code",
     long_description="",
     ext_modules=ext_modules,
+    packages=['endless_sky'],
     extras_require={"test": "pytest"},
     # Currently, build_ext only provides an optional "highest supported C++
     # level" feature, but in the future it may provide more features.
