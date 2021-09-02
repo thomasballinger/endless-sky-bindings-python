@@ -39,7 +39,7 @@ jobs:
       run: pip install --verbose .
 
     - name: Test
-      run: python tests/test.py
+      run: pytest
 
 #TODO windows once other things are working
 #  build_windows:
