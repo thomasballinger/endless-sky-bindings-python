@@ -89,6 +89,7 @@ jobs:
       run: pip install --verbose .[test]
 
     - name: Test
+      shell: msys2 {0}
       run: pytest
 
   build_linux:
