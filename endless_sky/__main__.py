@@ -25,6 +25,12 @@ if args.version or args.subcommand == "version":
     sys.exit(0)
 
 
+# For Endless Sky data to be loaded, the following is required:
+# - an installed version of the game or a checkout of the Endless Sky repo
+#   (use --no-resources to ignore this)
+# - a config location, where save games and plugins are stored.
+#   (use --no-
+
 # When parsing we need to choose a resources directory.
 # This is loaded before any plugins.
 # You can parse data with this first, you can use an empty resources dir,
