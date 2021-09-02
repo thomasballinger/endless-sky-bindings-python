@@ -16,6 +16,7 @@ endless_sky_version = ""
 
 extra_compile_args=[
         '-Wno-deprecated-declarations', # ignore mac OpenGL deprecation warnings
+        ] if platform.system() == "Darwin" else [
         ]
 
 ext_modules = [
