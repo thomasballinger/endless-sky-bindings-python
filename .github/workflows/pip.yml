@@ -26,7 +26,7 @@ jobs:
       run: brew update
 
     - name: Install dependencies
-      run: brew install libmad libpng jpeg-turbo SDL2
+      run: brew install libmad libpng jpeg-turbo SDL2 openal-soft
 
     - uses: actions/setup-python@v2
       with:
