@@ -10,10 +10,10 @@ on:
 jobs:
   build_mac:
     strategy:
-      fail-fast: false
       matrix:
         platform: [macos-latest]
-        python-version: ["3.5", "3.8", "3.9"]
+        #python-version: ["3.5", "3.8", "3.9"]
+        python-version: ["3.9"]
 
     runs-on: ${{ matrix.platform }}
 
@@ -42,39 +42,39 @@ jobs:
       run: pytest
 
 #TODO windows once other things are working
-#  build_windows:
-#   strategy:
-#     fail-fast: false
-#     matrix:
-#       platform: [windows-latest]
-#       python-version: ["3.5", "3.8", "3.9"]
+  build_windows:
+   strategy:
+     matrix:
+       platform: [windows-latest]
+       #python-version: ["3.5", "3.8", "3.9"]
+       python-version: ["3.9"]
 
-#   runs-on: ${{ matrix.platform }}
+   runs-on: ${{ matrix.platform }}
 
-#   steps:
-#   - uses: actions/checkout@v2
-#     with:
-#       submodules: recursive
+   steps:
+   - uses: actions/checkout@v2
+     with:
+       submodules: recursive
 
-#   - uses: actions/setup-python@v2
-#     with:
-#       python-version: ${{ matrix.python-version }}
+   - uses: actions/setup-python@v2
+     with:
+       python-version: ${{ matrix.python-version }}
 
-#   - name: Add requirements
-#     run: python -m pip install --upgrade wheel setuptools
+   - name: Add requirements
+     run: python -m pip install --upgrade wheel setuptools
 
-#   - name: Build and install
-#     run: pip install --verbose .
+   - name: Build and install
+     run: pip install --verbose .
 
-#   - name: Test
-#     run: python tests/test.py
+   - name: Test
+     run: pytest
 
   build_linux:
     strategy:
-      fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: ["3.5", "3.8", "3.9"]
+        #python-version: ["3.5", "3.8", "3.9"]
+        python-version: ["3.9"]
 
     runs-on: ${{ matrix.platform }}
 
@@ -100,4 +100,4 @@ jobs:
       run: pip install --verbose .
 
     - name: Test
-      run: python tests/test.py
+      run: pytest
