@@ -1,6 +1,5 @@
 import platform
 from setuptools import setup
-import distutils.sysconfig
 from glob import glob
 import os
 import sys
@@ -84,7 +83,7 @@ ext_modules = [
         define_macros=[('VERSION_INFO', __version__)],
         data_files=[
             (
-                distutils.sysconfig.get_python_lib(),
+                '', # install in the package folder
                 sorted(glob(".\dev64\bin\*.dll")) + [
                     DIR_MINGW64 + "\lib\libgcc_s_seh-1.dll",
                     DIR_MINGW64 + "\lib\libstdc++-6.dll",
