@@ -39,6 +39,7 @@ ext_modules = [
             "rpcrt4",
             "glew32.dll",
             "opengl32",
+            'mad',
         ] if platform.system() == "Windows" else (
             [
                 'jpeg',
