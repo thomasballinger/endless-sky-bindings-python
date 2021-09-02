@@ -40,6 +40,7 @@ jobs:
     - name: Test
       run: pytest
 
+
 #TODO windows once other things are working
   build_windows:
     strategy:
@@ -48,9 +49,18 @@ jobs:
         python-version: ["3.9"]
 
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    - uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: >-
+          mingw-w64-x86_64-gcc
+          mingw-w64-x86_64-python-pip
 
     env:
-      DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\x86_64-w64-mingw32
       DIR_ESLIB: .\dev64
       AR: gcc-ar
 
