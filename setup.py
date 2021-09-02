@@ -1,3 +1,4 @@
+import platform
 from setuptools import setup
 from glob import glob
 
@@ -24,36 +25,50 @@ ext_modules = [
             glob('endless-sky/source/Text/*.cpp')
         ),
         libraries=[
+            "winmm",
+            "mingw32",
+            "sdl2main",
+            "sdl2.dll",
+            "png.dll",
+            "turbojpeg.dll",
+            "jpeg.dll",
+            "openal32.dll",
+            "rpcrt4",
+            "glew32.dll",
+            "opengl32",
+        ] if platform.system() == "Windows" else [
             'jpeg',
             'SDL2',
             'png',
             'openal',
             'mad',
-            ],
+            "uuid"
+            "GL",
+            "GLEW",
+        ],
+
         library_dirs=[
             # mac homebrew locations
             '/usr/local/opt/jpeg-turbo/lib', 
             '/usr/local/opt/openal-soft/lib',
-            '/usr/local/lib/'
+            '/usr/local/lib/',
             # need linux locations here?
-            ],
+            # windows
+            './dev64/lib',
+            './dev64/bin', # which of these is correct?
+            './dev64/include'
+        ],
         include_dirs=[
+            # mac homebrew locations
             'endless-sky/tests/include',
-            '/usr/local/opt/jpeg-turbo/include'
+            '/usr/local/opt/jpeg-turbo/include',
+            # windows
+            './dev64/lib',
         ],
         extras_compile_args=extra_compile_args,
         define_macros=[('VERSION_INFO', __version__)],
     ),
 ]
-
-
-# TODO use all source files
-# - use jpegturbo
-# - ignore OPENGL_DEPRECATED on mac
-# - 
-"""
-"""
-
 
 setup(
     name="endless-sky-bindings",

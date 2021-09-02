@@ -11,11 +11,10 @@ jobs:
   build_mac:
     strategy:
       matrix:
-        platform: [macos-latest]
         #python-version: ["3.5", "3.8", "3.9"]
         python-version: ["3.9"]
 
-    runs-on: ${{ matrix.platform }}
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -43,40 +42,50 @@ jobs:
 
 #TODO windows once other things are working
   build_windows:
-   strategy:
-     matrix:
-       platform: [windows-latest]
-       #python-version: ["3.5", "3.8", "3.9"]
-       python-version: ["3.9"]
+    strategy:
+      matrix:
+        #python-version: ["3.5", "3.8", "3.9"]
+        python-version: ["3.9"]
 
-   runs-on: ${{ matrix.platform }}
+    runs-on: windows-latest
 
-   steps:
-   - uses: actions/checkout@v2
-     with:
-       submodules: recursive
+    env:
+      DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\x86_64-w64-mingw32
+      DIR_ESLIB: .\dev64
+      AR: gcc-ar
 
-   - uses: actions/setup-python@v2
-     with:
-       python-version: ${{ matrix.python-version }}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
 
-   - name: Add requirements
-     run: python -m pip install --upgrade wheel setuptools
+    - name: Fetch development libraries
+      run: |
+        # thanks MCO
+        Invoke-WebRequest https://endless-sky.github.io/win64-dev.zip -OutFile win64-dev.zip
+        Expand-Archive win64-dev.zip -DestinationPath . -Force
+        Remove-Item win64-dev.zip
 
-   - name: Build and install
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Add requirements
+      run: python -m pip install --upgrade wheel setuptools
+
+    - name: Build and install
      run: pip install --verbose .
 
-   - name: Test
-     run: pytest
+    - name: Test
+      run: pytest
 
   build_linux:
     strategy:
       matrix:
-        platform: [ubuntu-latest]
         #python-version: ["3.5", "3.8", "3.9"]
         python-version: ["3.9"]
 
-    runs-on: ${{ matrix.platform }}
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
