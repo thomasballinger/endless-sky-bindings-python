@@ -66,7 +66,8 @@ ext_modules = [
             # need linux locations here?
         ],
         include_dirs=[
-            './dev64/lib',
+            './dev64/include',
+            'endless-sky/tests/include',
         ] if platform.system() == "Windows" else [
             # mac homebrew locations
             'endless-sky/tests/include',
