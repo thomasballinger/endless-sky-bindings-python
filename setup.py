@@ -48,7 +48,7 @@ ext_modules = [
                 'mad',
             ] + (
                 [] if platform.system() == "Darwin" else [
-                    'uuid'
+                    'uuid',
                     'GL',
                     'GLEW',
                 ]
