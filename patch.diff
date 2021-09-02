@@ -1,0 +1,468 @@
+diff --git a/source/Audio.cpp b/source/Audio.cpp
+index 749c3ce0..e44c1cf4 100644
+--- a/source/Audio.cpp
++++ b/source/Audio.cpp
+@@ -160,9 +160,16 @@ void Audio::Init(const vector<string> &sources)
+ 			}
+ 		}
+ 	}
++
++#ifndef __EMSCRIPTEN__
+ 	// Begin loading the files.
+ 	if(!loadQueue.empty())
+ 		loadThread = thread(&Load);
++#else
++	// emscripten-compiled code freezes here in the browser
++	// so just load synchronously
++	Load();
++#endif
+ 	
+ 	// Create the music-streaming threads.
+ 	currentTrack.reset(new Music());
+diff --git a/source/FakeMad.h b/source/FakeMad.h
+new file mode 100644
+index 00000000..41e4bfd2
+--- /dev/null
++++ b/source/FakeMad.h
+@@ -0,0 +1,46 @@
++// A header-only no-op implementation of enough of libmad to use in Music.cpp
++// without actually doing anything.
++// Ordinarily provided by <mad.h>
++
++typedef signed long mad_sample_t;
++typedef signed long mad_fixed_t;
++enum mad_error {
++  MAD_ERROR_NONE	   = 0x0000,	/* no error */
++};
++struct mad_stream {
++  unsigned char const *buffer;		/* input bitstream buffer */
++  unsigned char const *bufend;		/* end of buffer */
++  unsigned char const *next_frame;	/* start of next frame */
++  enum mad_error error;			/* error code (see above) */
++};
++
++struct mad_frame {
++  int options;
++};
++
++struct mad_pcm {
++  unsigned int samplerate;		/* sampling frequency (Hz) */
++  unsigned short channels;		/* number of channels */
++  unsigned short length;		/* number of samples per channel */
++  mad_fixed_t samples[2][1152];		/* PCM output samples [ch][sample] */
++};
++struct mad_synth {
++  struct mad_pcm pcm;			/* PCM output */
++};
++
++# define mad_stream_init(synth)  /* nothing */
++# define mad_stream_finish(synth)  /* nothing */
++# define mad_frame_init(synth)  /* nothing */
++# define mad_frame_finish(synth)  /* nothing */
++# define mad_synth_init(synth)  /* nothing */
++# define mad_synth_finish(synth)  /* nothing */
++
++# define mad_stream_buffer(a, b, c)  /* nothing */
++# define mad_synth_frame(a, b)  /* nothing */
++
++int mad_frame_decode(struct mad_frame *, struct mad_stream *){return 0;}
++
++# define MAD_RECOVERABLE(error)	((error) & 0xff00)
++# define MAD_F_FRACBITS		28
++# define MAD_F(x)		((mad_fixed_t) (x##L))
++# define MAD_F_ONE		MAD_F(0x10000000)
+diff --git a/source/Files.cpp b/source/Files.cpp
+index df6fca14..ed686613 100644
+--- a/source/Files.cpp
++++ b/source/Files.cpp
+@@ -75,6 +75,11 @@ void Files::Init(const char * const *argv)
+ 			
+ 	}
+ 	
++#ifdef __EMSCRIPTEN__
++	config = "/";
++	resources = "/";
++#endif
++	
+ 	if(resources.empty())
+ 	{
+ 		// Find the path to the resource directory. This will depend on the
+diff --git a/source/GameWindow.cpp b/source/GameWindow.cpp
+index a7327023..da5b6d71 100644
+--- a/source/GameWindow.cpp
++++ b/source/GameWindow.cpp
+@@ -107,7 +107,9 @@ bool GameWindow::Init()
+ 	int maxHeight = mode.h;
+ 	if(maxWidth < minWidth || maxHeight < minHeight){
+ 		ExitWithError("Monitor resolution is too small!");
++#ifndef __EMSCRIPTEN__
+ 		return false;
++#endif
+ 	}
+ 	
+ 	int windowWidth = maxWidth - 100;
+@@ -424,6 +426,7 @@ void GameWindow::ExitWithError(const string& message, bool doPopUp)
+ 		box.title = "Endless Sky: Error";
+ 		box.message = message.c_str();
+ 		box.colorScheme = nullptr;
++		printf("Error: %s\n", message.c_str());
+ 		
+ 		SDL_MessageBoxButtonData button;
+ 		button.flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
+diff --git a/source/ImageBuffer.cpp b/source/ImageBuffer.cpp
+index 8bdae82e..ee500993 100644
+--- a/source/ImageBuffer.cpp
++++ b/source/ImageBuffer.cpp
+@@ -282,7 +282,7 @@ namespace {
+ #pragma GCC diagnostic pop
+ 		
+ 		jpeg_stdio_src(&cinfo, file);
+-		jpeg_read_header(&cinfo, true);
++		jpeg_read_header(&cinfo, TRUE);
+ 		cinfo.out_color_space = JCS_EXT_RGBA;
+ 		
+ 		// MAYBE: Reading in lots of images in a 32-bit process gets really hairy using the standard approach due to
+diff --git a/source/LoadPanel.cpp b/source/LoadPanel.cpp
+index bc06a7d7..098e2152 100644
+--- a/source/LoadPanel.cpp
++++ b/source/LoadPanel.cpp
+@@ -43,6 +43,10 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ #include <algorithm>
+ #include <stdexcept>
+ 
++#ifdef __EMSCRIPTEN__
++#    include <emscripten.h>
++#endif
++
+ using namespace std;
+ 
+ namespace {
+@@ -479,6 +483,14 @@ void LoadPanel::WriteSnapshot(const string &sourceFile, const string &snapshotNa
+ 		UpdateLists();
+ 		selectedFile = Files::Name(snapshotName);
+ 		loadedInfo.Load(Files::Saves() + selectedFile);
++
++#ifdef __EMSCRIPTEN__
++		// sync from persisted state into memory and then
++		EM_ASM(FS.syncfs(function(err) {
++			assert(!err);
++			console.log("save snapshot synced to IndexedDB");
++		}););
++#endif
+ 	}
+ 	else
+ 		GetUI()->Push(new Dialog("Error: unable to create the file \"" + snapshotName + "\"."));
+diff --git a/source/Music.cpp b/source/Music.cpp
+index add12345..8a2282b0 100644
+--- a/source/Music.cpp
++++ b/source/Music.cpp
+@@ -14,7 +14,11 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ 
+ #include "Files.h"
+ 
++#ifdef __EMSCRIPTEN__
++#include "FakeMad.h"
++#else
+ #include <mad.h>
++#endif
+ 
+ #include <algorithm>
+ #include <cstring>
+diff --git a/source/PlayerInfo.cpp b/source/PlayerInfo.cpp
+index eed3493d..ba138ac7 100644
+--- a/source/PlayerInfo.cpp
++++ b/source/PlayerInfo.cpp
+@@ -46,6 +46,10 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ #include <sstream>
+ #include <stdexcept>
+ 
++#ifdef __EMSCRIPTEN__
++#    include <emscripten.h>
++#endif
++
+ using namespace std;
+ 
+ 
+@@ -359,6 +363,15 @@ void PlayerInfo::Save() const
+ 	}
+ 		
+ 	Save(filePath);
++
++#ifdef __EMSCRIPTEN__
++	EM_ASM(
++	   // syncfs(false) means save in-memory fs to persistent storage
++	   FS.syncfs(false, function(err) {
++		   assert(!err);
++		   console.log("persisted save file to IndexedDB.");
++	}););
++#endif
+ }
+ 
+ 
+diff --git a/source/Point.cpp b/source/Point.cpp
+index e61e967a..248f975f 100644
+--- a/source/Point.cpp
++++ b/source/Point.cpp
+@@ -42,6 +42,16 @@ Point::Point(double x, double y) noexcept
+ 
+ 
+ 
++double Point::Xval() const {
++	return x;
++}
++double Point::Yval() const {
++	return y;
++}
++
++
++
++
+ // Check if the point is anything but (0, 0).
+ Point::operator bool() const noexcept
+ {
+diff --git a/source/Point.h b/source/Point.h
+index 36b182fa..3bb12be6 100644
+--- a/source/Point.h
++++ b/source/Point.h
+@@ -58,6 +58,9 @@ public:
+ 	const double &X() const noexcept;
+ 	double &Y();
+ 	const double &Y() const noexcept;
++
++	double Xval() const;
++	double Yval() const;
+ 	
+ 	void Set(double x, double y);
+ 	
+diff --git a/source/SpriteQueue.cpp b/source/SpriteQueue.cpp
+index 1149c668..0827ddf0 100644
+--- a/source/SpriteQueue.cpp
++++ b/source/SpriteQueue.cpp
+@@ -28,9 +28,11 @@ using namespace std;
+ // Constructor, which allocates worker threads.
+ SpriteQueue::SpriteQueue()
+ {
++#ifndef ES_NO_THREADS
+ 	threads.resize(max(4u, thread::hardware_concurrency()));
+ 	for(thread &t : threads)
+ 		t = thread(ref(*this));
++#endif // ES_NO_THREADS
+ }
+ 
+ 
+@@ -39,12 +41,16 @@ SpriteQueue::SpriteQueue()
+ SpriteQueue::~SpriteQueue()
+ {
+ 	{
++#ifndef ES_NO_THREADS
+ 		lock_guard<mutex> lock(readMutex);
++#endif // ES_NO_THREADS
+ 		added = -1;
+ 	}
++#ifndef ES_NO_THREADS
+ 	readCondition.notify_all();
+ 	for(thread &t : threads)
+ 		t.join();
++#endif // ES_NO_THREADS
+ }
+ 
+ 
+@@ -53,7 +59,9 @@ SpriteQueue::~SpriteQueue()
+ void SpriteQueue::Add(const shared_ptr<ImageSet> &images)
+ {
+ 	{
++#ifndef ES_NO_THREADS
+ 		lock_guard<mutex> lock(readMutex);
++#endif // ES_NO_THREADS
+ 		// Do nothing if we are destroying the queue already.
+ 		if(added < 0)
+ 			return;
+@@ -61,7 +69,11 @@ void SpriteQueue::Add(const shared_ptr<ImageSet> &images)
+ 		toRead.push(images);
+ 		++added;
+ 	}
++#ifndef ES_NO_THREADS
+ 	readCondition.notify_one();
++#else
++	this->operator()();
++#endif // ES_NO_THREADS
+ }
+ 
+ 
+@@ -69,7 +81,9 @@ void SpriteQueue::Add(const shared_ptr<ImageSet> &images)
+ // Unload the texture for the given sprite (to free up memory).
+ void SpriteQueue::Unload(const string &name)
+ {
++#ifndef ES_NO_THREADS
+ 	unique_lock<mutex> lock(loadMutex);
++#endif // ES_NO_THREADS
+ 	toUnload.push(name);
+ }
+ 
+@@ -78,8 +92,12 @@ void SpriteQueue::Unload(const string &name)
+ // Find out our percent completion.
+ double SpriteQueue::Progress()
+ {
++#ifndef ES_NO_THREADS
+ 	unique_lock<mutex> lock(loadMutex);
+ 	return DoLoad(lock);
++#else
++	return DoLoad();
++#endif // ES_NO_THREADS
+ }
+ 
+ 
+@@ -87,6 +105,7 @@ double SpriteQueue::Progress()
+ // Finish loading.
+ void SpriteQueue::Finish()
+ {
++#ifndef ES_NO_THREADS
+ 	// Loop until done loading.
+ 	while(true)
+ 	{
+@@ -100,6 +119,7 @@ void SpriteQueue::Finish()
+ 		// disk yet. Wait until one arrives.
+ 		loadCondition.wait(lock);
+ 	}
++#endif // ES_NO_THREADS
+ }
+ 
+ 
+@@ -107,6 +127,7 @@ void SpriteQueue::Finish()
+ // Thread entry point.
+ void SpriteQueue::operator()()
+ {
++#ifndef ES_NO_THREADS
+ 	while(true)
+ 	{
+ 		unique_lock<mutex> lock(readMutex);
+@@ -143,12 +164,30 @@ void SpriteQueue::operator()()
+ 		
+ 		readCondition.wait(lock);
+ 	}
++#else
++	// To signal this thread that it is time for it to quit, we set
++	// "added" to -1.
++	if(added < 0)
++		return;
++	if(toRead.empty())
++		return;
++
++	// Extract the one item we should work on reading right now.
++	shared_ptr<ImageSet> imageSet = toRead.front();
++	toRead.pop();
++	imageSet->Load();
++	toLoad.push(imageSet);
++#endif // ES_NO_THREADS
+ }
+ 
+ 
+-
++#ifndef ES_NO_THREADS
+ double SpriteQueue::DoLoad(unique_lock<mutex> &lock)
++#else
++double SpriteQueue::DoLoad()
++#endif // ES_NO_THREADS
+ {
++#ifndef ES_NO_THREADS
+ 	while(!toUnload.empty())
+ 	{
+ 		Sprite *sprite = SpriteSet::Modify(toUnload.front());
+@@ -177,6 +216,25 @@ double SpriteQueue::DoLoad(unique_lock<mutex> &lock)
+ 	// Wait until we have completed loading of as many sprites as we have added.
+ 	// The value of "added" is protected by readMutex.
+ 	unique_lock<mutex> readLock(readMutex);
++#else
++	while(!toUnload.empty())
++	{
++		Sprite *sprite = SpriteSet::Modify(toUnload.front());
++		toUnload.pop();
++
++		sprite->Unload();
++	}
++	for(int i = 0; !toLoad.empty() && i < 100; ++i)
++	{
++		// Extract the one item we should work on uploading right now.
++		shared_ptr<ImageSet> imageSet = toLoad.front();
++		toLoad.pop();
++
++		imageSet->Upload(SpriteSet::Modify(imageSet->Name()));
++
++		++completed;
++	}
++#endif // ES_NO_THREADS
+ 	// Special cases: we're bailing out, or we are done.
+ 	if(added <= 0 || added == completed)
+ 		return 1.;
+diff --git a/source/SpriteQueue.h b/source/SpriteQueue.h
+index e8005f21..f69bf719 100644
+--- a/source/SpriteQueue.h
++++ b/source/SpriteQueue.h
+@@ -57,20 +57,28 @@ public:
+ 	
+ 	
+ private:
++#ifndef ES_NO_THREADS
+ 	double DoLoad(std::unique_lock<std::mutex> &lock);
+-	
+-	
++#else
++	double DoLoad();
++#endif // ES_NO_THREADS
++
++
+ private:
+ 	// These are the image sets that need to be loaded from disk.
+ 	std::queue<std::shared_ptr<ImageSet>> toRead;
++#ifndef ES_NO_THREADS
+ 	std::mutex readMutex;
+ 	std::condition_variable readCondition;
++#endif // ES_NO_THREADS
+ 	int added = 0;
+ 	
+ 	// These image sets have been loaded from disk but have not been uplodaed.
+ 	std::queue<std::shared_ptr<ImageSet>> toLoad;
++#ifndef ES_NO_THREADS
+ 	std::mutex loadMutex;
+ 	std::condition_variable loadCondition;
++#endif // ES_NO_THREADS
+ 	int completed = 0;
+ 	
+ 	// These sprites must be unloaded to reclaim GPU memory.
+diff --git a/source/main.cpp b/source/main.cpp
+index 836edff7..aff9806c 100644
+--- a/source/main.cpp
++++ b/source/main.cpp
+@@ -48,6 +48,10 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ #include <mmsystem.h>
+ #endif
+ 
++#ifdef __EMSCRIPTEN__
++#    include <emscripten.h>
++#endif
++
+ using namespace std;
+ 
+ void PrintHelp();
+@@ -63,6 +67,21 @@ void InitConsole();
+ // Entry point for the EndlessSky executable
+ int main(int argc, char *argv[])
+ {
++#ifdef __EMSCRIPTEN__
++	EM_ASM(FS.mkdir('/saves');
++	FS.mount(IDBFS, {}, '/saves');
++
++	// sync from persisted state into memory
++	FS.syncfs(
++		true, function(err) {
++			assert(!err);
++			const contents = FS.lookupPath('saves').node.contents;
++			const numFiles = Object.keys(contents).length;
++			console.log(
++				numFiles ? numFiles : "No",
++				"save files found in IndexedDB.");
++		}););
++#endif
+ 	// Handle command-line arguments
+ #ifdef _WIN32
+ 	if(argc > 1)

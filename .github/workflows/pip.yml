@@ -4,100 +4,110 @@ on:
   workflow_dispatch:
   pull_request:
   push:
-    branches:
-      - main
 
 jobs:
-  build_mac:
+  buildAndTest:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest]
-        python-version: ["3.5", "3.8", "3.9"]
+        #python-version: ["3.5", "3.8", "3.9"]
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        python-version: ["3.9"]
+        include-libraries: [include]
+        build-size: [""]
+        threading: ["no-threads"]
+        exclude:
+          - os: ubuntu-latest
+            include-libraries: include
+        include:
+          - os: ubuntu-latest
+            python-version: "3.9"
+            include-libraries: system
+            threading: no-threads
+          - os: macos-latest
+            python-version: "3.9"
+            include-libraries: system
+            threading: no-threads
+          - os: windows-latest
+            python-version: "3.9"
+            include-libraries: include
+            build-size: skinny
+            threading: no-threads
 
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+
+    env:
+      DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\x86_64-w64-mingw32
+      DIR_ESLIB: .\dev64
+      AR: ${{ matrix.os == 'windows-latest' && 'gcc-ar' || '' }}
+      ES_SETUP_INCLUDE_LIBRARIES: ${{ matrix.include-libraries == 'include' && '1' || '0' }}
+      ES_SKINNY_BUILD: ${{ matrix.build-size == 'skinny' && '1' || '0' }}
 
     steps:
     - uses: actions/checkout@v2
       with:
         submodules: recursive
 
-    - name: Update Homebrew
-      run: brew update
-
-    - name: Install dependencies
-      run: brew install libmad libpng jpeg-turbo SDL2 openal-soft
+    - name: patch to make threadless
+      if: matrix.threading == 'no-threads'
+      working-directory: ./endless_sky/endless-sky
+      shell: bash
+      run: patch -p1 < ../../patch.diff
+#cd endless-sky/; git clean -dxf; git stash
 
     - uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Add requirements
-      run: python -m pip install --upgrade wheel setuptools
+    - name: Install Mac dependencies
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew update
+        brew install libmad libpng jpeg-turbo SDL2 openal-soft
 
-    - name: Build and install
-      run: pip install --verbose .[test]
-
-    - name: Test
-      run: pytest
-
-#TODO windows once other things are working
-#  build_windows:
-#   strategy:
-#     fail-fast: false
-#     matrix:
-#       platform: [windows-latest]
-#       python-version: ["3.5", "3.8", "3.9"]
-
-#   runs-on: ${{ matrix.platform }}
-
-#   steps:
-#   - uses: actions/checkout@v2
-#     with:
-#       submodules: recursive
-
-#   - uses: actions/setup-python@v2
-#     with:
-#       python-version: ${{ matrix.python-version }}
-
-#   - name: Add requirements
-#     run: python -m pip install --upgrade wheel setuptools
-
-#   - name: Build and install
-#     run: pip install --verbose .
-
-#   - name: Test
-#     run: python tests/test.py
-
-  build_linux:
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [ubuntu-latest]
-        python-version: ["3.5", "3.8", "3.9"]
-
-    runs-on: ${{ matrix.platform }}
-
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: recursive
-
-    - name: Install dependencies
+    - name: Install Ubuntu dependencies
+      if: matrix.os == 'ubuntu-latest'
       run: |
         sudo rm /etc/apt/sources.list.d/* && sudo dpkg --clear-avail
         sudo apt-get update
         sudo apt-get install -y --no-install-recommends libsdl2-dev libpng-dev libjpeg-turbo8-dev libopenal-dev libmad0-dev libglew-dev libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev uuid-dev
 
-    - uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+    - name: Fetch Windows development libraries
+      if: matrix.os == 'windows-latest'
+      run: |
+        # thanks MCO
+        Invoke-WebRequest https://endless-sky.github.io/win64-dev.zip -OutFile win64-dev.zip
+        Expand-Archive win64-dev.zip -DestinationPath . -Force
+        Remove-Item win64-dev.zip
+
+    - name: specify mingw compiler to setuptools
+      if: matrix.os == 'windows-latest'
+      run: |
+        "[build]`ncompiler=mingw32`n" | Out-File -FilePath setup.cfg
+
+    - name: Copy libraries from OS into lib and include
+      if: matrix.include-libraries == 'include'
+      run: python grab_libraries.py
 
     - name: Add requirements
-      run: python -m pip install --upgrade wheel setuptools
+      run: python -m pip install --upgrade wheel setuptools pytest pybind11
+
+    - name: sdist
+      run: python setup.py sdist
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: sdist-${{ matrix.os }}-${{ matrix.include-libraries }}-${{ matrix.build-size }}
+        path: dist/
 
     - name: Build and install
-      run: pip install --verbose .
+      shell: bash
+      run: pip install ./dist/*
+
+    - name: testing script in another dir
+      continue-on-error: true
+      working-directory: ./tests
+      run: python run_with_timeout.py python testing.py
 
     - name: Test
-      run: python tests/test.py
+      run: python tests/run_with_timeout.py pytest

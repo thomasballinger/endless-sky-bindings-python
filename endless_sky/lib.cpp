@@ -30,7 +30,7 @@ int add(int i, int j) {
 
 namespace py = pybind11;
 
-
+/*
 template<typename T>
 void declare_set(py::module &m, std::string &typestr) {
     using Class = Set<T>;
@@ -46,12 +46,13 @@ void declare_set(py::module &m, std::string &typestr) {
         .def("__getitem__", &Class::Find, py::return_value_policy::reference)
         .def("Has", &Class::Has);
 }
+*/
 
-PYBIND11_MODULE(endless_sky_bindings, m) {
+PYBIND11_MODULE(bindings, m) {
     m.doc() = R"pbdoc(
         Endless Sky Bindings
         -----------------------
-        .. currentmodule:: endless_sky_bindings
+        .. currentmodule:: endless_sky.bindings
         .. autosummary::
            :toctree: _generate
            add
@@ -68,9 +69,21 @@ PYBIND11_MODULE(endless_sky_bindings, m) {
         Some other explanation about the subtract function.
     )pbdoc");
 
-
     // test/src/helpers/datanode-factory
     m.def("AsDataNode", &AsDataNode);
+
+    // source/Angle
+    py::class_<Angle>(m, "Angle")
+        .def(py::init<>())
+        .def(py::init<double>())
+        .def(py::self + py::self)
+        .def(py::self += py::self)
+        .def(py::self - py::self)
+        .def(-py::self)
+        .def("Unit", &Angle::Unit)
+        .def("Degrees", &Angle::Degrees)
+        .def("Rotate", &Angle::Rotate);
+    // TODO why does -= (removed) give a warning?
 
     // source/DataNode
     py::class_<DataNode>(m, "DataNode")
@@ -96,20 +109,7 @@ PYBIND11_MODULE(endless_sky_bindings, m) {
         .def("Get", py::overload_cast<const std::string&>(&Dictionary::Get, py::const_))
         .def("__getitem__", py::overload_cast<const std::string&>(&Dictionary::Get, py::const_));
 
-    // source/Angle
-    py::class_<Angle>(m, "Angle")
-        .def(py::init<>())
-        .def(py::init<double>())
-        .def(py::init<Point>())
-        .def(py::self + py::self)
-        .def(py::self += py::self)
-        .def(py::self - py::self)
-        .def(-py::self)
-        .def("Unit", &Angle::Unit)
-        .def("Degrees", &Angle::Degrees)
-        .def("Rotate", &Angle::Rotate);
-    // TODO why does -= (removed) give a warning?
-
+/*
     // source/GameData
     py::class_<GameData>(m, "GameData")
         .def_static("BeginLoad", [](std::vector<std::string> argVec) {
@@ -131,6 +131,7 @@ PYBIND11_MODULE(endless_sky_bindings, m) {
         .def("Load", &Outfit::Load)
         .def("Name", &Outfit::Name)
         .def("Attributes", &Outfit::Attributes);
+*/
 
     // source/Point
     py::class_<Point>(m, "Point")
@@ -142,6 +143,7 @@ PYBIND11_MODULE(endless_sky_bindings, m) {
     m.def("RandomSeed", &Random::Seed);
     m.def("RandomInt", py::overload_cast<>(&Random::Int));
     m.def("RandomInt", py::overload_cast<uint32_t>(&Random::Int));
+/*
 
     // source/Set
     std::string a = std::string("Ship");
@@ -166,7 +168,7 @@ PYBIND11_MODULE(endless_sky_bindings, m) {
         .def("FinishLoading", &Ship::FinishLoading)
 
         .def("FlightCheck", &Ship::FlightCheck);
-
+*/
 
 
 #ifdef VERSION_INFO
