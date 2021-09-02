@@ -88,6 +88,14 @@ jobs:
       shell: msys2 {0}
       run: pip install --verbose .[test]
 
+    - name: Debugging fs
+      shell: msys2 {0}
+      run: python -c 'print(__import__("importlib").util.find_spec("endless_sky_bindings"))'
+
+    - name: Debugging
+      shell: msys2 {0}
+      run: python -vvvvv -c 'import endless_sky_bindings'
+
     - name: Test
       shell: msys2 {0}
       run: pytest
