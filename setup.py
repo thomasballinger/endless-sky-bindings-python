@@ -6,7 +6,7 @@ from pybind11.setup_helpers import Pybind11Extension, build_ext
 
 import sys
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 # TODO use info at https://pybind11.readthedocs.io/en/stable/compiling.html
 # to speed this up

@@ -14,6 +14,7 @@
 #include "endless-sky/source/Angle.h"
 #include "endless-sky/source/DataNode.h"
 #include "endless-sky/source/GameData.h"
+#include "endless-sky/source/Outfit.h"
 #include "endless-sky/source/Point.h"
 #include "endless-sky/source/Random.h"
 #include "endless-sky/source/Set.h"
@@ -42,6 +43,7 @@ void declare_set(py::module &m, std::string &typestr) {
             return py::make_iterator(s.begin(), s.end());
         }, py::keep_alive<0, 1>())
         .def("Find", &Class::Find, py::return_value_policy::reference)
+        .def("__getitem__", &Class::Find, py::return_value_policy::reference)
         .def("Has", &Class::Has);
 }
 
@@ -85,6 +87,15 @@ PYBIND11_MODULE(endless_sky_bindings, m) {
             return py::make_iterator(n.begin(), n.end());
         }, py::keep_alive<0, 1>());
 
+    // source/Dictionary
+    py::class_<Dictionary>(m, "Dictionary")
+        .def(py::init<>())
+        .def("__iter__", [](Dictionary &d) {
+            return py::make_iterator(d.begin(), d.end());
+        }, py::keep_alive<0, 1>())
+        .def("Get", py::overload_cast<const std::string&>(&Dictionary::Get, py::const_))
+        .def("__getitem__", py::overload_cast<const std::string&>(&Dictionary::Get, py::const_));
+
     // source/Angle
     py::class_<Angle>(m, "Angle")
         .def(py::init<>())
@@ -113,6 +124,13 @@ PYBIND11_MODULE(endless_sky_bindings, m) {
         })
 	.def_static("CheckReferences", &GameData::CheckReferences)
 	.def_static("Ships", &GameData::Ships);
+
+    // source/Outfit
+    py::class_<Outfit>(m, "Outfit")
+        .def(py::init<>())
+        .def("Load", &Outfit::Load)
+        .def("Name", &Outfit::Name)
+        .def("Attributes", &Outfit::Attributes);
 
     // source/Point
     py::class_<Point>(m, "Point")
