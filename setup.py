@@ -9,6 +9,8 @@ import sys
 
 __version__ = "0.0.2"
 
+endless_sky_version = ""
+
 # TODO use info at https://pybind11.readthedocs.io/en/stable/compiling.html
 # to speed this up
 
@@ -36,15 +38,21 @@ ext_modules = [
             "rpcrt4",
             "glew32.dll",
             "opengl32",
-        ] if platform.system() == "Windows" else ([
-            'jpeg',
-            'SDL2',
-            'png',
-            'openal',
-            'mad',
-            #"GL",   # these don't seem available?
-            #"GLEW", # what's up with that?
-        ] + ([] if platform.system() == "Darwin" else ['uuid'])),
+        ] if platform.system() == "Windows" else (
+            [
+                'jpeg',
+                'SDL2',
+                'png',
+                'openal',
+                'mad',
+            ] + (
+                [] if platform.system() == "Darwin" else [
+                    'uuid'
+                    'GL',
+                    'GLEW',
+                ]
+            )
+        ),
         library_dirs=[
             './dev64/lib',
             './dev64/bin', # which of these is correct?
