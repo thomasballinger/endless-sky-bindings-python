@@ -41,8 +41,8 @@ void declare_set(py::module &m, std::string &typestr) {
         .def("__iter__", [](Class &s) {
             return py::make_iterator(s.begin(), s.end());
         }, py::keep_alive<0, 1>())
-        .def("Find", &Class::Find)
-        .def("Has", &Class::Find);
+        .def("Find", &Class::Find, py::return_value_policy::reference)
+        .def("Has", &Class::Has);
 }
 
 PYBIND11_MODULE(endless_sky_bindings, m) {

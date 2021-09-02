@@ -70,6 +70,7 @@ def test_GameData_ownership(empty_resources_dir, empty_config_dir):
     ])
     ships = m.GameData.Ships();
     canoe = ships.Find("Canoe")
+    del canoe  # segfault if Find used the default return value policy
 
 """
 # TODO should this library ship with the vanilla data? Probably not?
