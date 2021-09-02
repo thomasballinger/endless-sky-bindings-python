@@ -10,6 +10,11 @@ __version__ = "0.0.2"
 
 # TODO use info at https://pybind11.readthedocs.io/en/stable/compiling.html
 # to speed this up
+
+extra_compile_args=[
+        '-Wno-deprecated-declarations', # ignore mac OpenGL deprecation warnings
+        ]
+
 ext_modules = [
     Pybind11Extension("endless_sky_bindings", [
             "lib.cpp",
@@ -26,14 +31,17 @@ ext_modules = [
             'mad',
             ],
         library_dirs=[
-            '/usr/local/opt/jpeg-turbo/lib',
+            # mac homebrew locations
+            '/usr/local/opt/jpeg-turbo/lib', 
             '/usr/local/opt/openal-soft/lib',
             '/usr/local/lib/'
+            # need linux locations here?
             ],
         include_dirs=[
             'endless-sky/tests/include',
             '/usr/local/opt/jpeg-turbo/include'
         ],
+        extras_compile_args=extra_compile_args,
         define_macros=[('VERSION_INFO', __version__)],
     ),
 ]
