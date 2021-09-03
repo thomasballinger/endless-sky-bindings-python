@@ -9,9 +9,16 @@ from pybind11.setup_helpers import Pybind11Extension, build_ext
 
 # Monkey-patch PyBindExtension to convert \foo flags to -foo
 # because it adds some \args on Windows assuming we're using compiler that likes that
+def mvsc_to_mingw(flag):
+    if flag == '/bigobj':
+        return '-Wa,-mbig-obj'
+    if flag == '/EHsc':
+        return ''
+    if flag == '-std:c++latest':
+        return "-std=c++14" # dunno, just a guess
+
 def _add_cflags(self, flags):
-    flags = ['-' + flag[1:] if flag.startswith('/') else flag
-             for flag in flags]
+    flags = [mvsc_to_mingw(flag) for flag in flags if mvsc_to_mingw(flag)]
     self.extra_compile_args[:0] = flags
 Pybind11Extension._add_cflags = _add_cflags
 
