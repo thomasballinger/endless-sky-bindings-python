@@ -8,6 +8,12 @@ import sys
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 
 DIR_MINGW64 = os.environ.get('DIR_MINGW64')
+# DIR_MINGW64 is defined using the already-installed mingw libraries,
+# and not defined when using the 
+
+if platform.system() == "Windows" and DIR_MINGW64:
+    import distutils.cygwinccompiler
+    distutils.cygwinccompiler.get_msvcr = lambda: []
 
 __version__ = "0.0.2"
 
@@ -16,10 +22,17 @@ endless_sky_version = ""
 # TODO use info at https://pybind11.readthedocs.io/en/stable/compiling.html
 # to speed this up
 
+# There are a few options to pursue for Windows:
+# - try to link everything statically!
+# - 
+
 extra_compile_args=[
         '-Wno-deprecated-declarations', # ignore mac OpenGL deprecation warnings
         ] if platform.system() == "Darwin" else [
         ]
+
+extra_link_args = (["-Wl,-Bstatic", "-lpthread", "-static-libstdc++", "-static"]
+                   if platform.system() == "Windows" else [])
 
 ext_modules = [
     Pybind11Extension("endless_sky_bindings", [
@@ -58,7 +71,7 @@ ext_modules = [
             )
         ),
         library_dirs=[
-            './dev64/lib',
+            #'./dev64/lib', try to force the dlls in bin
             './dev64/bin', # which of these is correct?
             './dev64/include'
         ] if platform.system() == "Windows" else [
@@ -77,8 +90,9 @@ ext_modules = [
             '/usr/local/opt/jpeg-turbo/include',
         ],
         extra_compile_args=extra_compile_args,
+        extra_link_args=extra_link_args,
         define_macros=[('VERSION_INFO', __version__)],
-        data_files=[
+        data_files=([
             (
                 '', # install in the package folder
                 sorted(glob(".\dev64\bin\*.dll")) + [
@@ -87,7 +101,7 @@ ext_modules = [
                     DIR_MINGW64 + "\lib\libwinpthread-1.dll",
                 ]
             )
-        ] if platform.system() == "Windows" else []
+        ] if platform.system() == "Windows" and DIR_MINGW64 else [])
     ),
 ]
 
