@@ -47,11 +47,11 @@ void declare_set(py::module &m, std::string &typestr) {
         .def("Has", &Class::Has);
 }
 
-PYBIND11_MODULE(endless_sky_bindings, m) {
+PYBIND11_MODULE(bindings, m) {
     m.doc() = R"pbdoc(
         Endless Sky Bindings
         -----------------------
-        .. currentmodule:: endless_sky_bindings
+        .. currentmodule:: endless_sky.bindings
         .. autosummary::
            :toctree: _generate
            add

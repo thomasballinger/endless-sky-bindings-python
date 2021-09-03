@@ -1,7 +1,7 @@
 
 # These are harvested from the host OS when creating a source distribution (sdist)
-endless_sky/include/*.h
-endless_sky/lib/*.dylib
+endless_sky/include/
+endless_sky/lib/
 
 # Using https://github.com/github/gitignore/blob/master/Python.gitignore
 # Byte-compiled / optimized / DLL files

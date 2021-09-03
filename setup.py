@@ -32,14 +32,26 @@ if platform.system() == "Windows" and DIR_MINGW64:
 __version__ = "0.0.2"
 endless_sky_version = "753db45e921b7b7d57bb7b4afaf5181acbe0a6cc"
 
+# The initial goal here is to create a source distribution (sdist) that could
+# be downloaded and installed on any platform.
+# For this to be possible, dylib/so/DLL files for all platforms need to be
+# included OR instructions about how to install them need to be included.
+# To get things going, start by linking in jpegturbo and openal - but eventually
+# these needn't be in the sdist, they should just be in the wheels.
+# Is that possible, can a wheel be more than a compiled sdist?
+
 # TODO use info at https://pybind11.readthedocs.io/en/stable/compiling.html
-# to speed this up
+# to speed this compile process up when iterating.
 
 extra_compile_args=[
         '-Wno-deprecated-declarations', # ignore mac OpenGL deprecation warnings
+        '-v',  # for debugging an include
+        '-H',  # for debugging an include
         ] if platform.system() == "Darwin" else []
 
-extra_link_args = (["-Wl"] if platform.system() == "Windows" else [])
+extra_link_args = (["-Wl"] if platform.system() == "Windows" else [
+    "-Wl,-rpath,$ORIGIN/lib/."
+])
 
 pybind_extension = Pybind11Extension("endless_sky.bindings", [
         "endless_sky/lib.cpp",
@@ -77,26 +89,25 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
         )
     ),
     library_dirs=[
+        os.path.join(path_to_build_folder(), 'lib')
+    ] + ([
         './dev64/lib', # *.dll.a
         './dev64/bin', # *.dll
     #    './dev64/include' # *.h
     ] if platform.system() == "Windows" else [
         # mac homebrew locations
-        '/usr/local/opt/jpeg-turbo/lib', 
-        '/usr/local/opt/openal-soft/lib',
         '/usr/local/lib/',
         # need linux locations here?
-    ],
+    ]),
     include_dirs=[
+        os.path.join(path_to_build_folder(), 'include'),
         os.path.join(path_to_build_folder(), 'endless-sky/tests/include'),
-        os.path.join(path_to_build_folder(), 'endless-sky/endless-sky/source/*.h'),
-        os.path.join(path_to_build_folder(), 'endless-sky/endless-sky/source/text/*.h'),
+        os.path.join(path_to_build_folder(), 'endless-sky/endless-sky/source'),
+        os.path.join(path_to_build_folder(), 'endless-sky/endless-sky/source/text'),
     ] + ([
         './dev64/include',
         'endless-sky/tests/include',
     ] if platform.system() == "Windows" else [
-        # mac homebrew locations
-        '/usr/local/opt/jpeg-turbo/include', # homebrew doesn't link this
     ] if platform.system() == "Mac" else []),
     extra_compile_args=extra_compile_args,
     extra_link_args=extra_link_args,
@@ -104,7 +115,7 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
             ('VERSION_INFO', __version__),
             ('ENDLESS_SKY_VERSION_INFO', endless_sky_version),
     ],
-    data_files=([
+    data_files=([  # TODO - THIS IS NOT A THING!
         (
             '', # install in the package folder
             sorted(glob(".\dev64\bin\*.dll")) + [
@@ -134,6 +145,9 @@ setup(
             'endless-sky/source/*.hpp',
             'endless-sky/source/text/*.h',
             'endless-sky/source/text/*.hpp',
+            'include/*.h',
+            'include/*/*.h',
+            'lib/*.dylib',
         ]
     },
     extras_require={"test": "pytest"},
