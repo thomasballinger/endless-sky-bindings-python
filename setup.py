@@ -121,26 +121,23 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
                 '/usr/local/opt/jpeg-turbo/lib',
                 '/usr/local/opt/openal-soft/lib',
             ] if platform.system() == 'Darwin' else [
-                crash()
+                #TODO does anything need to be manually included here?
+                # Probably not, linux just works?
             ] if platform.system() == 'Linux' else [
                  './dev64/lib', # *.dll.a
                  './dev64/bin', # *.dll
-            ] if platform.system() == "Windows" else crash()
-        )
-    ),
+            ] if platform.system() == "Windows" else crash())),
     include_dirs=(
-        (
-            [os.path.join(path_to_build_folder(), 'include')]
-            if LIBRARIES_INCLUDED else (
-                [
-                    '/usr/local/opt/jpeg-turbo/include',
-                    '/usr/local/opt/openal-soft/include',
-                ] if platform.system() == 'Darwin' else [
-                    #TODO does anything need to be manually included here?
-                    # Probably not, linux just works?
-                ] if platform.system() == 'Linux' else [
-                    './dev64/include'
-                ] if platform.system() == 'Windows' else crash())) + [
+        ([os.path.join(path_to_build_folder(), 'include')] if LIBRARIES_INCLUDED else (
+            [
+                '/usr/local/opt/jpeg-turbo/include',
+                '/usr/local/opt/openal-soft/include',
+            ] if platform.system() == 'Darwin' else [
+                #TODO does anything need to be manually included here?
+                # Probably not, linux just works?
+            ] if platform.system() == 'Linux' else [
+                './dev64/include'
+            ] if platform.system() == 'Windows' else crash())) + [
         os.path.join(path_to_build_folder(), 'endless-sky/tests/include'),
         os.path.join(path_to_build_folder(), 'endless-sky/endless-sky/source'),
         os.path.join(path_to_build_folder(), 'endless-sky/endless-sky/source/text'),
