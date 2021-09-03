@@ -14,8 +14,8 @@ def mvsc_to_mingw(flag):
         return '-Wa,-mbig-obj'
     if flag == '/EHsc':
         return ''
-    if flag == '-std:c++latest':
-        return "-std=c++14" # dunno, just a guess
+    if flag == '/std:c++latest':
+        return "-std=c++17"
 
 def _add_cflags(self, flags):
     flags = [mvsc_to_mingw(flag) for flag in flags if mvsc_to_mingw(flag)]
