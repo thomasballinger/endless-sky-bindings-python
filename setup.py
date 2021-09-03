@@ -71,9 +71,9 @@ ext_modules = [
             )
         ),
         library_dirs=[
-            #'./dev64/lib', try to force the dlls in bin
-            './dev64/bin', # which of these is correct?
-            './dev64/include'
+            './dev64/lib', # *.dll.a
+            './dev64/bin', # *.dll
+        #    './dev64/include' # *.h
         ] if platform.system() == "Windows" else [
             # mac homebrew locations
             '/usr/local/opt/jpeg-turbo/lib', 
