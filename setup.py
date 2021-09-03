@@ -7,6 +7,22 @@ import sysconfig
 
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 
+# There are two different sdists builds possible.
+# With ES_SETUP_INCLUDE_LIBRARIES set (eg when building wheels) we copy
+# in all libraries into endless_sky/lib. This produces a build that only
+# works on a single platform because we harvest the libraries from the system.
+# Without ES_SETUP_INCLUDE_LIBRARIES set (eg when the package will be run on
+# the very same machine that is building it) we do not copy these libraries in
+# and just look for library folders on the OS.
+INCLUDE_LIBRARIES = (os.environ.get('ES_SETUP_INCLUDE_LIBRARIES') or '0') == '1'
+
+# Once we have an sdist we use the presence of endless_sky/lib to determine
+# whether to use the system lib locations or the local ones.
+LIBRARIES_INCLUDED = os.path.exists('endless_sky/lib/')
+
+if INCLUDE_LIBRARIES:
+    assert LIBRARIES_INCLUDED, "can't include libraries if endless_sky/lib/ does not exist. Run ./grab_libraries.py to harvest libs from the OS."
+
 # Endless Sky requires libraries like dirent.h that are not provided by MSVC,
 # so mingw should be used when compiling on Windows.
 # DIR_MINGW64 is defined in .github/workflows CI, pointing to the
@@ -24,8 +40,11 @@ def path_to_build_folder():
                     version=sys.version_info)
     return os.path.join('build', dir_name, 'endless_sky')
 
-if platform.system() == "Windows" and DIR_MINGW64:
+# https://stackoverflow.com/a/57109148/398212
+# TODO do we also need extra_link_args = ["-Wl,-Bstatic", "-lpthread"]
+if platform.system() == "Windows":
     import distutils.cygwinccompiler
+    # monkeypatch for too-recent MSVC versions
     distutils.cygwinccompiler.get_msvcr = lambda: []
 
 # Update these with new releases
@@ -38,15 +57,18 @@ endless_sky_version = "753db45e921b7b7d57bb7b4afaf5181acbe0a6cc"
 # included OR instructions about how to install them need to be included.
 # To get things going, start by linking in jpegturbo and openal - but eventually
 # these needn't be in the sdist, they should just be in the wheels.
-# Is that possible, can a wheel be more than a compiled sdist?
+# Windows DLLs will be included in the sdist, but mac and linux.
+# Maybe libs will be included in wheels, but not in sdist? In that case
+# we will need to separate setup() invocations in setup.py, one for wheels!
+# That's probably the way to go.
 
 # TODO use info at https://pybind11.readthedocs.io/en/stable/compiling.html
 # to speed this compile process up when iterating.
 
 extra_compile_args=[
         '-Wno-deprecated-declarations', # ignore mac OpenGL deprecation warnings
-        '-v',  # for debugging an include
-        '-H',  # for debugging an include
+        #'-v',  # for debugging an include
+        #'-H',  # for debugging an include
         ] if platform.system() == "Darwin" else []
 
 extra_link_args = (["-Wl"] if platform.system() == "Windows" else [
@@ -88,23 +110,23 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
             ]
         )
     ),
-    library_dirs=[
-        os.path.join(path_to_build_folder(), 'lib')
-    ] + ([
-        './dev64/lib', # *.dll.a
-        './dev64/bin', # *.dll
-    #    './dev64/include' # *.h
-    ] if platform.system() == "Windows" else [
-        # mac homebrew locations
-        '/usr/local/lib/',
-        # need linux locations here?
-    ]),
-    include_dirs=[
-        os.path.join(path_to_build_folder(), 'include'),
+    library_dirs=(
+        [os.path.join(path_to_build_folder(), 'lib')] if LIBRARIES_INCLUDED else [] +
+        (
+            [
+                './dev64/lib', # *.dll.a
+                './dev64/bin', # *.dll
+            #    './dev64/include' # *.h
+            ] if platform.system() == "Windows" else []
+        )
+    ),
+    include_dirs=(([os.path.join(path_to_build_folder(), 'include')]
+                   if LIBRARIES_INCLUDED
+                   else []) + [
         os.path.join(path_to_build_folder(), 'endless-sky/tests/include'),
         os.path.join(path_to_build_folder(), 'endless-sky/endless-sky/source'),
         os.path.join(path_to_build_folder(), 'endless-sky/endless-sky/source/text'),
-    ] + ([
+    ]) + ([
         './dev64/include',
         'endless-sky/tests/include',
     ] if platform.system() == "Windows" else [
@@ -115,16 +137,6 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
             ('VERSION_INFO', __version__),
             ('ENDLESS_SKY_VERSION_INFO', endless_sky_version),
     ],
-    data_files=([  # TODO - THIS IS NOT A THING!
-        (
-            '', # install in the package folder
-            sorted(glob(".\dev64\bin\*.dll")) + [
-                DIR_MINGW64 + "\lib\libgcc_s_seh-1.dll",
-                DIR_MINGW64 + "\lib\libstdc++-6.dll",
-                DIR_MINGW64 + "\lib\libwinpthread-1.dll",
-            ]
-        )
-    ] if platform.system() == "Windows" and DIR_MINGW64 else [])
 )
 
 setup(
@@ -145,10 +157,11 @@ setup(
             'endless-sky/source/*.hpp',
             'endless-sky/source/text/*.h',
             'endless-sky/source/text/*.hpp',
+        ] + ([
             'include/*.h',
             'include/*/*.h',
             'lib/*.dylib',
-        ]
+        ] if INCLUDE_LIBRARIES else [])
     },
     extras_require={"test": "pytest"},
     # Currently, build_ext only provides an optional "highest supported C++
@@ -156,3 +169,16 @@ setup(
     cmdclass={"build_ext": build_ext},
     zip_safe=False,
 )
+
+"""
+    data_files=([  # TODO - THIS IS NOT A THING!
+        (
+            '', # install in the package folder
+            sorted(glob(".\dev64\bin\*.dll")) + [
+                DIR_MINGW64 + "\lib\libgcc_s_seh-1.dll",
+                DIR_MINGW64 + "\lib\libstdc++-6.dll",
+                DIR_MINGW64 + "\lib\libwinpthread-1.dll",
+            ]
+        )
+    ] if platform.system() == "Windows" and DIR_MINGW64 else [])
+"""

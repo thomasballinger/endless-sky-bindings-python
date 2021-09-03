@@ -1,4 +1,4 @@
-import endless_sky_bindings as m
+import endless_sky.bindings as m
 import platform
 
 def test_random():

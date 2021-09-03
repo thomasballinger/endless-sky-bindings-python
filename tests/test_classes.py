@@ -1,5 +1,5 @@
 import pytest
-import endless_sky_bindings as m
+import endless_sky.bindings as m
 
 def test_Point():
     p = m.Point(1, 2)
