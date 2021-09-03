@@ -3,6 +3,15 @@ import platform
 from distutils.dir_util import copy_tree
 import os
 
+def list_files(startpath):
+    for root, dirs, files in os.walk(startpath):
+        level = root.replace(startpath, '').count(os.sep)
+        indent = ' ' * 4 * (level)
+        print('{}{}/'.format(indent, os.path.basename(root)))
+        subindent = ' ' * 4 * (level + 1)
+        for f in files:
+            print('{}{}'.format(subindent, f))
+
 shutil.rmtree('endless_sky/include', ignore_errors=True)
 shutil.rmtree('endless_sky/lib', ignore_errors=True)
 
@@ -28,9 +37,12 @@ elif platform.system() == 'Windows':
     os.makedirs('endless_sky/lib')
 
     # trust the bundle at https://endless-sky.github.io/win64-dev.zip
+    copy_tree('dev64/include', 'endless_sky/include')
     copy_tree('dev64/bin', 'endless_sky/lib')
     copy_tree('dev64/lib', 'endless_sky/lib')
-    copy_tree('dev64/include', 'endless_sky/include')
 
 else:
     assert False, "Platform not supported"
+
+list_files('endless_sky/lib')
+list_files('endless_sky/include')

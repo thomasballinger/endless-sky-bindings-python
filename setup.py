@@ -33,12 +33,14 @@ Pybind11Extension._add_cflags = _add_cflags
 # the very same machine that is building it) we do not copy these libraries in
 # and just look for library folders on the OS.
 INCLUDE_LIBRARIES = (os.environ.get('ES_SETUP_INCLUDE_LIBRARIES') or '0') == '1'
+print('INCLUDE_LIBRARIES:', INCLUDE_LIBRARIES)
 
 # A "real" source distribution might include the shared libraries for every platform.
 
 # Once we have an sdist we use the presence of endless_sky/lib to determine
 # whether to use the system lib locations or the local ones.
 LIBRARIES_INCLUDED = os.path.exists('endless_sky/lib/')
+print('LIBRARIES_INCLUDED:', LIBRARIES_INCLUDED)
 
 if INCLUDE_LIBRARIES:
     assert LIBRARIES_INCLUDED, "can't include libraries if endless_sky/lib/ does not exist. Run ./grab_libraries.py to harvest libs from the OS."
