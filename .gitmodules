@@ -1,3 +1,6 @@
 [submodule "endless-sky"]
 	path = endless-sky
 	url = git@github.com:endless-sky/endless-sky.git
+[submodule "endless_sky/endless-sky"]
+	path = endless_sky/endless-sky
+	url = git@github.com:endless-sky/endless-sky.git

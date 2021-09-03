@@ -27,7 +27,7 @@ if args.version or args.subcommand == "version":
 
 # For Endless Sky data to be loaded, the following is required:
 # - an installed version of the game or a checkout of the Endless Sky repo
-#   (use --no-resources to ignore this)
+#   (use --no-resources to ignore this and use a blank one)
 # - a config location, where save games and plugins are stored.
 #   (use --use-installed-plugins to include installed plugins, by default
 #   a temp config directory will be used.
@@ -35,10 +35,13 @@ if args.version or args.subcommand == "version":
 # when analyzing a save game file, you can only use installed plugins
 # if the saved game is in the save game folder!
 
-# when previewing an individual plugin file, use an assumed name of zzzz or something
+# when previewing an individual plugin file, use an assumed name of zzzz or something?
 
 # we need to be able to discover existing endless sky installations
 # or have an endless sky repo manually specified.
+# Later, have a script that does a zip download somewhere https://github.com/endless-sky/endless-sky/archive/1873fd9ee9a9ad6a4fd210fe03f8d5a6fc7abc25.zip
+# Where do these get downloaded to? I dunno, where does nltk put its datasets?
+# Maybe a .endless-sky-python-assets in home? Maybe use config dir logic?
 
 if args.subcommand == 'parse':
     print("let's parse a file or resources directory:", args.file)

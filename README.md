@@ -41,3 +41,24 @@ True
  'turret mounts': 0.0,
  'weapon capacity': 10.0}
 ```
+
+# Installation
+
+There will be wheels! They should be easy to install!
+
+```
+pip install endless-sky-bindings
+```
+
+# Building from source distribution:
+
+## Mac
+Install dependencies:
+
+```
+brew install libmad libpng jpeg-turbo SDL2 openal-soft
+```
+
+pip install --no-binary endless_sky
+
+
