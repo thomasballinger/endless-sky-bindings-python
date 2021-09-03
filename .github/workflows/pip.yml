@@ -54,6 +54,7 @@ jobs:
       matrix:
         #python-version: ["3.5", "3.8", "3.9"]
         python-version: ["3.9"]
+        ES_SETUP_INCLUDE_LIBRARIES: ["1"]
 
     runs-on: windows-latest
 
@@ -85,9 +86,10 @@ jobs:
     - name: Add requirements
       run: python -m pip install --upgrade wheel setuptools
 
-    - name: specify mingw compiler to setuptools
-      run: |
-        "[build]`ncompiler=mingw32`n" | Out-File -FilePath setup.cfg
+    - name: Copy libraries from OS into lib and include
+      if: matrix.ES_SETUP_INCLUDE_LIBRARIES == '1'
+      run: python grab_libraries.py
+      shell: bash
 
     - name: Build and install
       run: pip install --verbose .[test]
@@ -97,13 +99,7 @@ jobs:
         python -vvvvv -c 'import endless_sky_bindings'
         python -c 'print(__import__("sys").executable, __import__("sys").version)'
 
-    - name: Debugging
-      shell: bash
-      run: |
-        ls "C:/Users/runneradmin/AppData/Local/Temp/*/*/*"
-
     - name: Test
-      shell: msys2 {0}
       run: pytest
 
   build_linux:
@@ -111,6 +107,7 @@ jobs:
       matrix:
         #python-version: ["3.5", "3.8", "3.9"]
         python-version: ["3.9"]
+        ES_SETUP_INCLUDE_LIBRARIES: ["0"]
 
     runs-on: ubuntu-latest
 
@@ -131,6 +128,11 @@ jobs:
 
     - name: Add requirements
       run: python -m pip install --upgrade wheel setuptools
+
+    - name: Copy libraries from OS into lib and include
+      if: matrix.ES_SETUP_INCLUDE_LIBRARIES == '1'
+      run: python grab_libraries.py
+      shell: bash
 
     - name: Build and install
       run: pip install --verbose .[test]

@@ -16,6 +16,8 @@ from pybind11.setup_helpers import Pybind11Extension, build_ext
 # and just look for library folders on the OS.
 INCLUDE_LIBRARIES = (os.environ.get('ES_SETUP_INCLUDE_LIBRARIES') or '0') == '1'
 
+# A "real" source distribution might include the shared libraries for every platform.
+
 # Once we have an sdist we use the presence of endless_sky/lib to determine
 # whether to use the system lib locations or the local ones.
 LIBRARIES_INCLUDED = os.path.exists('endless_sky/lib/')
@@ -65,6 +67,9 @@ endless_sky_version = "753db45e921b7b7d57bb7b4afaf5181acbe0a6cc"
 # TODO use info at https://pybind11.readthedocs.io/en/stable/compiling.html
 # to speed this compile process up when iterating.
 
+def crash(msg=''):
+    raise AssertionError((msg or 'TODO') + ' on platform ' + platform.system())
+
 extra_compile_args=[
         '-Wno-deprecated-declarations', # ignore mac OpenGL deprecation warnings
         #'-v',  # for debugging an include
@@ -111,26 +116,35 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
         )
     ),
     library_dirs=(
-        [os.path.join(path_to_build_folder(), 'lib')] if LIBRARIES_INCLUDED else [] +
-        (
+        [os.path.join(path_to_build_folder(), 'lib')] if LIBRARIES_INCLUDED else (
             [
-                './dev64/lib', # *.dll.a
-                './dev64/bin', # *.dll
-            #    './dev64/include' # *.h
-            ] if platform.system() == "Windows" else []
+                '/usr/local/opt/jpeg-turbo/lib',
+                '/usr/local/opt/openal-soft/lib',
+            ] if platform.system() == 'Darwin' else [
+                crash()
+            ] if platform.system() == 'Linux' else [
+                 './dev64/lib', # *.dll.a
+                 './dev64/bin', # *.dll
+            ] if platform.system() == "Windows" else crash()
         )
     ),
-    include_dirs=(([os.path.join(path_to_build_folder(), 'include')]
-                   if LIBRARIES_INCLUDED
-                   else []) + [
+    include_dirs=(
+        (
+            [os.path.join(path_to_build_folder(), 'include')]
+            if LIBRARIES_INCLUDED else (
+                [
+                    '/usr/local/opt/jpeg-turbo/include',
+                    '/usr/local/opt/openal-soft/include',
+                ] if platform.system() == 'Darwin' else [
+                    #TODO does anything need to be manually included here?
+                    # Probably not, linux just works?
+                ] if platform.system() == 'Linux' else [
+                    './dev64/include'
+                ] if platform.system() == 'Windows' else crash())) + [
         os.path.join(path_to_build_folder(), 'endless-sky/tests/include'),
         os.path.join(path_to_build_folder(), 'endless-sky/endless-sky/source'),
         os.path.join(path_to_build_folder(), 'endless-sky/endless-sky/source/text'),
-    ]) + ([
-        './dev64/include',
-        'endless-sky/tests/include',
-    ] if platform.system() == "Windows" else [
-    ] if platform.system() == "Mac" else []),
+    ]),
     extra_compile_args=extra_compile_args,
     extra_link_args=extra_link_args,
     define_macros=[
