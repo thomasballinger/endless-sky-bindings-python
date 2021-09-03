@@ -16,6 +16,9 @@ def mvsc_to_mingw(flag):
         return ''
     if flag == '/std:c++latest':
         return "-std=c++17"
+    if flag.startswith('/'):
+        return ''
+    return flag
 
 def _add_cflags(self, flags):
     flags = [mvsc_to_mingw(flag) for flag in flags if mvsc_to_mingw(flag)]
