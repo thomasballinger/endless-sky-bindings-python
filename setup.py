@@ -7,6 +7,14 @@ import sysconfig
 
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 
+# Monkey-patch PyBindExtension to convert \foo flags to -foo
+# because it adds some \args on Windows assuming we're using compiler that likes that
+def _add_cflags(self, flags):
+    flags = ['-' + flag[1:] if flag.startswith('/') else flag
+             for flag in flags]
+    self.extra_compile_args[:0] = flags
+Pybind11Extension._add_cflags = _add_cflags
+
 # There are two different sdists builds possible.
 # With ES_SETUP_INCLUDE_LIBRARIES set (eg when building wheels) we copy
 # in all libraries into endless_sky/lib. This produces a build that only
