@@ -234,7 +234,7 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
         "endless_sky/endless-sky/source/Visual.cpp",
         "endless_sky/endless-sky/source/Weapon.cpp",
         "endless_sky/endless-sky/source/Weather.cpp",
-        "endless_sky/endless-sky/source/main.cpp",
+        #"endless_sky/endless-sky/source/main.cpp",
         "endless_sky/endless-sky/source/text/DisplayText.cpp",
         "endless_sky/endless-sky/source/text/Font.cpp",
         "endless_sky/endless-sky/source/text/FontSet.cpp",
