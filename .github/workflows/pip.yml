@@ -61,6 +61,8 @@ jobs:
       DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\x86_64-w64-mingw32
       DIR_ESLIB: .\dev64
       AR: gcc-ar
+      ES_SETUP_INCLUDE_LIBRARIES: ${{ matrix.ES_SETUP_INCLUDE_LIBRARIES }}
+
 
     steps:
     - uses: actions/checkout@v2
@@ -108,6 +110,9 @@ jobs:
         ES_SETUP_INCLUDE_LIBRARIES: ["0"]
 
     runs-on: ubuntu-latest
+
+    env:
+      ES_SETUP_INCLUDE_LIBRARIES: ${{ matrix.ES_SETUP_INCLUDE_LIBRARIES }}
 
     steps:
     - uses: actions/checkout@v2
