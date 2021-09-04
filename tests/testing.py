@@ -35,6 +35,8 @@ pid = os.getpid()
 def die_after_30s():
     """Force quit after a timeout"""
     time.sleep(30)
+    print("We hit the timeout, time to die!")
+    sys.stdout.flush()
     subprocess.call(['Taskkill', '/PID', str(pid), '/F'])
 
 t = threading.Thread(target=die_after_30s, daemon=True)
