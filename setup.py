@@ -103,16 +103,20 @@ extra_link_args = (['-Wl,--verbose'] if platform.system() == "Windows" else [
     "-Wl,-rpath,$ORIGIN/lib/."
 ])
 
-pybind_extension = Pybind11Extension("endless_sky.bindings", [
-        "endless_sky/lib.cpp",
-#        "endless_sky/endless-sky/tests/src/helpers/datanode-factory.cpp",
-    ] + sorted(
-        glob('endless_sky/endless-sky/source/Point.cpp') +
-        glob('endless_sky/endless-sky/source/Random.cpp') +
-        glob('endless_sky/endless-sky/source/Angle.cpp')
 #        glob('endless_sky/endless-sky/source/*.cpp') +
 #        glob('endless_sky/endless-sky/source/text/*.cpp')
-    ),
+pybind_extension = Pybind11Extension("endless_sky.bindings", [
+        "endless_sky/lib.cpp",
+        "endless_sky/endless-sky/source/Angle.cpp",
+        "endless_sky/endless-sky/source/DataFile.cpp",
+        "endless_sky/endless-sky/source/DataNode.cpp",
+        "endless_sky/endless-sky/source/File.cpp",
+        "endless_sky/endless-sky/source/Files.cpp",
+        "endless_sky/endless-sky/source/Point.cpp",
+        "endless_sky/endless-sky/source/Random.cpp",
+        "endless_sky/endless-sky/source/text/Utf8.cpp",
+        "endless_sky/endless-sky/tests/src/helpers/datanode-factory.cpp",
+    ],
     libraries=[
         "winmm",
         "mingw32",
