@@ -30,7 +30,7 @@ int add(int i, int j) {
 
 namespace py = pybind11;
 
-
+/*
 template<typename T>
 void declare_set(py::module &m, std::string &typestr) {
     using Class = Set<T>;
@@ -46,6 +46,7 @@ void declare_set(py::module &m, std::string &typestr) {
         .def("__getitem__", &Class::Find, py::return_value_policy::reference)
         .def("Has", &Class::Has);
 }
+*/
 
 PYBIND11_MODULE(bindings, m) {
     m.doc() = R"pbdoc(
@@ -68,6 +69,7 @@ PYBIND11_MODULE(bindings, m) {
         Some other explanation about the subtract function.
     )pbdoc");
 
+/*
     // test/src/helpers/datanode-factory
     m.def("AsDataNode", &AsDataNode);
 
@@ -75,7 +77,6 @@ PYBIND11_MODULE(bindings, m) {
     py::class_<Angle>(m, "Angle")
         .def(py::init<>())
         .def(py::init<double>())
-        .def(py::init<Point>())
         .def(py::self + py::self)
         .def(py::self += py::self)
         .def(py::self - py::self)
@@ -99,7 +100,7 @@ PYBIND11_MODULE(bindings, m) {
         .def("__iter__", [](DataNode &n) {
             return py::make_iterator(n.begin(), n.end());
         }, py::keep_alive<0, 1>());
-/*
+
     // source/Dictionary
     py::class_<Dictionary>(m, "Dictionary")
         .def(py::init<>())
@@ -130,6 +131,7 @@ PYBIND11_MODULE(bindings, m) {
         .def("Load", &Outfit::Load)
         .def("Name", &Outfit::Name)
         .def("Attributes", &Outfit::Attributes);
+*/
 
     // source/Point
     py::class_<Point>(m, "Point")
@@ -141,6 +143,7 @@ PYBIND11_MODULE(bindings, m) {
     m.def("RandomSeed", &Random::Seed);
     m.def("RandomInt", py::overload_cast<>(&Random::Int));
     m.def("RandomInt", py::overload_cast<uint32_t>(&Random::Int));
+/*
 
     // source/Set
     std::string a = std::string("Ship");
