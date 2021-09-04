@@ -92,11 +92,13 @@ def crash(msg=''):
 
 extra_compile_args=[
         '-Wno-deprecated-declarations', # ignore mac OpenGL deprecation warnings
-        #'-v',  # for debugging an include
-        #'-H',  # for debugging an include
+            #'-v',  # for debugging an include
+            #'-H',  # for debugging an include
         ] if platform.system() == "Darwin" else [
-        #'-v',  # for debugging an include
-        #'-H',  # for debugging an include
+            #'-v',  # for debugging an include
+            #'-H',  # for debugging an include
+            '-visibility=hidden',
+            '-g0',
         ] if platform.system() == "Windows" else []
 
 extra_link_args = (['-Wl,--verbose'] if platform.system() == "Windows" else [

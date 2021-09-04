@@ -25,8 +25,6 @@ print("ran code")
 sys.stdout.flush()
 
 print("now let's try to exit")
+sys.stdout.flush()
 
 os._exit(0)
-
-
-
