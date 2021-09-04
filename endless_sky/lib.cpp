@@ -68,9 +68,22 @@ PYBIND11_MODULE(bindings, m) {
         Some other explanation about the subtract function.
     )pbdoc");
 
-
     // test/src/helpers/datanode-factory
     m.def("AsDataNode", &AsDataNode);
+
+    // source/Angle
+    py::class_<Angle>(m, "Angle")
+        .def(py::init<>())
+        .def(py::init<double>())
+        .def(py::init<Point>())
+        .def(py::self + py::self)
+        .def(py::self += py::self)
+        .def(py::self - py::self)
+        .def(-py::self)
+        .def("Unit", &Angle::Unit)
+        .def("Degrees", &Angle::Degrees)
+        .def("Rotate", &Angle::Rotate);
+    // TODO why does -= (removed) give a warning?
 
     // source/DataNode
     py::class_<DataNode>(m, "DataNode")
@@ -86,7 +99,7 @@ PYBIND11_MODULE(bindings, m) {
         .def("__iter__", [](DataNode &n) {
             return py::make_iterator(n.begin(), n.end());
         }, py::keep_alive<0, 1>());
-
+/*
     // source/Dictionary
     py::class_<Dictionary>(m, "Dictionary")
         .def(py::init<>())
@@ -95,20 +108,6 @@ PYBIND11_MODULE(bindings, m) {
         }, py::keep_alive<0, 1>())
         .def("Get", py::overload_cast<const std::string&>(&Dictionary::Get, py::const_))
         .def("__getitem__", py::overload_cast<const std::string&>(&Dictionary::Get, py::const_));
-
-    // source/Angle
-    py::class_<Angle>(m, "Angle")
-        .def(py::init<>())
-        .def(py::init<double>())
-        .def(py::init<Point>())
-        .def(py::self + py::self)
-        .def(py::self += py::self)
-        .def(py::self - py::self)
-        .def(-py::self)
-        .def("Unit", &Angle::Unit)
-        .def("Degrees", &Angle::Degrees)
-        .def("Rotate", &Angle::Rotate);
-    // TODO why does -= (removed) give a warning?
 
     // source/GameData
     py::class_<GameData>(m, "GameData")
@@ -166,7 +165,7 @@ PYBIND11_MODULE(bindings, m) {
         .def("FinishLoading", &Ship::FinishLoading)
 
         .def("FlightCheck", &Ship::FlightCheck);
-
+*/
 
 
 #ifdef VERSION_INFO

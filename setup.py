@@ -95,8 +95,8 @@ extra_compile_args=[
         #'-v',  # for debugging an include
         #'-H',  # for debugging an include
         ] if platform.system() == "Darwin" else [
-        '-v',  # for debugging an include
-        '-H',  # for debugging an include
+        #'-v',  # for debugging an include
+        #'-H',  # for debugging an include
         ] if platform.system() == "Windows" else []
 
 extra_link_args = (["-Wl"] if platform.system() == "Windows" else [
