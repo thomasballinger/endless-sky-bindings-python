@@ -115,15 +115,15 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
     libraries=[
         "winmm",
         "mingw32",
-#        "sdl2main",
-#        "sdl2.dll",
+        "sdl2main",
+        "sdl2.dll",
         "png.dll",
         "turbojpeg.dll",
         "jpeg.dll",
         "openal32.dll",
         "rpcrt4",
-#        "glew32.dll",
-#        "opengl32",
+        "glew32.dll",
+        "opengl32",
         'mad',
     ] if platform.system() == "Windows" else (
         [
