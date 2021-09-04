@@ -9,7 +9,7 @@ if platform.system() == 'Windows':
     if sys.version_info >= (3, 8):
         os.add_dll_directory(extra_dll_dir)
         print('called add_dll_directory on', extra_dll_dir)
-        print(os.path.listdir(extra_dll_dir))
+        print(os.listdir(extra_dll_dir))
     else:
         # legacy DLL loading mechanism through PATH env variable manipulations
         os.environ.setdefault("PATH", "")
