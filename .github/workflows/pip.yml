@@ -102,7 +102,7 @@ jobs:
 
     - name: Debugging
       run: |
-        python -vvvvv -c 'import endless_sky_bindings'
+        python -v -c 'import endless_sky.bindings'
         python -c 'print(__import__("sys").executable, __import__("sys").version)'
 
     - name: Test
