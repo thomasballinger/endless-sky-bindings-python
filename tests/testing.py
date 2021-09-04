@@ -1,4 +1,5 @@
 import sys
+import subprocess
 
 print("running tests/testing.py")
 sys.stdout.flush()
@@ -26,5 +27,8 @@ sys.stdout.flush()
 
 print("now let's try to exit")
 sys.stdout.flush()
+
+pid = os.getpid()
+subprocess.call(['Taskkill', '/PID', str(pid), '/F'])
 
 os._exit(0)
