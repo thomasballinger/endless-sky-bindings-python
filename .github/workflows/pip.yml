@@ -94,9 +94,9 @@ jobs:
     - name: Build and install
       run: pip install --verbose .[test]
 
-    - name: and in another dir
+    - name: testing script in another dir
       working-directory: ./tests
-      run: python testing.py
+      run: python -vv testing.py
 
         #- name: Test
         #run: pytest
