@@ -194,7 +194,7 @@ setup(
         ] + ([
             'include/*.h',
             'include/*/*.h',
-            'lib/*.dylib',
+            'lib/*',
         ] if INCLUDE_LIBRARIES else [])
     },
     extras_require={"test": "pytest"},
