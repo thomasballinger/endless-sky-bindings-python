@@ -105,10 +105,11 @@ extra_link_args = (['-Wl,--verbose'] if platform.system() == "Windows" else [
 
 pybind_extension = Pybind11Extension("endless_sky.bindings", [
         "endless_sky/lib.cpp",
-        "endless_sky/endless-sky/tests/src/helpers/datanode-factory.cpp",
+#        "endless_sky/endless-sky/tests/src/helpers/datanode-factory.cpp",
     ] + sorted(
-        glob('endless_sky/endless-sky/source/*.cpp') +
-        glob('endless_sky/endless-sky/source/text/*.cpp')
+        glob('endless_sky/endless-sky/source/Angle.cpp')
+#        glob('endless_sky/endless-sky/source/*.cpp') +
+#        glob('endless_sky/endless-sky/source/text/*.cpp')
     ),
     libraries=[
         "winmm",
