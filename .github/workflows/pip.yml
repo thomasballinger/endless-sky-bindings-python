@@ -94,19 +94,19 @@ jobs:
     - name: Build and install
       run: pip install --verbose .[test]
 
-    - name: Step To run on failure
-      if: ${{ failure() }}
+    - name: Test
+      continue-on-error: true
+      run: pytest
+
+    - name: Debugging
+      continue-on-error: true
       run: |
-        TREE build /F
-        TREE /F
+        python -v -I -c 'import endless_sky'
 
     - name: Debugging
       continue-on-error: true
       run: |
         python -v -I -c 'import endless_sky; import endless_sky.bindings'
-
-    - name: Test
-      run: pytest
 
   build_linux:
     strategy:
