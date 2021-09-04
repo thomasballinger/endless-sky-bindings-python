@@ -37,7 +37,7 @@ def die_after_30s():
     time.sleep(30)
     subprocess.call(['Taskkill', '/PID', str(pid), '/F'])
 
-t = threading.Thread(target=die_after_30s)
+t = threading.Thread(target=die_after_30s, daemon=True)
 t.start()
 
 # Python hangs here!
