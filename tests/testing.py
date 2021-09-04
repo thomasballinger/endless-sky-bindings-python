@@ -1,4 +1,17 @@
+import sys
+
+print("running tests/testing.py")
+sys.stdout.flush()
+
+
+print("importing endless_sky.bindings")
+sys.stdout.flush()
+
 import endless_sky.bindings as m
+
+print("imported")
+sys.stdout.flush()
+
 import os
 
 def test_Point():
@@ -9,6 +22,7 @@ def test_Point():
 test_Point()
 
 print("ran code")
+sys.stdout.flush()
 
 print("now let's try to exit")
 
