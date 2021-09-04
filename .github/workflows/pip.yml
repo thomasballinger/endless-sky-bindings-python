@@ -96,7 +96,7 @@ jobs:
 
     - name: testing script in another dir
       working-directory: ./tests
-      run: python -vv testing.py
+      run: python testing.py
 
         #- name: Test
         #run: pytest
