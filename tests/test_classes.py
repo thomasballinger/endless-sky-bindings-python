@@ -6,7 +6,6 @@ def test_Point():
     assert p.X == 1
     assert p.Y == 2
 
-"""
 def test_Angle():
     a = m.Angle(90)
     assert (a + m.Angle(45)).Degrees()
@@ -21,6 +20,7 @@ def test_DataNode():
     assert d.Token(1) == "hello"
     assert [x.Token(0) for x in list(d)] == ["key"]
 
+"""
 def test_Ship():
     n = m.AsDataNode('ship Canoe\n\tattributes\n\t\tcategory "Transport"')
     s = m.Ship(n)
