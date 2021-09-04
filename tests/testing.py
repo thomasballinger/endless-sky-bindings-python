@@ -1,4 +1,6 @@
 import sys
+import time
+import threading
 import subprocess
 
 print("running tests/testing.py")
@@ -29,6 +31,14 @@ print("now let's try to exit")
 sys.stdout.flush()
 
 pid = os.getpid()
-subprocess.call(['Taskkill', '/PID', str(pid), '/F'])
 
+def die_after_30s():
+    """Force quit after a timeout"""
+    time.sleep(30)
+    subprocess.call(['Taskkill', '/PID', str(pid), '/F'])
+
+t = threading.Thread(target=die_after_30s)
+t.start()
+
+# Python hangs here!
 os._exit(0)
