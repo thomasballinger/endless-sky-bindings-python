@@ -91,6 +91,12 @@ jobs:
       if: matrix.ES_SETUP_INCLUDE_LIBRARIES == '1'
       run: python grab_libraries.py
 
+    - name: Step To run on failure
+      if: ${{ failure() }}
+      run: |
+        TREE build /F
+        TREE /F
+
     - name: Build and install
       run: pip install --verbose .[test]
 
