@@ -94,8 +94,11 @@ jobs:
     - name: Build and install
       run: pip install --verbose .[test]
 
-    - name: Test
-      run: pytest
+    - name: try a hard exist
+      run: python testing.py
+
+        #- name: Test
+        #run: pytest
 
     #- name: Debugging
       #continue-on-error: true

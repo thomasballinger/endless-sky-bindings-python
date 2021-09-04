@@ -16,8 +16,3 @@ if platform.system() == 'Windows':
         # legacy DLL loading mechanism through PATH env variable manipulations
         os.environ.setdefault("PATH", "")
         os.environ["PATH"] += os.pathsep + extra_dll_dir
-
-    for filename in os.listdir(extra_dll_dir):
-        if filename.endswith('.a'):
-            print('removing', filename)
-            os.remove(os.path.join(extra_dll_dir, filename))
