@@ -39,9 +39,8 @@ elif platform.system() == 'Windows':
 
     # trust the bundle at https://endless-sky.github.io/win64-dev.zip
     copy_tree('dev64/include', 'endless_sky/include')
-    copy_tree('dev64/bin', 'endless_sky/lib')
-    copy_tree('dev64/lib', 'endless_sky/lib')
-
+    copy_tree('dev64/bin', 'endless_sky/lib') # *.dll
+    copy_tree('dev64/lib', 'endless_sky/lib') # *.dll.a  # TODO should these be copied over?
     DIR_MINGW64 = os.environ.get('DIR_MINGW64')
     assert DIR_MINGW64, "DIR_MINGW64 envar required"
     assert os.path.exists(DIR_MINGW64), "Need mingw installation at" + DIR_MINGW64

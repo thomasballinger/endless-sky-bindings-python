@@ -147,7 +147,7 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
                 #TODO does anything need to be manually included here?
                 # Probably not, linux just works?
             ] if platform.system() == 'Linux' else [
-                 './dev64/lib', # *.dll.a
+                 './dev64/lib', # *.dll.a # TODO should these be included?
                  './dev64/bin', # *.dll
             ] if platform.system() == "Windows" else crash())),
     include_dirs=(
