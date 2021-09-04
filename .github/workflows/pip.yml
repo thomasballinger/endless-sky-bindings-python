@@ -101,9 +101,9 @@ jobs:
         TREE /F
 
     - name: Debugging
+      continue-on-error: true
       run: |
         python -v -I -c 'import endless_sky; import endless.bindings'
-        python -c 'print(__import__("sys").executable, __import__("sys").version)'
 
     - name: Test
       run: pytest
