@@ -4,6 +4,7 @@ from distutils.dir_util import copy_tree
 import os
 
 def list_files(startpath):
+    print(os.path.abspath(startpath))
     for root, dirs, files in os.walk(startpath):
         level = root.replace(startpath, '').count(os.sep)
         indent = ' ' * 4 * (level)
