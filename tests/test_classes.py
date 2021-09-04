@@ -6,6 +6,7 @@ def test_Point():
     assert p.X == 1
     assert p.Y == 2
 
+"""
 def test_Angle():
     a = m.Angle(90)
     assert (a + m.Angle(45)).Degrees()
@@ -72,6 +73,7 @@ def test_GameData_ownership(empty_resources_dir, empty_config_dir):
     canoe = ships.Find("Canoe")
     del canoe  # segfault if Find used the default return value policy
 
+"""
 """
 # TODO should this library ship with the vanilla data? Probably not?
 def test_GameData_full():
