@@ -95,13 +95,12 @@ jobs:
       run: pip install --verbose .[test]
 
     - name: Test
-      continue-on-error: true
       run: pytest
 
-    - name: Debugging
-      continue-on-error: true
-      run: |
-        python -v -I -c 'import endless_sky; import endless_sky.bindings'
+    #- name: Debugging
+      #continue-on-error: true
+      #run: |
+       #python -v -I -c 'import endless_sky; import endless_sky.bindings'
 
   build_linux:
     strategy:
