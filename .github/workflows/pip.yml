@@ -94,10 +94,6 @@ jobs:
     - name: Build and install
       run: pip install --verbose .[test]
 
-    - name: try a hard exist
-      continue-on-error: true
-      run: python -I testing.py
-
     - name: and in another dir
       working-directory: ./tests
       run: python testing.py

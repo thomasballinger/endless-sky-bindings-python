@@ -12,7 +12,7 @@ print("ran code")
 
 print("now let's try to exit")
 
-os._exit()
+os._exit(0)
 
 
 
