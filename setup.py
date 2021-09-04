@@ -109,8 +109,9 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
     ] + sorted(
         glob('endless_sky/endless-sky/source/Point.cpp') +
         glob('endless_sky/endless-sky/source/Random.cpp') +
+        glob('endless_sky/endless-sky/source/Angle.cpp')
 #        glob('endless_sky/endless-sky/source/*.cpp') +
-        glob('endless_sky/endless-sky/source/text/*.cpp')
+#        glob('endless_sky/endless-sky/source/text/*.cpp')
     ),
     libraries=[
         "winmm",
