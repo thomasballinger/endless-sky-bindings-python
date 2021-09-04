@@ -15,7 +15,7 @@ def mvsc_to_mingw(flag):
     if flag == '/EHsc':
         return ''
     if flag == '/std:c++latest':
-        return "-std=c++2a"
+        return "-std=c++17"
     if flag.startswith('/'):
         return ''
     return flag
