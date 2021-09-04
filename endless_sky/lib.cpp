@@ -69,7 +69,6 @@ PYBIND11_MODULE(bindings, m) {
         Some other explanation about the subtract function.
     )pbdoc");
 
-/*
     // test/src/helpers/datanode-factory
     m.def("AsDataNode", &AsDataNode);
 
@@ -101,6 +100,7 @@ PYBIND11_MODULE(bindings, m) {
             return py::make_iterator(n.begin(), n.end());
         }, py::keep_alive<0, 1>());
 
+/*
     // source/Dictionary
     py::class_<Dictionary>(m, "Dictionary")
         .def(py::init<>())
