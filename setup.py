@@ -110,20 +110,12 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
         "endless_sky/lib.cpp",
         "endless_sky/endless-sky/tests/src/helpers/datanode-factory.cpp",
 
-        #"endless_sky/endless-sky/source/AI.cpp",
         "endless_sky/endless-sky/source/Account.cpp",
         "endless_sky/endless-sky/source/Angle.cpp",
-        #"endless_sky/endless-sky/source/Armament.cpp",
-        #"endless_sky/endless-sky/source/AsteroidField.cpp",
         "endless_sky/endless-sky/source/Audio.cpp",
-        #"endless_sky/endless-sky/source/BankPanel.cpp",
         "endless_sky/endless-sky/source/BatchDrawList.cpp",
         "endless_sky/endless-sky/source/BatchShader.cpp",
-        #"endless_sky/endless-sky/source/BoardingPanel.cpp",
         "endless_sky/endless-sky/source/Body.cpp",
-        #"endless_sky/endless-sky/source/CaptureOdds.cpp",
-        #"endless_sky/endless-sky/source/CargoHold.cpp",
-        #"endless_sky/endless-sky/source/CollisionSet.cpp",
         "endless_sky/endless-sky/source/Color.cpp",
         "endless_sky/endless-sky/source/Command.cpp",
         "endless_sky/endless-sky/source/ConditionSet.cpp",
@@ -238,6 +230,10 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
         #"endless_sky/endless-sky/source/ConversationPanel.cpp",
         #"endless_sky/endless-sky/source/News.cpp",
         #"endless_sky/endless-sky/source/Radar.cpp",
+        #"endless_sky/endless-sky/source/CargoHold.cpp",
+        #"endless_sky/endless-sky/source/BankPanel.cpp",
+        #"endless_sky/endless-sky/source/BoardingPanel.cpp",
+        #"endless_sky/endless-sky/source/AI.cpp",
 
         #"endless_sky/endless-sky/source/ShipEvent.cpp",
 
@@ -251,6 +247,14 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
         #"endless_sky/endless-sky/source/Hardpoint.cpp",
 
         #"endless_sky/endless-sky/source/DistanceMap.cpp",
+
+        #"endless_sky/endless-sky/source/CollisionSet.cpp",
+
+        #"endless_sky/endless-sky/source/CaptureOdds.cpp",
+
+        #"endless_sky/endless-sky/source/AsteroidField.cpp",
+
+        #"endless_sky/endless-sky/source/Armament.cpp",
 
         # Needs Panel, (which needs GameData)
         #"endless_sky/endless-sky/source/UI.cpp",
