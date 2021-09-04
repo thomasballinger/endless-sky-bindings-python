@@ -97,7 +97,7 @@ extra_compile_args=[
         ] if platform.system() == "Darwin" else [
             #'-v',  # for debugging an include
             #'-H',  # for debugging an include
-            '-visibility=hidden',
+            '-fvisibility=hidden',
             '-g0',
         ] if platform.system() == "Windows" else []
 
