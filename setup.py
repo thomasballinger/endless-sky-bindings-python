@@ -113,7 +113,6 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
         "endless_sky/endless-sky/source/Files.cpp",
         "endless_sky/endless-sky/source/Point.cpp",
         "endless_sky/endless-sky/source/Random.cpp",
-        "endless_sky/endless-sky/source/text/Utf8.cpp",
         "endless_sky/endless-sky/tests/src/helpers/datanode-factory.cpp",
     ] + glob('endless_sky/endless-sky/source/text/*.cpp'),
     libraries=[
