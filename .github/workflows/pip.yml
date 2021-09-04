@@ -54,8 +54,9 @@ jobs:
         #python-version: ["3.5", "3.8", "3.9"]
         python-version: ["3.9"]
         ES_SETUP_INCLUDE_LIBRARIES: ["1"]
+        windows-version: ["windows-2016", "latest", "windows-2022"]
 
-    runs-on: windows-latest
+    runs-on: ${{ matrix.windows-version }}
 
     env:
       DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\x86_64-w64-mingw32
