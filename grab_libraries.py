@@ -46,7 +46,7 @@ elif platform.system() == 'Windows':
     assert os.path.exists(DIR_MINGW64), "Need mingw installation at" + DIR_MINGW64
     shutil.copy(os.path.join(DIR_MINGW64, 'lib\libgcc_s_seh-1.dll'), 'endless_sky_lib/')
     shutil.copy(os.path.join(DIR_MINGW64, 'lib\libstdc++-6.dll'), 'endless_sky_lib/')
-    shutil.copy(os.path.join(DIR_MINGW64, 'lib\libwinpthread-1.dll'), 'endless_sky_lib.')
+    shutil.copy(os.path.join(DIR_MINGW64, 'lib\libwinpthread-1.dll'), 'endless_sky/lib.')
 
 else:
     assert False, "Platform not supported"
