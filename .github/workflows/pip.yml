@@ -103,7 +103,7 @@ jobs:
     - name: Debugging
       continue-on-error: true
       run: |
-        python -v -I -c 'import endless_sky; import endless.bindings'
+        python -v -I -c 'import endless_sky; import endless_sky.bindings'
 
     - name: Test
       run: pytest
