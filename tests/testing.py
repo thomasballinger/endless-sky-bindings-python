@@ -1,10 +1,13 @@
+"""
+Checks (failing gracefully when run by run_with_timeout.py) that cleanup does not hang.
+This test fails when the library is compiled with unpatched Endless Sky sources.
+"""
 import sys
 import time
 import subprocess
 
 print("running tests/testing.py")
 sys.stdout.flush()
-
 
 print("importing endless_sky.bindings")
 sys.stdout.flush()

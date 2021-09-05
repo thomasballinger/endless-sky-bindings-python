@@ -1,28 +1,5 @@
 Endless Sky bindings for Python
 
-
----
-
-Currently stuck trying to get Windows to run!
-
-I'm trying to figure out why my Python ES bindings are passing tests but then hanging on Python interpreter exit on Windows: `sys._exit(0)` hangs if the extension module has been imported, but it can kill itself with `subprocess.call(['Taskkill', '/PID', str(os.getpid(), '/F'])` before this.
-
-I don't know much about Windows. Maybe I want to get remote windows box that looks like the GitHub Actions environment and try to figure out what is going on.
-
-Maybe I should use something similar to strace to instrument just what Python is doing, `python -vv` does give me much.
-
-Maybe I want to start commenting out code in Endless Sky source files; it starts failing once I include GameData and all the files it needs to be linked against, but unfortunately that was a jump from compiling ~50 .cpp files up to compiling ~120 .cpp files so there's a lot of code to "bisect."
-
-Probably I should read more about what pybind11 makes things do on exit. I don't understand well what C++ code is running on import / extension module initialization and finalization.
-
-Maybe I should publish the module with this bug and someone on Windows could help me out with debugging.
-
-I could try linking things more statically. I doubt that's the problem, but it is an arbitrary choice I made.
-
-I tried patching out threads like I do for the Emscripten (JavaScript) bindings, and I don't see a change.
-
-----
-
 $ pip install endless-sky-bindings
 
 This library does not include the Endless Sky data, so you'll need to find that on your system or clone the [Endless Sky repo](https://github.com/endless-sky/endless-sky) to get it.
@@ -49,9 +26,6 @@ True
 
 # Installation
 
-There will be wheels! They should be easy to install!
-
-
 ## Mac
 
 ```
@@ -72,27 +46,37 @@ pip install endless-sky-bindings
 pip install endless-sky-bindings
 ```
 
-# Building from source distribution:
+# Building from source
 
-## Mac
-Install some dependencies
+```
+git clone git@github.com:thomasballinger/endless-sky-bindings-python.git
+cd endless-sky-bindings-python
+```
 
+---
+
+Mac
 ```
 brew install libmad libpng jpeg-turbo SDL2 openal-soft
-pip install --no-binary endless_sky
 ```
 
-
-## Linux
-
+Linux
 ```
 sudo apt-get install libsdl2-dev libpng-dev libjpeg-turbo8-dev libopenal-dev libmad0-dev libglew-dev libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev uuid-dev
-pip install --no-binary endless_sky
 ```
 
+Windows
+```
+Invoke-WebRequest https://endless-sky.github.io/win64-dev.zip -OutFile win64-dev.zip
+Expand-Archive win64-dev.zip -DestinationPath . -Force
+Remove-Item win64-dev.zip
+```
 
-## Windows
+---
 
-Download the Windows dependencies from https://endless-sky.github.io/win64-dev.zip and unzip this into a folder called dev64 at the root of the repo. Run python setup.py install.
-
-I don't know if this works, I haven't tried it.
+```
+cd endless_sky/endless-sky
+patch -p1 < ../../patch.diff
+cd ../..
+pip install 
+```
