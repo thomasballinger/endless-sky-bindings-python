@@ -146,6 +146,7 @@ PYBIND11_MODULE(bindings, m) {
 // source/Set
     std::string a = std::string("Ship");
     declare_set<Ship>(m, a);
+*/
 
     // source/Ship
     py::class_<Ship, std::shared_ptr<Ship>>(m, "Ship")
@@ -166,7 +167,6 @@ PYBIND11_MODULE(bindings, m) {
         .def("FinishLoading", &Ship::FinishLoading)
 
         .def("FlightCheck", &Ship::FlightCheck);
-*/
 
 
 #ifdef VERSION_INFO
