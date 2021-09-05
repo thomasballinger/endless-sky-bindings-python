@@ -20,6 +20,10 @@ def test_DataNode():
     assert d.Token(1) == "hello"
     assert [x.Token(0) for x in list(d)] == ["key"]
 
+def test_Dictionary():
+    d = m.Dictionary()
+    assert d
+
 """
 # these work on Mac and Linx but I'm debugging the Windows build right now.
 def test_Ship():
