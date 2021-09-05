@@ -100,7 +100,6 @@ PYBIND11_MODULE(bindings, m) {
             return py::make_iterator(n.begin(), n.end());
         }, py::keep_alive<0, 1>());
 
-/*
     // source/Dictionary
     py::class_<Dictionary>(m, "Dictionary")
         .def(py::init<>())
@@ -110,6 +109,7 @@ PYBIND11_MODULE(bindings, m) {
         .def("Get", py::overload_cast<const std::string&>(&Dictionary::Get, py::const_))
         .def("__getitem__", py::overload_cast<const std::string&>(&Dictionary::Get, py::const_));
 
+/*
     // source/GameData
     py::class_<GameData>(m, "GameData")
         .def_static("BeginLoad", [](std::vector<std::string> argVec) {
