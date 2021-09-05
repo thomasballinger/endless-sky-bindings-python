@@ -24,13 +24,12 @@ def test_Dictionary():
     d = m.Dictionary()
     assert d
 
-"""
-# these work on Mac and Linx but I'm debugging the Windows build right now.
 def test_Ship():
     n = m.AsDataNode('ship Canoe\n\tattributes\n\t\tcategory "Transport"')
     s = m.Ship(n)
     assert s.ModelName() == 'Canoe'
 
+"""
 @pytest.fixture
 def empty_resources_dir(tmp_path):
     r = tmp_path / "resources"
