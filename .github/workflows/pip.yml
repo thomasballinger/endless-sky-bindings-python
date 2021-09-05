@@ -6,7 +6,7 @@ on:
   push:
 
 jobs:
-  buildAndTest:
+  wheel:
     strategy:
       fail-fast: false
       matrix:
@@ -26,10 +26,6 @@ jobs:
           - os: macos-latest
             python-version: "3.9"
             include-libraries: system
-            threading: no-threads
-          - os: windows-latest
-            python-version: "3.9"
-            include-libraries: include
             threading: no-threads
 
     runs-on: ${{ matrix.os }}
@@ -89,22 +85,73 @@ jobs:
     - name: Add requirements
       run: python -m pip install --upgrade wheel setuptools pytest pybind11
 
-    - name: sdist
-      run: python setup.py sdist
+    - name: wheel
+      # builds both apparently
+      run: python -m build
 
+    # just for debugging various sdists and wheels
     - uses: actions/upload-artifact@v2
       with:
-        name: sdist-${{ matrix.os }}-${{ matrix.include-libraries }}
+        name: dist-${{ matrix.os }}-${{ matrix.include-libraries }}
         path: dist/
 
     - name: Build and install
       shell: bash
-      run: pip install ./dist/*
+      run: pip install ./dist/*.whl
 
-    - name: testing script in another dir
-      continue-on-error: true
+    - name: checking for timeout on interpreter exit
       working-directory: ./tests
       run: python run_with_timeout.py python testing.py
 
     - name: Test
-      run: python tests/run_with_timeout.py pytest
+      run: pytest
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v2
+      with:
+        path: dist/*.whl
+
+  sdist:
+    name: Build SDist
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    # Note ES_SETUP_INCLUDE_LIBRARIES is NOT set, so the uploaded sdist will
+    # never include system libraries in /endless_sky/lib and endless_sky/include
+
+    - name: patch to make threadless
+      working-directory: ./endless_sky/endless-sky
+      shell: bash
+      run: patch -p1 < ../../patch.diff
+
+    - name: Build SDist
+      run: pipx run build --sdist
+
+    - name: Check metadata
+      run: pipx run twine check dist/*
+
+    - uses: actions/upload-artifact@v2
+      with:
+        path: dist/*.tar.gz
+
+  upload_all:
+    name: Upload if release
+    needs: [wheel, sdist]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+
+    steps:
+    - uses: actions/setup-python@v2
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: artifact
+        path: dist
+
+    - uses: pypa/gh-action-pypi-publish@v1.4.2
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
