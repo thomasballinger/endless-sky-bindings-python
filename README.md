@@ -11,16 +11,15 @@ I don't know much about Windows. Maybe I want to get remote windows box that loo
 
 Maybe I should use something similar to strace to instrument just what Python is doing, `python -vv` does give me much.
 
-Maybe I want to start commenting out code in Endless Sky source files; it starts failing once I include GameData and all the files it needs to be linked against, but unfortunately that was a jump from ~60 .cpp files to ~120 .cpp files so there's a lot of code to "bisect."
+Maybe I want to start commenting out code in Endless Sky source files; it starts failing once I include GameData and all the files it needs to be linked against, but unfortunately that was a jump from compiling ~50 .cpp files up to compiling ~120 .cpp files so there's a lot of code to "bisect."
 
-Probably I should read more about what pybind11 makes things do on exit. I don't understand well what C++ code is running on import / extension module initialization.
+Probably I should read more about what pybind11 makes things do on exit. I don't understand well what C++ code is running on import / extension module initialization and finalization.
 
-Maybe I should try patching threads out again, I've been using the raw Endless Sky source but I have the threadless patch I use for the JavaScript bindings around.
+Maybe I should publish the module with this bug and someone on Windows could help me out with debugging.
 
-Maybe I should publish the module with this bug and someone on Windows could help me out with debugging. I could write a test running script that runs pytest then forcibly kills the process.
+I could try linking things more statically. I doubt that's the problem, but it is an arbitrary choice I made.
 
-I could try linking things more statically. I doubt that's the problem, but it is
-a arbitrary choice I made.
+I tried patching out threads like I do for the Emscripten (JavaScript) bindings, and I don't see a change.
 
 ----
 
