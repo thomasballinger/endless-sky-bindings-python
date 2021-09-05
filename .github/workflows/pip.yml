@@ -32,10 +32,11 @@ jobs:
             python-version: "3.9"
             include-libraries: include
             build-size: skinny
-          - os: windows-latest
-            python-version: "3.9"
-            include-libraries: include
-            threading: no-threads
+
+#          - os: windows-latest
+#            python-version: "3.9"
+#            include-libraries: include
+#            threading: no-threads
 
     runs-on: ${{ matrix.os }}
 
@@ -51,12 +52,12 @@ jobs:
       with:
         submodules: recursive
 
-    - name: patch to make threadless
-      if: matrix.threading == 'no-threads'
-      working-directory: ./endless_sky/endless-sky
-      shell: bash
-      run: patch ../../patch.diff
-#cd endless-sky/; git clean -dxf; git stash
+#    - name: patch to make threadless
+#      if: matrix.threading == 'no-threads'
+#      working-directory: ./endless_sky/endless-sky
+#      shell: bash
+#      run: patch ../../patch.diff
+##cd endless-sky/; git clean -dxf; git stash
 
     - name: Install Mac dependencies
       if: matrix.os == 'macos-latest'
