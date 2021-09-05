@@ -30,7 +30,6 @@ int add(int i, int j) {
 
 namespace py = pybind11;
 
-/*
 template<typename T>
 void declare_set(py::module &m, std::string &typestr) {
     using Class = Set<T>;
@@ -46,7 +45,6 @@ void declare_set(py::module &m, std::string &typestr) {
         .def("__getitem__", &Class::Find, py::return_value_policy::reference)
         .def("Has", &Class::Has);
 }
-*/
 
 PYBIND11_MODULE(bindings, m) {
     m.doc() = R"pbdoc(
