@@ -10,11 +10,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        #python-version: ["3.5", "3.8", "3.9"]
         os: [macos-latest, ubuntu-latest, windows-latest]
+        #python-version: ["3.5", "3.8", "3.9"]
         python-version: ["3.9"]
         include-libraries: [include]
-        build-size: [""]
         threading: ["no-threads"]
         exclude:
           - os: ubuntu-latest
@@ -31,7 +30,6 @@ jobs:
           - os: windows-latest
             python-version: "3.9"
             include-libraries: include
-            build-size: skinny
             threading: no-threads
 
     runs-on: ${{ matrix.os }}
@@ -41,7 +39,6 @@ jobs:
       DIR_ESLIB: .\dev64
       AR: ${{ matrix.os == 'windows-latest' && 'gcc-ar' || '' }}
       ES_SETUP_INCLUDE_LIBRARIES: ${{ matrix.include-libraries == 'include' && '1' || '0' }}
-      ES_SKINNY_BUILD: ${{ matrix.build-size == 'skinny' && '1' || '0' }}
 
     steps:
     - uses: actions/checkout@v2
@@ -97,7 +94,7 @@ jobs:
 
     - uses: actions/upload-artifact@v2
       with:
-        name: sdist-${{ matrix.os }}-${{ matrix.include-libraries }}-${{ matrix.build-size }}
+        name: sdist-${{ matrix.os }}-${{ matrix.include-libraries }}
         path: dist/
 
     - name: Build and install
