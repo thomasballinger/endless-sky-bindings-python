@@ -45,8 +45,7 @@ print('LIBRARIES_INCLUDED:', LIBRARIES_INCLUDED)
 if INCLUDE_LIBRARIES:
     assert LIBRARIES_INCLUDED, "can't include libraries if endless_sky/lib/ does not exist. Run ./grab_libraries.py to harvest libs from the OS."
 
-assert os.path.exists('endless_sky/endless-sky/'), "endless-sky sources not present. Run ./copy_es_sources.sh to copy from endless-sky submodule."
-
+assert os.path.exists('endless_sky/endless-sky/'), "endless-sky sources not present. Did you not git clone --recursive?"
 
 # https://stackoverflow.com/questions/63804883/including-and-distributing-third-party-libraries-with-a-python-c-extension
 def path_to_build_folder():
@@ -58,7 +57,7 @@ def path_to_build_folder():
     return os.path.join('build', dir_name, 'endless_sky')
 
 # https://stackoverflow.com/a/57109148/398212
-# TODO do we also need extra_link_args = ["-Wl,-Bstatic", "-lpthread"] ?
+# TODO do we also need extra_link_args = ["-Wl,-Bstatic", "-lpthread"] ? Would that help with our threading issues?
 if platform.system() == "Windows":
     import distutils.cygwinccompiler
     # monkeypatch for too-recent MSVC versions
@@ -76,9 +75,9 @@ endless_sky_version = "2fd9f8883ccc4bcfcd62e9aa12194f0941572543"
 # to be installed on that platform.
 # So Windows DLLs will be included in the sdist, but mac and linux libs needn't
 # be since on those platform telling someone to install libraries isn't so bad.
-# However to get started here I'm including libpeg-turbo and openal-soft in the
-# mac build, mostly for the practice including lib files on a platform I can
-# easily test on.
+# We do including libpeg-turbo and openal-soft in the mac build, and maybe we
+# could include more libraries here too?
+# Whether any libraries are linked depends on the INCLUDE_LIBRARIES env variable.
 
 def crash(msg=''):
     raise AssertionError((msg or 'TODO') + ' on platform ' + platform.system())
@@ -86,7 +85,9 @@ def crash(msg=''):
 # TODO use info at https://pybind11.readthedocs.io/en/stable/compiling.html
 # to speed this compile process up when iterating.
 extra_compile_args=[
-	    '-DES_NO_THREADS',
+        '-DES_NO_THREADS',  # This will only have an effect if endless-sky is
+                            # patched with patch.diff, adding the option to
+                            # build this code without threads.
         '-Wno-deprecated-declarations', # ignore mac OpenGL deprecation warnings
             #'-v',  # for debugging an include
             #'-H',  # for debugging an include
@@ -97,11 +98,17 @@ extra_compile_args=[
             '-fvisibility=hidden',
             '-g0',
         ] if platform.system() == "Windows" else [
-            '-DES_NO_THREADS',
+            '-DES_NO_THREADS',  # Windows is the only platform that actually
+                                # needs the threadless build, but we do it
+                                # everywhere for consistency.
         ]
 
-extra_link_args = (['-Wl,--verbose'] if platform.system() == "Windows" else [
-    "-Wl,-rpath,$ORIGIN/lib/."
+extra_link_args = ([
+    #'-Wl,--verbose'  # for debugging
+    ] if platform.system() == "Windows" else [
+    "-Wl,-rpath,$ORIGIN/lib/." # On Mac and Linux this adds our lib folder.
+                               # On windows this is taken care of at runtime,
+                               # see endless_sky/libpath_hack.py.
 ])
 
 pybind_extension = Pybind11Extension("endless_sky.bindings", [
