@@ -15,20 +15,23 @@ jobs:
         #python-version: ["3.5", "3.8", "3.9"]
         python-version: ["3.9"]
         os: [macos-latest, ubuntu-latest, windows-latest]
-        threading: [normal]
-        build-size: [full]
         include-libraries: [include]
         exclude:
           - os: ubuntu-latest
             include-libraries: include
         include:
           - os: ubuntu-latest
+            python-version: "3.9"
             include-libraries: system
           - os: macos-latest
+            python-version: "3.9"
             include-libraries: system
           - os: windows-latest
+            python-version: "3.9"
+            include-libraries: include
             build-size: skinny
           - os: windows-latest
+            python-version: "3.9"
             include-libraries: include
             threading: no-threads
 
