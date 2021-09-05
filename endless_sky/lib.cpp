@@ -30,6 +30,22 @@ int add(int i, int j) {
 
 namespace py = pybind11;
 
+template<typename T>
+void declare_set(py::module &m, std::string &typestr) {
+    using Class = Set<T>;
+    std::string pyclass_name = std::string("SetOf") + typestr + std::string("s");
+    py::class_<Class>(m, pyclass_name.c_str())
+        .def(py::init<>())
+        .def("size", &Class::size)
+        .def("__len__", [](const Class &s) { return s.size(); })
+        .def("__iter__", [](Class &s) {
+            return py::make_iterator(s.begin(), s.end());
+        }, py::keep_alive<0, 1>())
+        .def("Find", &Class::Find, py::return_value_policy::reference)
+        .def("__getitem__", &Class::Find, py::return_value_policy::reference)
+        .def("Has", &Class::Has);
+}
+
 PYBIND11_MODULE(bindings, m) {
     m.doc() = R"pbdoc(
         Endless Sky Bindings
@@ -126,17 +142,9 @@ PYBIND11_MODULE(bindings, m) {
     m.def("RandomInt", py::overload_cast<>(&Random::Int));
     m.def("RandomInt", py::overload_cast<uint32_t>(&Random::Int));
 
-    // source/Set
-    py::class_<Set<Ship>>(m, "SetOfShips")
-        .def(py::init<>())
-        .def("size", &Set<Ship>::size)
-        .def("__len__", [](const Set<Ship> &s) { return s.size(); })
-        .def("__iter__", [](Set<Ship> &s) {
-            return py::make_iterator(s.begin(), s.end());
-        }, py::keep_alive<0, 1>())
-        .def("Find", &Set<Ship>::Find, py::return_value_policy::reference)
-        .def("__getitem__", &Set<Ship>::Find, py::return_value_policy::reference)
-        .def("Has", &Set<Ship>::Has);
+// source/Set
+    std::string a = std::string("Ship");
+    declare_set<Ship>(m, a);
 
     // source/Ship
     py::class_<Ship, std::shared_ptr<Ship>>(m, "Ship")
