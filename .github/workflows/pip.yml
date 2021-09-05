@@ -33,8 +33,8 @@ jobs:
     env:
       DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\x86_64-w64-mingw32
       DIR_ESLIB: .\dev64
-      AR: ${{ matrix.os == "windows-latest" && "gcc-ar" || "" }}
-      ES_SETUP_INCLUDE_LIBRARIES: ${{ matrix.include-libraries == "include" && "1" || "0" }}
+      AR: ${{ matrix.os == 'windows-latest' && 'gcc-ar' || '' }}
+      ES_SETUP_INCLUDE_LIBRARIES: ${{ matrix.include-libraries == 'include' && "1" || "0" }}
       ES_SKINNY_BUILD: ${{ matrix.build-size == 'skinny' && '1' || '0' }}
 
     steps:
@@ -50,7 +50,7 @@ jobs:
 #cd endless-sky/; git clean -dxf; git stash
 
     - name: Install Mac dependencies
-      if: matrix.os == "macos-latest"
+      if: matrix.os == macos-latest
       run: |
         brew update
         brew install libmad libpng jpeg-turbo SDL2 openal-soft
@@ -59,14 +59,14 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install Ubuntu dependencies
-      if: matrix.os == "ubuntu-latest"
+      if: matrix.os == ubuntu-latest
       run: |
         sudo rm /etc/apt/sources.list.d/* && sudo dpkg --clear-avail
         sudo apt-get update
         sudo apt-get install -y --no-install-recommends libsdl2-dev libpng-dev libjpeg-turbo8-dev libopenal-dev libmad0-dev libglew-dev libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev uuid-dev
 
     - name: Fetch Windows development libraries
-      if: matrix.os == "windows-latest"
+      if: matrix.os == windows-latest
       run: |
         # thanks MCO
         Invoke-WebRequest https://endless-sky.github.io/win64-dev.zip -OutFile win64-dev.zip
@@ -74,7 +74,7 @@ jobs:
         Remove-Item win64-dev.zip
 
     - name: specify mingw compiler to setuptools
-      if: matrix.os == "windows-latest"
+      if: matrix.os == windows-latest
       run: |
         "[build]`ncompiler=mingw32`n" | Out-File -FilePath setup.cfg
 
