@@ -30,7 +30,6 @@ int add(int i, int j) {
 
 namespace py = pybind11;
 
-/*
 template<typename T>
 void declare_set(py::module &m, std::string &typestr) {
     using Class = Set<T>;
@@ -46,7 +45,6 @@ void declare_set(py::module &m, std::string &typestr) {
         .def("__getitem__", &Class::Find, py::return_value_policy::reference)
         .def("Has", &Class::Has);
 }
-*/
 
 PYBIND11_MODULE(bindings, m) {
     m.doc() = R"pbdoc(
@@ -109,7 +107,6 @@ PYBIND11_MODULE(bindings, m) {
         .def("Get", py::overload_cast<const std::string&>(&Dictionary::Get, py::const_))
         .def("__getitem__", py::overload_cast<const std::string&>(&Dictionary::Get, py::const_));
 
-/*
     // source/GameData
     py::class_<GameData>(m, "GameData")
         .def_static("BeginLoad", [](std::vector<std::string> argVec) {
@@ -131,7 +128,6 @@ PYBIND11_MODULE(bindings, m) {
         .def("Load", &Outfit::Load)
         .def("Name", &Outfit::Name)
         .def("Attributes", &Outfit::Attributes);
-*/
 
     // source/Point
     py::class_<Point>(m, "Point")
@@ -143,7 +139,6 @@ PYBIND11_MODULE(bindings, m) {
     m.def("RandomSeed", &Random::Seed);
     m.def("RandomInt", py::overload_cast<>(&Random::Int));
     m.def("RandomInt", py::overload_cast<uint32_t>(&Random::Int));
-/*
 
     // source/Set
     std::string a = std::string("Ship");
@@ -168,7 +163,6 @@ PYBIND11_MODULE(bindings, m) {
         .def("FinishLoading", &Ship::FinishLoading)
 
         .def("FlightCheck", &Ship::FlightCheck);
-*/
 
 
 #ifdef VERSION_INFO
