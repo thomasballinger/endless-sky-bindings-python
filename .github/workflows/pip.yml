@@ -14,23 +14,22 @@ jobs:
         #python-version: ["3.5", "3.8", "3.9"]
         python-version: ["3.9"]
         os: [macos-latest, ubuntu-latest, windows-latest]
-        #threading: [normal, no-threads]
-        include:
-          - os: macos-latest
+        threading: [normal]
+        build-size: [full]
+        include-libraries: [include]
+        exclude:
+          - os: ubuntu-latest
             include-libraries: include
-          - os: macos-latest
-            include-libraries: system
+        include:
           - os: ubuntu-latest
             include-libraries: system
+          - os: macos-latest
+            include-libraries: system
           - os: windows-latest
-            include-libraries: include
             build-size: skinny
           - os: windows-latest
             include-libraries: include
-            build-size: skinny
             threading: no-threads
-          - os: windows-latest
-            include-libraries: include
 
     runs-on: ${{ matrix.os }}
 
