@@ -28,7 +28,7 @@ jobs:
     - name: patch to make threadless
       working-directory: ./endless_sky/endless-sky
       shell: bash
-      run: git apply --whitespace=nowarn ../../patch.diff
+      run: patch ../../patch.diff
 #cd endless-sky/; git clean -dxf; git stash
 
     - name: Update Homebrew
@@ -80,7 +80,7 @@ jobs:
     - name: patch to make threadless
       working-directory: ./endless_sky/endless-sky
       shell: bash
-      run: git apply --whitespace=nowarn ../../patch.diff
+      run: patch ../../patch.diff
 
     - name: Fetch development libraries
       run: |
@@ -142,7 +142,7 @@ jobs:
     - name: patch to make threadless
       working-directory: ./endless_sky/endless-sky
       shell: bash
-      run: git apply --whitespace=nowarn ../../patch.diff
+      run: patch ../../patch.diff
 
     - name: Install dependencies
       run: |
