@@ -5,9 +5,9 @@
 
 // this has implications! see https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html?highlight=vector#automatic-conversion
 // default for the rest of the STL types
-#include <pybind11/stl.h>
+//#include <pybind11/stl.h>
 // some specific "opaque" types for which e.g. .append() actually updates both sides
-#include <pybind11/stl_bind.h>
+//#include <pybind11/stl_bind.h>
 
 #include "endless-sky/source/Angle.h"
 #include "endless-sky/source/DataNode.h"
