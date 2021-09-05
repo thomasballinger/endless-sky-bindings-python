@@ -83,15 +83,19 @@ def crash(msg=''):
 # TODO use info at https://pybind11.readthedocs.io/en/stable/compiling.html
 # to speed this compile process up when iterating.
 extra_compile_args=[
+	    '-DES_NO_THREADS',
         '-Wno-deprecated-declarations', # ignore mac OpenGL deprecation warnings
             #'-v',  # for debugging an include
             #'-H',  # for debugging an include
         ] if platform.system() == "Darwin" else [
+            '-DES_NO_THREADS',
             #'-v',  # for debugging an include
             #'-H',  # for debugging an include
             '-fvisibility=hidden',
             '-g0',
-        ] if platform.system() == "Windows" else []
+        ] if platform.system() == "Windows" else [
+            '-DES_NO_THREADS',
+        ]
 
 extra_link_args = (['-Wl,--verbose'] if platform.system() == "Windows" else [
     "-Wl,-rpath,$ORIGIN/lib/."
