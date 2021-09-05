@@ -123,7 +123,7 @@ PYBIND11_MODULE(bindings, m) {
 */
 
     // source/Outfit
-    py::class_<Outfit>(m, "Outfit");
+    py::class_<Outfit>(m, "Outfit")
         .def(py::init<>())
         .def("Load", &Outfit::Load);
         /*
