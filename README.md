@@ -1,5 +1,27 @@
 Endless Sky bindings for Python
 
+
+---
+
+Currently stuck trying to get Windows to run!
+
+I'm trying to figure out why my Python ES bindings are passing tests but then hanging on Python interpreter exit on Windows: `sys._exit(0)` hangs if the extension module has been imported, but it can kill itself with `subprocess.call(['Taskkill', '/PID', str(os.getpid(), '/F'])` before this.
+
+I don't know much about Windows. Maybe I want to get remote windows box that looks like the GitHub Actions environment and try to figure out what is going on.
+
+Maybe I should use something similar to strace to instrument just what Python is doing, `python -vv` does give me much.
+
+Maybe I want to start commenting out code in Endless Sky source files; it starts failing once I include GameData and all the files it needs to be linked against, but unfortunately that was a jump from ~60 .cpp files to ~120 .cpp files so there's a lot of code to "bisect."
+
+Probably I should read more about what pybind11 makes things do on exit. I don't understand well what C++ code is running on import / extension module initialization.
+
+Maybe I should try patching threads out again, I've been using the raw Endless Sky source but I have the threadless patch I use for the JavaScript bindings around.
+
+Maybe I should publish the module with this bug and someone on Windows could help me out with debugging. I could write a test running script that runs pytest then forcibly kills the process.
+
+
+----
+
 $ pip install endless-sky-bindings
 
 This library does not include the Endless Sky data, so you'll need to find that on your system or clone the [Endless Sky repo](https://github.com/endless-sky/endless-sky) to get it.
