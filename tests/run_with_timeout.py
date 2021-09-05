@@ -5,7 +5,7 @@ import sys
 
 process = subprocess.Popen(sys.argv[1:])
 
-TIMEOUT = 15
+TIMEOUT = 45
 
 try:
     process.wait(TIMEOUT)
