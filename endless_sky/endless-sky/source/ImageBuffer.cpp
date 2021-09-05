@@ -282,7 +282,7 @@ namespace {
 #pragma GCC diagnostic pop
 		
 		jpeg_stdio_src(&cinfo, file);
-		jpeg_read_header(&cinfo, TRUE);
+		jpeg_read_header(&cinfo, true);
 		cinfo.out_color_space = JCS_EXT_RGBA;
 		
 		// MAYBE: Reading in lots of images in a 32-bit process gets really hairy using the standard approach due to

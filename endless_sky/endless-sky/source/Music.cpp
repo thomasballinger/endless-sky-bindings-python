@@ -14,11 +14,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 #include "Files.h"
 
-#ifdef __EMSCRIPTEN__
-#include "FakeMad.h"
-#else
 #include <mad.h>
-#endif
 
 #include <algorithm>
 #include <cstring>

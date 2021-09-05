@@ -21,7 +21,6 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 
 using namespace std;
 
@@ -116,7 +115,6 @@ void Outfit::Load(const DataNode &node)
 	
 	for(const DataNode &child : node)
 	{
-
 		if(child.Token(0) == "category" && child.Size() >= 2)
 			category = child.Token(1);
 		else if(child.Token(0) == "plural" && child.Size() >= 2)
@@ -176,9 +174,8 @@ void Outfit::Load(const DataNode &node)
 			description += child.Token(1);
 			description += '\n';
 		}
-		else if(child.Token(0) == "cost" && child.Size() >= 2) {
+		else if(child.Token(0) == "cost" && child.Size() >= 2)
 			cost = child.Value(1);
-		}
 		else if(child.Token(0) == "mass" && child.Size() >= 2)
 			mass = child.Value(1);
 		else if(child.Token(0) == "licenses" && (child.HasChildren() || child.Size() >= 2))

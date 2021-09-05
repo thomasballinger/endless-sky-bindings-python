@@ -43,8 +43,6 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include <limits>
 #include <sstream>
 
-#include <iostream>
-
 using namespace std;
 
 namespace {

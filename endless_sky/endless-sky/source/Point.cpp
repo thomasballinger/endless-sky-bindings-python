@@ -42,16 +42,6 @@ Point::Point(double x, double y) noexcept
 
 
 
-double Point::Xval() const {
-	return x;
-}
-double Point::Yval() const {
-	return y;
-}
-
-
-
-
 // Check if the point is anything but (0, 0).
 Point::operator bool() const noexcept
 {
