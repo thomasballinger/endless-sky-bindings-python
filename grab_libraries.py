@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import shutil
 import platform
 from distutils.dir_util import copy_tree

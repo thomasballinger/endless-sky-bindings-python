@@ -32,10 +32,11 @@ jobs:
             python-version: "3.9"
             include-libraries: include
             build-size: skinny
-          - os: windows-latest
-            python-version: "3.9"
-            include-libraries: include
-            threading: no-threads
+
+#          - os: windows-latest
+#            python-version: "3.9"
+#            include-libraries: include
+#            threading: no-threads
 
     runs-on: ${{ matrix.os }}
 
@@ -51,21 +52,22 @@ jobs:
       with:
         submodules: recursive
 
-    - name: patch to make threadless
-      if: matrix.threading == 'no-threads'
-      working-directory: ./endless_sky/endless-sky
-      shell: bash
-      run: patch ../../patch.diff
-#cd endless-sky/; git clean -dxf; git stash
+#    - name: patch to make threadless
+#      if: matrix.threading == 'no-threads'
+#      working-directory: ./endless_sky/endless-sky
+#      shell: bash
+#      run: patch ../../patch.diff
+##cd endless-sky/; git clean -dxf; git stash
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
 
     - name: Install Mac dependencies
       if: matrix.os == 'macos-latest'
       run: |
         brew update
         brew install libmad libpng jpeg-turbo SDL2 openal-soft
-    - uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
 
     - name: Install Ubuntu dependencies
       if: matrix.os == 'ubuntu-latest'
@@ -92,10 +94,19 @@ jobs:
       run: python grab_libraries.py
 
     - name: Add requirements
-      run: python -m pip install --upgrade wheel setuptools
+      run: python -m pip install --upgrade wheel setuptools pytest pybind11
+
+    - name: sdist
+      run: python setup.py sdist
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: sdist-${{ matrix.os }}-${{ matrix.include-libraries }}-${{ matrix.build-size }}
+        path: dist/
 
     - name: Build and install
-      run: pip install .[test]
+      shell: bash
+      run: pip install ./dist/*
 
     - name: testing script in another dir
       continue-on-error: true
