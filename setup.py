@@ -7,8 +7,11 @@ import sysconfig
 
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 
-# Monkey-patch PyBindExtension to convert \foo flags to -foo
-# because it adds some \args on Windows assuming we're using compiler that likes that
+# Endless Sky requires libraries like dirent.h that are not provided by MSVC,
+# so mingw should be used when compiling on Windows.
+# However Pybind11Extension seems to assume MVSC on the windows platform, so
+# monkey-patch PyBindExtension to convert \foo flags to -foo because it adds
+# some \args style args on Windows assuming we're using compiler that likes them.
 def mvsc_to_mingw(flag):
     if flag == '/bigobj':
         return '-Wa,-mbig-obj'
@@ -19,14 +22,13 @@ def mvsc_to_mingw(flag):
     if flag.startswith('/'):
         return ''
     return flag
-
 def _add_cflags(self, flags):
     flags = [mvsc_to_mingw(flag) for flag in flags if mvsc_to_mingw(flag)]
     self.extra_compile_args[:0] = flags
 Pybind11Extension._add_cflags = _add_cflags
 
-# There are two different sdists builds possible.
-# With ES_SETUP_INCLUDE_LIBRARIES set (eg when building wheels) we copy
+# There are two different styles of sdists builds possible.
+# With ES_SETUP_INCLUDE_LIBRARIES=1 (eg when building wheels) we copy
 # in all libraries into endless_sky/lib. This produces a build that only
 # works on a single platform because we harvest the libraries from the system.
 # Without ES_SETUP_INCLUDE_LIBRARIES set (eg when the package will be run on
@@ -35,8 +37,6 @@ Pybind11Extension._add_cflags = _add_cflags
 INCLUDE_LIBRARIES = (os.environ.get('ES_SETUP_INCLUDE_LIBRARIES') or '0') == '1'
 print('INCLUDE_LIBRARIES:', INCLUDE_LIBRARIES)
 
-# A "real" source distribution might include the shared libraries for every platform.
-
 # Once we have an sdist we use the presence of endless_sky/lib to determine
 # whether to use the system lib locations or the local ones.
 LIBRARIES_INCLUDED = os.path.exists('endless_sky/lib/')
@@ -44,14 +44,6 @@ print('LIBRARIES_INCLUDED:', LIBRARIES_INCLUDED)
 
 if INCLUDE_LIBRARIES:
     assert LIBRARIES_INCLUDED, "can't include libraries if endless_sky/lib/ does not exist. Run ./grab_libraries.py to harvest libs from the OS."
-
-# Endless Sky requires libraries like dirent.h that are not provided by MSVC,
-# so mingw should be used when compiling on Windows.
-# DIR_MINGW64 is defined in .github/workflows CI, pointing to the
-# location of already-installed mingw in the GitHub Actions environment.
-# To compile locally on Windows you'll need to set this.
-# Don't do this, install the wheel instead.
-DIR_MINGW64 = os.environ.get('DIR_MINGW64')
 
 # https://stackoverflow.com/questions/63804883/including-and-distributing-third-party-libraries-with-a-python-c-extension
 def path_to_build_folder():
@@ -63,7 +55,7 @@ def path_to_build_folder():
     return os.path.join('build', dir_name, 'endless_sky')
 
 # https://stackoverflow.com/a/57109148/398212
-# TODO do we also need extra_link_args = ["-Wl,-Bstatic", "-lpthread"]
+# TODO do we also need extra_link_args = ["-Wl,-Bstatic", "-lpthread"] ?
 if platform.system() == "Windows":
     import distutils.cygwinccompiler
     # monkeypatch for too-recent MSVC versions
@@ -73,23 +65,23 @@ if platform.system() == "Windows":
 __version__ = "0.0.2"
 endless_sky_version = "753db45e921b7b7d57bb7b4afaf5181acbe0a6cc"
 
-# The initial goal here is to create a source distribution (sdist) that could
-# be downloaded and installed on any platform.
-# For this to be possible, dylib/so/DLL files for all platforms need to be
-# included OR instructions about how to install them need to be included.
-# To get things going, start by linking in jpegturbo and openal - but eventually
-# these needn't be in the sdist, they should just be in the wheels.
-# Windows DLLs will be included in the sdist, but mac and linux.
-# Maybe libs will be included in wheels, but not in sdist? In that case
-# we will need to separate setup() invocations in setup.py, one for wheels!
-# That's probably the way to go.
-
-# TODO use info at https://pybind11.readthedocs.io/en/stable/compiling.html
-# to speed this compile process up when iterating.
+# Python package builds happen in two steps: an sdist is always created first,
+# then a wheel is optionally created based on that sdist. (I think.)
+# All necessary dylib/so/DLL files need to be included in the sdist OR
+# instructions about how to install them need to be included in the README.
+# This seems hard on Windows, so the goal here is to not require anything else
+# to be installed on that platform.
+# So Windows DLLs will be included in the sdist, but mac and linux libs needn't
+# be since on those platform telling someone to install libraries isn't so bad.
+# However to get started here I'm including libpeg-turbo and openal-soft in the
+# mac build, mostly for the practice including lib files on a platform I can
+# easily test on.
 
 def crash(msg=''):
     raise AssertionError((msg or 'TODO') + ' on platform ' + platform.system())
 
+# TODO use info at https://pybind11.readthedocs.io/en/stable/compiling.html
+# to speed this compile process up when iterating.
 extra_compile_args=[
         '-Wno-deprecated-declarations', # ignore mac OpenGL deprecation warnings
             #'-v',  # for debugging an include
@@ -105,11 +97,14 @@ extra_link_args = (['-Wl,--verbose'] if platform.system() == "Windows" else [
     "-Wl,-rpath,$ORIGIN/lib/."
 ])
 
-#        glob('endless_sky/endless-sky/source/*.cpp') +
 pybind_extension = Pybind11Extension("endless_sky.bindings", [
         "endless_sky/lib.cpp",
         "endless_sky/endless-sky/tests/src/helpers/datanode-factory.cpp",
 
+        # eventually this should just be a glob, but I'm listing
+        # files to see which ones cause the hang on exit on Windows.
+        #] + glob('endless_sky/endless-sky/source/*.cpp') +
+        #glob('endless_sky/endless-sky/source/text/*.cpp'),
         "endless_sky/endless-sky/source/Account.cpp",
         "endless_sky/endless-sky/source/Angle.cpp",
         "endless_sky/endless-sky/source/Audio.cpp",
@@ -170,7 +165,8 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
         "endless_sky/endless-sky/source/text/Utf8.cpp",
         "endless_sky/endless-sky/source/text/WrappedText.cpp",
 
-        # GameData and requirements (including these makes Python hang on exit)
+        # GameData and its requirements
+        # (adding these makes Python hang on exit on Windows)
         #"endless_sky/endless-sky/source/GameData.cpp",
 
         #"endless_sky/endless-sky/source/AI.cpp",
@@ -285,9 +281,10 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
                 '/usr/local/opt/openal-soft/lib',
             ] if platform.system() == 'Darwin' else [
                 #TODO does anything need to be manually included here?
-                # Probably not, linux just works?
+                # Probably not, linux libs will just be in the right spots?
             ] if platform.system() == 'Linux' else [
-                 './dev64/lib', # *.dll.a # TODO should these be included?
+                 './dev64/lib', # *.dll.a - should be included at compile time
+                                #           but could be removed from wheel
                  './dev64/bin', # *.dll
             ] if platform.system() == "Windows" else crash())),
     include_dirs=(
@@ -297,7 +294,7 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
                 '/usr/local/opt/openal-soft/include',
             ] if platform.system() == 'Darwin' else [
                 #TODO does anything need to be manually included here?
-                # Probably not, linux just works?
+                # Probably not, linux probably just works?
             ] if platform.system() == 'Linux' else [
                 './dev64/include'
             ] if platform.system() == 'Windows' else crash())) + [
@@ -315,7 +312,8 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
 
 setup(
     name="endless-sky-bindings",  # I'd like to change this to endless-sky but 
-    version=__version__,          # want to prove out the library before doing that
+    version=__version__,          # want to prove out the library before asking
+                                  # for permission to do that.
     author="Thomas Ballinger",
     author_email="thomasballinger@gmail.com",
     url="https://github.com/thomasballinger/endless-sky-bindings-python",
@@ -343,16 +341,3 @@ setup(
     cmdclass={"build_ext": build_ext},
     zip_safe=False,
 )
-
-"""
-    data_files=([  # TODO - THIS IS NOT A THING!
-        (
-            '', # install in the package folder
-            sorted(glob(".\dev64\bin\*.dll")) + [
-                DIR_MINGW64 + "\lib\libgcc_s_seh-1.dll",
-                DIR_MINGW64 + "\lib\libstdc++-6.dll",
-                DIR_MINGW64 + "\lib\libwinpthread-1.dll",
-            ]
-        )
-    ] if platform.system() == "Windows" and DIR_MINGW64 else [])
-"""

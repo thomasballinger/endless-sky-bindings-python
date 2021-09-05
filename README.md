@@ -19,6 +19,8 @@ Maybe I should try patching threads out again, I've been using the raw Endless S
 
 Maybe I should publish the module with this bug and someone on Windows could help me out with debugging. I could write a test running script that runs pytest then forcibly kills the process.
 
+I could try linking things more statically. I doubt that's the problem, but it is
+a arbitrary choice I made.
 
 ----
 
