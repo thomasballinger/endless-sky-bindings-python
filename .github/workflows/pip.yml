@@ -60,7 +60,8 @@ jobs:
         #python-version: ["3.5", "3.8", "3.9"]
         python-version: ["3.9"]
         ES_SETUP_INCLUDE_LIBRARIES: ["1"]
-        windows-version: ["windows-2016", "windows-latest"]
+        windows-version: ["windows-latest"]
+        ES_FAT_BUILD: ["0", "1"]
 
     runs-on: ${{ matrix.windows-version }}
 
@@ -69,7 +70,7 @@ jobs:
       DIR_ESLIB: .\dev64
       AR: gcc-ar
       ES_SETUP_INCLUDE_LIBRARIES: ${{ matrix.ES_SETUP_INCLUDE_LIBRARIES }}
-
+      ES_FAT_BUILD: ${{ matrix.ES_FAT_BUILD }}
 
     steps:
     - uses: actions/checkout@v2
