@@ -64,7 +64,7 @@ if platform.system() == "Windows":
     distutils.cygwinccompiler.get_msvcr = lambda: []
 
 # Update these with new releases
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 endless_sky_version = "2fd9f8883ccc4bcfcd62e9aa12194f0941572543"
 
 # Python package builds happen in two steps: an sdist is always created first,
