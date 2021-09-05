@@ -28,8 +28,8 @@ jobs:
     - name: patch to make threadless
       working-directory: ./endless_sky/endless-sky
       run: |
-        #cd endless-sky/; git clean -dxf; git stash
 	git apply --whitespace=nowarn ../../patch.diff
+      #cd endless-sky/; git clean -dxf; git stash
 
     - name: Update Homebrew
       run: brew update
