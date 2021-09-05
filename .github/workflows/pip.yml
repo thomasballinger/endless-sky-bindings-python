@@ -61,7 +61,7 @@ jobs:
         python-version: ["3.9"]
         ES_SETUP_INCLUDE_LIBRARIES: ["1"]
         windows-version: ["windows-latest"]
-        ES_FAT_BUILD: ["0", "1"]
+        ES_SKINNY_BUILD: ["0", "1"]
 
     runs-on: ${{ matrix.windows-version }}
 
@@ -70,7 +70,7 @@ jobs:
       DIR_ESLIB: .\dev64
       AR: gcc-ar
       ES_SETUP_INCLUDE_LIBRARIES: ${{ matrix.ES_SETUP_INCLUDE_LIBRARIES }}
-      ES_FAT_BUILD: ${{ matrix.ES_FAT_BUILD }}
+      ES_SKINNY_BUILD: ${{ matrix.ES_SKINNY_BUILD }}
 
     steps:
     - uses: actions/checkout@v2
@@ -110,11 +110,11 @@ jobs:
     - name: testing script in another dir
       continue-on-error: true
       working-directory: ./tests
-      run: python testing.py
+      run: python run_with_timeout.py python testing.py
 
     - name: Test
       continue-on-error: true
-      run: pytest
+      run: python tests/run_with_timeout.py pytest
 
     #- name: Debugging
       #continue-on-error: true

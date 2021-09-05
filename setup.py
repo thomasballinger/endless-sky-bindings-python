@@ -102,8 +102,8 @@ extra_link_args = (['-Wl,--verbose'] if platform.system() == "Windows" else [
 ])
 
 ## Just for debugging
-ES_FAT_BUILD = (os.environ.get('ES_FAT_BUILD') or '0') == '1'
-print('ES_FAT_BUILD:', ES_FAT_BUILD)
+ES_SKINNY_BUILD = (os.environ.get('ES_SKINNY_BUILD') or '0') == '1'
+print('ES_SKINNY_BUILD:', ES_SKINNY_BUILD)
 
 pybind_extension = Pybind11Extension("endless_sky.bindings", [
         "endless_sky/lib.cpp",
@@ -172,7 +172,7 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
         "endless_sky/endless-sky/source/text/Table.cpp",
         "endless_sky/endless-sky/source/text/Utf8.cpp",
         "endless_sky/endless-sky/source/text/WrappedText.cpp",
-        ] + ([] if not ES_FAT_BUILD else [
+        ] + ([] if ES_SKINNY_BUILD else [
 
         # GameData and its requirements
         # (adding these makes Python hang on exit on Windows)
