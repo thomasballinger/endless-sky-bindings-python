@@ -75,7 +75,8 @@ jobs:
 
     - name: specify mingw compiler to setuptools
       if: matrix.os == "windows-latest"
-      run: "[build]`ncompiler=mingw32`n" | Out-File -FilePath setup.cfg
+      run: |
+        "[build]`ncompiler=mingw32`n" | Out-File -FilePath setup.cfg
 
     - name: Copy libraries from OS into lib and include
       if: matrix.include-libraries == include
