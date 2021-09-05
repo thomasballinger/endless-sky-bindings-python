@@ -113,7 +113,6 @@ jobs:
       run: python run_with_timeout.py python testing.py
 
     - name: Test
-      continue-on-error: true
       run: python tests/run_with_timeout.py pytest
 
     #- name: Debugging

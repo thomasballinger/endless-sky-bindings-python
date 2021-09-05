@@ -15,6 +15,7 @@ except subprocess.TimeoutExpired:
     print("Hit timeout, running Taskkill on", str(process.pid))
     sys.stdout.flush()
     subprocess.call(['Taskkill', '/PID', str(process.pid), '/F'])
+    print("failed the 'can exit without hanging forever' test")
     sys.exit(1)
 else:
     sys.exit(process.returncode)
