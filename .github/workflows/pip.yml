@@ -13,11 +13,11 @@ jobs:
       fail-fast: false
       matrix:
         #python-version: ["3.5", "3.8", "3.9"]
-        python-version: ["3.9"]
         os: [macos-latest, ubuntu-latest, windows-latest]
-        threading: [normal]
-        build-size: [full]
+        python-version: ["3.9"]
         include-libraries: [include]
+        build-size: [""]
+        threading: [""]
         exclude:
           - os: ubuntu-latest
             include-libraries: include
