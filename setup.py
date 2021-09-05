@@ -63,7 +63,7 @@ if platform.system() == "Windows":
 
 # Update these with new releases
 __version__ = "0.0.2"
-endless_sky_version = "753db45e921b7b7d57bb7b4afaf5181acbe0a6cc"
+endless_sky_version = "2fd9f8883ccc4bcfcd62e9aa12194f0941572543"
 
 # Python package builds happen in two steps: an sdist is always created first,
 # then a wheel is optionally created based on that sdist. (I think.)
