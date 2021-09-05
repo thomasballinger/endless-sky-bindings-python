@@ -4,8 +4,6 @@
 #include <pybind11/operators.h>
 
 // this has implications! see https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html?highlight=vector#automatic-conversion
-// convenience seems more important than speed for these bindings though
-//
 // default for the rest of the STL types
 #include <pybind11/stl.h>
 // some specific "opaque" types for which e.g. .append() actually updates both sides
@@ -122,6 +120,7 @@ PYBIND11_MODULE(bindings, m) {
         })
 	.def_static("CheckReferences", &GameData::CheckReferences)
 	.def_static("Ships", &GameData::Ships);
+*/
 
     // source/Outfit
     py::class_<Outfit>(m, "Outfit")
@@ -129,7 +128,6 @@ PYBIND11_MODULE(bindings, m) {
         .def("Load", &Outfit::Load)
         .def("Name", &Outfit::Name)
         .def("Attributes", &Outfit::Attributes);
-*/
 
     // source/Point
     py::class_<Point>(m, "Point")
