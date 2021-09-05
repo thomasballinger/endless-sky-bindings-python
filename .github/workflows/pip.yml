@@ -13,12 +13,12 @@ jobs:
       matrix:
         #python-version: ["3.5", "3.8", "3.9"]
         python-version: ["3.9"]
-        ES_SETUP_INCLUDE_LIBRARIES: ["0", "1"]
+        include-libraries: ["include", "system"]
 
     runs-on: macos-latest
 
     env:
-      ES_SETUP_INCLUDE_LIBRARIES: ${{ matrix.ES_SETUP_INCLUDE_LIBRARIES }}
+      ES_SETUP_INCLUDE_LIBRARIES: ${{ matrix.include-libraries == "include" && "1" || "0" }}
 
     steps:
     - uses: actions/checkout@v2
@@ -59,9 +59,9 @@ jobs:
       matrix:
         #python-version: ["3.5", "3.8", "3.9"]
         python-version: ["3.9"]
-        ES_SETUP_INCLUDE_LIBRARIES: ["1"]
+        include-libraries: ["include"]
         windows-version: ["windows-latest"]
-        ES_SKINNY_BUILD: ["0", "1"]
+        build-size: ["full", "skinny"]
 
     runs-on: ${{ matrix.windows-version }}
 
@@ -69,8 +69,8 @@ jobs:
       DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\x86_64-w64-mingw32
       DIR_ESLIB: .\dev64
       AR: gcc-ar
-      ES_SETUP_INCLUDE_LIBRARIES: ${{ matrix.ES_SETUP_INCLUDE_LIBRARIES }}
-      ES_SKINNY_BUILD: ${{ matrix.ES_SKINNY_BUILD }}
+      ES_SETUP_INCLUDE_LIBRARIES: ${{ matrix.include-libraries == "include" && "1" || "0" }}
+      ES_SKINNY_BUILD: ${{ matrix.build-size == 'full' && '0' || '1' }}
 
     steps:
     - uses: actions/checkout@v2
@@ -127,12 +127,12 @@ jobs:
       matrix:
         #python-version: ["3.5", "3.8", "3.9"]
         python-version: ["3.9"]
-        ES_SETUP_INCLUDE_LIBRARIES: ["0"]
+        include-libraries: ["system"]
 
     runs-on: ubuntu-latest
 
     env:
-      ES_SETUP_INCLUDE_LIBRARIES: ${{ matrix.ES_SETUP_INCLUDE_LIBRARIES }}
+      ES_SETUP_INCLUDE_LIBRARIES: ${{ matrix.include-libraries == "include" && "1" || "0" }}
 
     steps:
     - uses: actions/checkout@v2
