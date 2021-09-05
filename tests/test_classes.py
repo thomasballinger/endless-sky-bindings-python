@@ -21,6 +21,7 @@ def test_DataNode():
     assert [x.Token(0) for x in list(d)] == ["key"]
 
 """
+# these work on Mac and Linx but I'm debugging the Windows build right now.
 def test_Ship():
     n = m.AsDataNode('ship Canoe\n\tattributes\n\t\tcategory "Transport"')
     s = m.Ship(n)
