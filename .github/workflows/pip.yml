@@ -78,9 +78,7 @@ jobs:
 
     - name: patch to make threadless
       working-directory: ./endless_sky/endless-sky
-      run: |
-        #cd endless-sky/; git clean -dxf; git stash
-	git apply --whitespace=nowarn ../../patch.diff
+      run: git apply --whitespace=nowarn ../../patch.diff
 
     - name: Fetch development libraries
       run: |
@@ -141,9 +139,7 @@ jobs:
 
     - name: patch to make threadless
       working-directory: ./endless_sky/endless-sky
-      run: |
-        #cd endless-sky/; git clean -dxf; git stash
-	git apply --whitespace=nowarn ../../patch.diff
+      run: git apply --whitespace=nowarn ../../patch.diff
 
     - name: Install dependencies
       run: |
