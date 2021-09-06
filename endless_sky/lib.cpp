@@ -128,7 +128,8 @@ PYBIND11_MODULE(bindings, m) {
         .def(py::init<>())
         .def("Load", &Outfit::Load)
         .def("Name", &Outfit::Name)
-        .def("Attributes", &Outfit::Attributes);
+//        .def("Attributes", &Outfit::Attributes);
+        .def("Attributes", [](Outfit &self) { return 17; });
 
     // source/Point
     py::class_<Point>(m, "Point")
