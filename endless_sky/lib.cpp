@@ -11,6 +11,7 @@
 
 #include "endless-sky/source/Angle.h"
 #include "endless-sky/source/DataNode.h"
+#include "endless-sky/source/Dictionary.h"
 #include "endless-sky/source/GameData.h"
 #include "endless-sky/source/Outfit.h"
 #include "endless-sky/source/Point.h"
@@ -126,10 +127,8 @@ PYBIND11_MODULE(bindings, m) {
     py::class_<Outfit>(m, "Outfit")
         .def(py::init<>())
         .def("Load", &Outfit::Load)
-        .def("Name", &Outfit::Name);
-        /*
+        .def("Name", &Outfit::Name)
         .def("Attributes", &Outfit::Attributes);
-    */
 
     // source/Point
     py::class_<Point>(m, "Point")
