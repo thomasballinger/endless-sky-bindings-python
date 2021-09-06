@@ -102,6 +102,7 @@ jobs:
 
     - name: checking for timeout on interpreter exit
       working-directory: ./tests
+      continue-on-error: true
       run: python run_with_timeout.py python testing.py
 
     - name: Test
