@@ -19,6 +19,19 @@ index 749c3ce0..e44c1cf4 100644
  	
  	// Create the music-streaming threads.
  	currentTrack.reset(new Music());
+diff --git a/source/Dictionary.h b/source/Dictionary.h
+index f083bae7..bb0d6155 100644
+--- a/source/Dictionary.h
++++ b/source/Dictionary.h
+@@ -23,7 +23,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ // that prioritizes fast lookup time at the expense of longer construction time
+ // compared to an STL map. That makes it suitable for ship attributes, which are
+ // changed much less frequently than they are queried.
+-class Dictionary : private std::vector<std::pair<const char *, double>> {
++class Dictionary : public std::vector<std::pair<const char *, double>> {
+ public:
+ 	// Access a key for modifying it:
+ 	double &operator[](const char *key);
 diff --git a/source/Files.cpp b/source/Files.cpp
 index df6fca14..ed686613 100644
 --- a/source/Files.cpp
