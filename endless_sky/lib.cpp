@@ -126,10 +126,8 @@ PYBIND11_MODULE(bindings, m) {
     py::class_<Outfit>(m, "Outfit")
         .def(py::init<>())
         .def("Load", &Outfit::Load)
-        .def("Name", &Outfit::Name);
-        /*
+        .def("Name", &Outfit::Name)
         .def("Attributes", &Outfit::Attributes);
-    */
 
     // source/Point
     py::class_<Point>(m, "Point")
