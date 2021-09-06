@@ -131,7 +131,7 @@ PYBIND11_MODULE(bindings, m) {
         .def("Get", py::overload_cast<const std::string&>(&Outfit::Get, py::const_))
 //        .def("Attributes", &Outfit::Attributes);
         .def("Attributes", [](Outfit &self) {
-                const Dictionary = self.Attributes()
+                const Dictionary = self.Attributes();
                 return 17;
         });
 
