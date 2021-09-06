@@ -80,3 +80,14 @@ patch -p1 < ../../patch.diff
 cd ../..
 pip install 
 ```
+
+# Updating the Endless Sky patch
+
+These bindings use a patched version of Endless Sky to patch out threads and make a few other changes.
+
+To update the patch:
+
+- make changes in the submodule at endless_sky/endless-sky
+- with that directory as the working directory, run `git diff > ../../patch.diff`
+
+This is especially important after updating the version of Endless Sky used.
