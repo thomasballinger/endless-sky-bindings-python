@@ -18,15 +18,8 @@ jobs:
         exclude:
           - os: ubuntu-latest
             include-libraries: include
-        include:
-          - os: ubuntu-latest
-            python-version: "3.9"
-            include-libraries: system
-            threading: no-threads
           - os: macos-latest
-            python-version: "3.9"
-            include-libraries: system
-            threading: no-threads
+            include-libraries: include
 
     runs-on: ${{ matrix.os }}
 
