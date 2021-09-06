@@ -91,3 +91,5 @@ To update the patch:
 - with that directory as the working directory, run `git diff > ../../patch.diff`
 
 This is especially important after updating the version of Endless Sky used.
+
+This patch is intended to be the minimum to make Python bindings work; if this repo is combined with Emscripten-compiled JavaScript bindings at a later date it will need to be expanded.
