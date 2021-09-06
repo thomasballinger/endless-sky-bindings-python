@@ -10,7 +10,7 @@ from pybind11.setup_helpers import build_ext
 from pybind11.setup_helpers import ParallelCompile
 from pybind11.setup_helpers import naive_recompile
 
-ParallelCompile(needs_recompile=naive_recompile).install()
+#ParallelCompile(needs_recompile=naive_recompile).install()
 
 # Endless Sky requires libraries like dirent.h that are not provided by MSVC,
 # so mingw should be used when compiling on Windows.
