@@ -92,7 +92,8 @@ extra_compile_args=[
             #'-v',  # for debugging an include
             #'-H',  # for debugging an include
         ] if platform.system() == "Darwin" else [
-            '-DES_NO_THREADS',
+            #'-DES_NO_THREADS',
+            '-mthreads',  # might do something?
             #'-v',  # for debugging an include
             #'-H',  # for debugging an include
             '-fvisibility=hidden',
