@@ -76,13 +76,12 @@ def test_GameData_ownership(empty_resources_dir, empty_config_dir):
     canoe = ships.Find("Canoe")
     del canoe  # segfault if Find used the default return value policy
 
-"""
-# TODO should this library ship with the vanilla data? Probably not?
-def test_GameData_full():
+# This library does not ship with vanilla data, but it's always present in the
+# build enviroment so we might as well use it.
+def test_GameData_full(empty_config_dir):
     m.GameData.BeginLoad([
         "progname",
-        "--resources", "./endless_sky",
+        "--resources", "./endless_sky/endless-sky",
         "--config", str(empty_config_dir),
     ])
     assert len(m.GameData.Ships()) > 100
-"""
