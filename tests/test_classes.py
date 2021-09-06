@@ -29,7 +29,6 @@ def test_Ship():
     s = m.Ship(n)
     assert s.ModelName() == 'Canoe'
 
-"""
 @pytest.fixture
 def empty_resources_dir(tmp_path):
     r = tmp_path / "resources"
@@ -77,7 +76,6 @@ def test_GameData_ownership(empty_resources_dir, empty_config_dir):
     canoe = ships.Find("Canoe")
     del canoe  # segfault if Find used the default return value policy
 
-"""
 """
 # TODO should this library ship with the vanilla data? Probably not?
 def test_GameData_full():

@@ -105,7 +105,6 @@ PYBIND11_MODULE(bindings, m) {
         .def("Get", py::overload_cast<const std::string&>(&Dictionary::Get, py::const_))
         .def("__getitem__", py::overload_cast<const std::string&>(&Dictionary::Get, py::const_));
 
-/*
     // source/GameData
     py::class_<GameData>(m, "GameData")
         .def_static("BeginLoad", [](std::vector<std::string> argVec) {
@@ -120,7 +119,6 @@ PYBIND11_MODULE(bindings, m) {
         })
 	.def_static("CheckReferences", &GameData::CheckReferences)
 	.def_static("Ships", &GameData::Ships);
-*/
 
     // source/Outfit
     py::class_<Outfit>(m, "Outfit")
