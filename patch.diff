@@ -168,6 +168,44 @@ index add12345..8a2282b0 100644
  
  #include <algorithm>
  #include <cstring>
+diff --git a/source/Outfit.cpp b/source/Outfit.cpp
+index eb9ffc8f..bf7999ad 100644
+--- a/source/Outfit.cpp
++++ b/source/Outfit.cpp
+@@ -324,7 +324,13 @@ const Dictionary &Outfit::Attributes() const
+ 	return attributes;
+ }
+ 
+-
++Dictionary Outfit::Attributes_noconst_noref_noconst() { return attributes; }
++const Dictionary Outfit::Attributes_const_noref_noconst() { return attributes; }
++Dictionary &Outfit::Attributes_noconst_ref_noconst() { return attributes; };
++Dictionary Outfit::Attributes_noconst_noref_const() const { return attributes; };
++//Dictionary &Outfit::Attributes_noconst_ref_const() const { return attributes; };
++const Dictionary Outfit::Attributes_const_noref_const() const { return attributes; };
++const Dictionary &Outfit::Attributes_const_ref_noconst() { return attributes; };
+ 
+ // Determine whether the given number of instances of the given outfit can
+ // be added to a ship with the attributes represented by this instance. If
+diff --git a/source/Outfit.h b/source/Outfit.h
+index 6e2ee9e6..37d901bd 100644
+--- a/source/Outfit.h
++++ b/source/Outfit.h
+@@ -62,6 +62,14 @@ public:
+ 	double Get(const char *attribute) const;
+ 	double Get(const std::string &attribute) const;
+ 	const Dictionary &Attributes() const;
++
++	Dictionary Attributes_noconst_noref_noconst();
++	const Dictionary Attributes_const_noref_noconst();
++	Dictionary &Attributes_noconst_ref_noconst();
++	Dictionary Attributes_noconst_noref_const() const;
++	//Dictionary &Attributes_noconst_ref_const() const;
++	const Dictionary Attributes_const_noref_const() const;
++	const Dictionary &Attributes_const_ref_noconst();
+ 	
+ 	// Determine whether the given number of instances of the given outfit can
+ 	// be added to a ship with the attributes represented by this instance. If
 diff --git a/source/PlayerInfo.cpp b/source/PlayerInfo.cpp
 index eed3493d..ba138ac7 100644
 --- a/source/PlayerInfo.cpp
