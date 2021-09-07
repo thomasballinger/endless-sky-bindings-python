@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from .loader import LoadData
+from .loader import load_data
 
 from pprint import pformat
 
@@ -12,7 +12,7 @@ def parse_ships(path=None, *, resources=None, config=None, format='dict'):
     Parse a file or folder along with resources
 
     """
-    es = LoadData(path, resources_path=resources, config_path=config)
+    es = load_data(path, resources=resources, config=config)
     ships = es.GameData.Ships()
     for name, ship in ships:
         ship.FinishLoading(True)

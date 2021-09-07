@@ -50,6 +50,6 @@ if args.subcommand == 'parse':
     output = parse_ships(
             args.file,
             format=args.format,
-            resources_path=args.resources,
-            config_path=args.config)
+            resources=args.resources,
+            config=args.config)
     print(output)

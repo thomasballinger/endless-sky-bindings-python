@@ -30,6 +30,11 @@ $ python -m endless_sky parse --resources ~/endless-sky myData.txt# only parses 
 
 Warning: endless_sky.bindings contains non-resetable singletons like GameData, so once you load some data (say with a parser) you can't unload that data without exiting Python.
 
+# Notes
+
+- You can only load once!
+- Loading takes a lot of memory: 600MB for vanilla data! (this could be optimized)
+
 # Installation
 
 ## Mac
@@ -87,7 +92,9 @@ cd ../..
 pip install 
 ```
 
-# Updating the Endless Sky patch
+# Dev notes
+
+## Updating the Endless Sky patch
 
 These bindings use a patched version of Endless Sky to patch out threads and make a few other changes.
 

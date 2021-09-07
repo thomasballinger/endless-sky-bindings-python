@@ -19,20 +19,20 @@ class AlreadyLoadedError(Exception):
     (static class members in C++) state that can't even properly be reset.
     """
 
-def LoadStringData(s, *, resources_path=None, config_path=None):
+def load_string_data(s, *, resources=None, config=None):
     with TemporaryDirectory() as tmpdir:
         tmpfile = os.path.join(tmpdir, 'mydata.txt')
         with open(tmpfile, 'w') as f:
             f.write(s)
-        return LoadData(tmpfile, resources_path=resources_path, config_path=config_path)
+        return load_data(tmpfile, resources=resources, config=config)
 
-def LoadData(path=None, *, resources_path=None, config_path=None):
+def load_data(path=None, *, resources=None, config=None):
     """
     Load a file or folder of files, data files in resources, global
     plugins (the plugins folder in resources), and local plugins
     (the plugins folder in config).
 
-    All three of path, resources_path, and config_path my be omitted.
+    Each of path, resources, and config is an optional path as a string.
 
     Returns a reference to the endless_sky.bindings module, but you can
     ignore this return value and import it directly instead if you want.
@@ -41,8 +41,8 @@ def LoadData(path=None, *, resources_path=None, config_path=None):
     or directory is temporarily symlinked in it with the name zzzTemp.
     Hopefully this name places this data last in the load order.
 
-    resources_path defaults to a temporary, empty (but valid) resources directory.
-    config_path defaults to a temporary, tempty (but valid) config directory.
+    resources defaults to a temporary, empty (but valid) resources directory.
+    config defaults to a temporary, tempty (but valid) config directory.
     """
     global LOADED
 
@@ -52,32 +52,32 @@ def LoadData(path=None, *, resources_path=None, config_path=None):
     if path and not os.path.exists(path):
         raise ValueError("Can't find the path "+repr(path))
 
-    if resources_path and not os.path.exists(resources_path):
-        raise ValueError("Nonexistent resource path "+repr(resources_path))
+    if resources and not os.path.exists(resources):
+        raise ValueError("Nonexistent resource path "+repr(resources))
 
-    if config_path is None:
+    if config is None:
         pass
     else:
         raise ValueError("specifying a config path is not yet tested")
-        if os.path.exists(config_path):
-            raise ValueError("Nonexistent resource path "+repr(resources_path))
+        if os.path.exists(config):
+            raise ValueError("Nonexistent resource path "+repr(resources))
 
     # TODO check that the path is not in the resources/data, images, or sounds
     # TODO check that path is not in the specified global plugins folder
     # TODO check if the path is not in the specified local plugins folder
 
-    with ResourcesDir(resources_path) as resources:
-        with ConfigDir(None) as config:
+    with ResourcesDir(resources) as r:
+        with ConfigDir(None) as c:
             if path:
-                config.link_plugin(path)
-            args = ['foo', '--resources', resources.name, '--config', config.name]
+                c.link_plugin(path)
+            args = ['foo', '--resources', r.name, '--config', c.name]
             try:
                 es.GameData.BeginLoad(args)
             except RuntimeError as e:
                 if 'Unable to find the resource directories' in str(e):
                     print(args)
-                    print(resources.name, os.listdir(resources.name))
-                    print(config.name, os.listdir(config.name))
+                    print(r.name, os.listdir(r.name))
+                    print(c.name, os.listdir(c.name))
                     raise
                 else:
                     raise
