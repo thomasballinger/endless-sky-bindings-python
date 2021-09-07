@@ -4,23 +4,20 @@ $ pip install endless-sky-bindings
 
 This library does not include the Endless Sky data, so you'll need to find that on your system or clone the [Endless Sky repo](https://github.com/endless-sky/endless-sky) to get it.
 
+## Command line use
+
+$ python -m endless_sky p
+
+## Library
+
 ```
->>> import endless_sky.bindings as es
+>>> from endless_sky.parser import parse_ships
 >>> from pprint import pprint
->>> es.GameData.BeginLoad(['foo', '--resources', '/Users/tomb/endless-sky/'])
-True
->>> ships = es.GameData.Ships()
->>> shuttle = ships.Find("Shuttle")
->>> shuttle.FinishLoading(True)
->>> pprint(dict(shuttle.Attributes().Attributes()))
+>>> ships = parse_ships(resources='/Users/tomb/endless-sky/']
+>>> pprint(ships['Shuttle'])
 {'bunks': 6.0,
  'cargo space': 20.0,
  'drag': 1.7000000000000002,
- 'energy capacity': 1000.0,
- 'energy generation': 1.2000000000000002,
- 'engine capacity': 13.0,
- 'fuel capacity': 400.0,
- 'gun ports': 1.0,
  ...
 ```
 
@@ -90,6 +87,6 @@ To update the patch:
 - make changes in the submodule at endless_sky/endless-sky
 - with that directory as the working directory, run `git diff > ../../patch.diff`
 
-This is especially important after updating the version of Endless Sky used.
+This is likely to be necessary after updating the version of Endless Sky used.
 
 This patch is intended to be the minimum to make Python bindings work; if this repo is combined with Emscripten-compiled JavaScript bindings at a later date it will need to be expanded.

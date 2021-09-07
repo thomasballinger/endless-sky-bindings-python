@@ -1,4 +1,5 @@
 import pytest
+from endless_sky.module_instance_hack import make_es
 import endless_sky.bindings as m
 
 def test_Point():
@@ -48,40 +49,62 @@ def empty_config_dir(tmp_path):
     saves.mkdir()
     return r
 
-def test_GameData_empty(empty_resources_dir, empty_config_dir):
-    m.GameData.BeginLoad([
-        "progname",
-        "--resources", str(empty_resources_dir),
-        "--config", str(empty_config_dir),
-    ])
-
 def test_GameData_simple(empty_resources_dir, empty_config_dir):
     (empty_resources_dir / "data" / "simple.txt").write_text('ship Canoe\n\tdescription "A boat."')
-    m.GameData.BeginLoad([
+    es = make_es()
+    es.GameData.BeginLoad([
         "progname",
         "--resources", str(empty_resources_dir),
         "--config", str(empty_config_dir),
     ])
-    ships = m.GameData.Ships();
+    ships = es.GameData.Ships();
     assert list(ships) == [("Canoe", ships.Find("Canoe"))]
+
+def test_GameData_simple(empty_resources_dir, empty_config_dir):
+    """Check that the hack of importing two modules actually keep data separate."""
+
+    (empty_resources_dir / "data" / "simple.txt").write_text('ship Canoe\n\tdescription "A boat."')
+    es1 = make_es()
+    es2 = make_es()
+    assert es1 is not es2
+
+    es1.GameData.BeginLoad([
+        "progname",
+        "--resources", str(empty_resources_dir),
+        "--config", str(empty_config_dir),
+    ])
+    ships = es1.GameData.Ships();
+    assert list(ships) == [("Canoe", ships.Find("Canoe"))]
+
+    (empty_resources_dir / "data" / "simple.txt").write_text('ship Kayak\n\tdescription "A sleeker boat for only one."')
+    es2.GameData.BeginLoad([
+        "progname",
+        "--resources", str(empty_resources_dir),
+        "--config", str(empty_config_dir),
+    ])
+    ships = es2.GameData.Ships();
+    assert list(ships) == [("Kayak", ships.Find("Kayak"))]
 
 def test_GameData_ownership(empty_resources_dir, empty_config_dir):
     (empty_resources_dir / "data" / "simple.txt").write_text('ship Canoe\n\tdescription "A boat."')
-    m.GameData.BeginLoad([
+    es = make_es()
+    es.GameData.BeginLoad([
         "progname",
         "--resources", str(empty_resources_dir),
         "--config", str(empty_config_dir),
     ])
-    ships = m.GameData.Ships();
+    ships = es.GameData.Ships();
     canoe = ships.Find("Canoe")
     del canoe  # segfault if Find used the default return value policy
 
 # This library does not ship with vanilla data, but it's always present in the
 # build enviroment so we might as well use it.
 def test_GameData_full(empty_config_dir):
-    m.GameData.BeginLoad([
+    es = make_es()
+    es.GameData.BeginLoad([
         "progname",
         "--resources", "./endless_sky/endless-sky",
         "--config", str(empty_config_dir),
     ])
-    assert len(m.GameData.Ships()) > 100
+    # This might use a lot of memory (if sprites get loaded)
+    assert len(es.GameData.Ships()) > 100

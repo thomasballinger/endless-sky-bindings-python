@@ -1,14 +1,33 @@
-import platform
-from setuptools import setup
 from glob import glob
 import os
+import platform
+import re
+from setuptools import setup
 import sys
 import sysconfig
+import warnings
 
 from pybind11.setup_helpers import Pybind11Extension
 from pybind11.setup_helpers import build_ext
 from pybind11.setup_helpers import ParallelCompile
 from pybind11.setup_helpers import naive_recompile
+
+__version__ = re.search(
+    r'__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
+    open('endless_sky/__init__.py', encoding='utf_8_sig').read()
+).group(1)
+
+endless_sky_version = "2fd9f8883ccc4bcfcd62e9aa12194f0941572543"
+try:
+    submodule_version = open('.git/modules/endless_sky/endless-sky/HEAD').read().strip()
+except FileNotFoundError:
+    pass
+if submodule_version and submodule_version != endless_sky_version:
+    msg = "endless_sky_version "+endless_sky_version+" does not match submodule "+submodule_version
+    warnings.warn(msg)
+    if (os.environ.get('GITHUB_REPOSITORY') or '').endswith("endless-sky-bindings-python"):
+        # Prevent doing a release without updating this
+        raise ValueError(msg)
 
 ParallelCompile(needs_recompile=naive_recompile).install()
 
@@ -67,10 +86,6 @@ if platform.system() == "Windows":
     import distutils.cygwinccompiler
     # monkeypatch for too-recent MSVC versions
     distutils.cygwinccompiler.get_msvcr = lambda: []
-
-# Update these with new releases
-__version__ = "0.0.3"
-endless_sky_version = "2fd9f8883ccc4bcfcd62e9aa12194f0941572543"
 
 # Python package builds happen in two steps: an sdist is always created first,
 # then a wheel is optionally created based on that sdist. (I think.)
