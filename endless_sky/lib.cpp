@@ -9,7 +9,7 @@
 // some specific "opaque" types for which e.g. .append() actually updates both sides
 //#include <pybind11/stl_bind.h>
 
-int main(int argc, char *argv[]);
+int maine(int argc, char *argv[]);
 
 #include "endless-sky/source/Angle.h"
 #include "endless-sky/source/DataNode.h"
@@ -173,7 +173,7 @@ PYBIND11_MODULE(bindings, m) {
             cstrs.push_back(const_cast<char *>(s.c_str()));
         }
         cstrs.push_back(NULL);
-        return main(argVec.size(), cstrs.data());
+        return maine(argVec.size(), cstrs.data());
     });
 
 
