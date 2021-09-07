@@ -16,19 +16,36 @@ $ python -m endless_sky parse --resources ~/endless-sky myData.txt# only parses 
 
 ## Library
 
+Once you get a handle on the endless_sky.bindings module (bound to 'es' variable here),
+C++ classes are exposed to Python pretty directly; for documentation, see
+[the header files in Endless Sky](https://github.com/endless-sky/endless-sky/tree/master/source).
+
 ```
->>> from endless_sky.parser import parse_ships
->>> from pprint import pprint
->>> ships = parse_ships(resources='/Users/tomb/endless-sky/')
->>> pprint(ships['Shuttle'])
-{'bunks': 6.0,
- 'cargo space': 20.0,
- 'drag': 1.7000000000000002,
- ...
->>> from endless_sky import bindings
+>>> from endless_sky.parser import load_data
+>>> es = load_data(resources="/Users/tomb/endless-sky")
+>>> es.Ship
+<class 'endless_sky.bindings.Ship'>
+>>> ships = es.GameData.Ships() # these objects correspond to 
+>>> ships.<tab><tab>
+ships.Find(  ships.Has(   ships.size(
+>>> ships.Find("Shuttle")
+<endless_sky.bindings.Ship object at 0x1087391b0>
+>>> shuttle = ships.Find("Shuttle")
+>>> shuttle.<tab><tab>
+shuttle.Attributes(      shuttle.Cost(            shuttle.FlightCheck(     shuttle.Place(
+shuttle.BaseAttributes(  shuttle.Description(     shuttle.ModelName(       shuttle.Recharge(
+shuttle.ChassisCost(     shuttle.FinishLoading(   shuttle.Name(            shuttle.SetName(
+>>> shuttle.Attributes().Attributes()
+<endless_sky.bindings.Dictionary object at 0x1087392f0>
+>>> dict(shuttle.Attributes().Attributes())
+{'bunks': 6.0, 'cargo space': 20.0, 'drag': 1.7000000000000002, ...}
+>>> shuttle.SetName("Summer Breeze"...)
+>>> x = ships.Find("Shuttle")
+>>> x.Name()
+'Summer Breeze'
 ```
 
-Warning: endless_sky.bindings contains non-resetable singletons like GameData, so once you load some data (say with a parser) you can't unload that data without exiting Python.
+Warning: endless_sky.bindings contains non-resetable singletons like GameData, so once you load some data (directly with GameData.BeginLoad(), with a load_data, or indirectly with a parser function) you can't unload that data without exiting Python.
 
 # Notes
 
