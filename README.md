@@ -8,10 +8,11 @@ This library does not include the Endless Sky data, so you'll need to find that 
 
 ```
 % echo -e 'ship Rocket\n\tattributes\n\t\tdrag 10' > myData.txt
-$ python -m endless_sky parse --resources ~/endless-sky myData.txt# only parses ships atm
+$ python -m endless_sky parse --resources ~/endless-sky myData.txt  # only prints ships atm
 ...
  'Rocket': {'drag': 10.0, 'gun ports': 0.0, 'turret mounts': 0.0},
 ...
+$ python -m endless_sky run -- --resources ~/endless-sky
 ```
 
 ## Library
@@ -46,12 +47,6 @@ shuttle.ChassisCost(     shuttle.FinishLoading(   shuttle.Name(            shutt
 ```
 
 Warning: endless_sky.bindings contains non-resetable singletons like GameData, so once you load some data (directly with GameData.BeginLoad(), with a load_data, or indirectly with a parser function) you can't unload that data without exiting Python.
-
-## Run the game
-
-```
-python -m endless_sky run -- --resources /Users/tomb/endless-sky
-```
 
 # Notes
 
