@@ -253,21 +253,12 @@ index e8005f21..f69bf719 100644
  	
  	// These sprites must be unloaded to reclaim GPU memory.
 diff --git a/source/main.cpp b/source/main.cpp
-index ddd2db4c..65323236 100644
+index ddd2db4c..1fac754e 100644
 --- a/source/main.cpp
 +++ b/source/main.cpp
-@@ -61,7 +61,7 @@ void InitConsole();
- 
- 
- // Entry point for the EndlessSky executable
--int main(int argc, char *argv[])
-+int main_by_another_name(int argc, char *argv[])
- {
- 	// Handle command-line arguments
- #ifdef _WIN32
 @@ -431,3 +431,5 @@ void InitConsole()
  		setvbuf(stdin, nullptr, _IONBF, 0);
  }
  #endif
 +
-+const auto& main = static_cast<int(*)(int argc, char *argv[])>(main_by_another_name);
++const auto& alias_to_main = static_cast<int(*)(int argc, char *argv[])>(main);

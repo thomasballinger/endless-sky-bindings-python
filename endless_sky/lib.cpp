@@ -9,7 +9,7 @@
 // some specific "opaque" types for which e.g. .append() actually updates both sides
 //#include <pybind11/stl_bind.h>
 
-int main(int argc, char *argv[]);
+int main_by_another_name(int argc, char *argv[]);
 
 #include "endless-sky/source/Angle.h"
 #include "endless-sky/source/DataNode.h"
