@@ -104,7 +104,7 @@ jobs:
     # just for debugging various sdists and wheels
     - uses: actions/upload-artifact@v2
       with:
-        name: dist-${{ matrix.os }}-${{ matrix.include-libraries }}
+        name: dist-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.include-libraries }}
         path: dist/
 
     - name: Install
