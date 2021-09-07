@@ -1,5 +1,5 @@
 diff --git a/source/Audio.cpp b/source/Audio.cpp
-index 749c3ce0..e44c1cf4 100644
+index a348510f..9ed4610f 100644
 --- a/source/Audio.cpp
 +++ b/source/Audio.cpp
 @@ -160,9 +160,16 @@ void Audio::Init(const vector<string> &sources)
@@ -33,10 +33,10 @@ index f083bae7..bb0d6155 100644
  	// Access a key for modifying it:
  	double &operator[](const char *key);
 diff --git a/source/GameWindow.cpp b/source/GameWindow.cpp
-index a7327023..da5b6d71 100644
+index a7327023..6f714d34 100644
 --- a/source/GameWindow.cpp
 +++ b/source/GameWindow.cpp
-@@ -424,6 +426,7 @@ void GameWindow::ExitWithError(const string& message, bool doPopUp)
+@@ -424,6 +424,7 @@ void GameWindow::ExitWithError(const string& message, bool doPopUp)
  		box.title = "Endless Sky: Error";
  		box.message = message.c_str();
  		box.colorScheme = nullptr;
@@ -45,10 +45,10 @@ index a7327023..da5b6d71 100644
  		SDL_MessageBoxButtonData button;
  		button.flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
 diff --git a/source/ImageBuffer.cpp b/source/ImageBuffer.cpp
-index 8bdae82e..ee500993 100644
+index f7254903..2e878e02 100644
 --- a/source/ImageBuffer.cpp
 +++ b/source/ImageBuffer.cpp
-@@ -282,7 +282,7 @@ namespace {
+@@ -287,7 +287,7 @@ namespace {
  #pragma GCC diagnostic pop
  		
  		jpeg_stdio_src(&cinfo, file);

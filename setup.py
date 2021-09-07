@@ -17,7 +17,7 @@ __version__ = re.search(
     open('endless_sky/__init__.py', encoding='utf_8_sig').read()
 ).group(1)
 
-endless_sky_version = "2fd9f8883ccc4bcfcd62e9aa12194f0941572543"
+endless_sky_version = "439387647c27869017ef357c4097d2907a7d6d21"
 submodule_version = None
 try:
     submodule_version = open('.git/modules/endless_sky/endless-sky/HEAD').read().strip()
@@ -73,6 +73,7 @@ if INCLUDE_LIBRARIES:
 assert os.path.exists('endless_sky/endless-sky/'), "endless-sky sources not present. Did you not git clone --recursive?"
 
 # https://stackoverflow.com/questions/63804883/including-and-distributing-third-party-libraries-with-a-python-c-extension
+# TODO does this work correctly for source builds?
 def path_to_build_folder():
     """Returns the name of a distutils build directory"""
     f = "{dirname}.{platform}-{version[0]}.{version[1]}"
@@ -191,8 +192,10 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
                 './dev64/include'
             ] if platform.system() == 'Windows' else crash())) + [
         os.path.join(path_to_build_folder(), 'endless-sky/tests/include'),
-        os.path.join(path_to_build_folder(), 'endless-sky/endless-sky/source'),
-        os.path.join(path_to_build_folder(), 'endless-sky/endless-sky/source/text'),
+
+        # These two are almost certainly not needed
+        os.path.join(path_to_build_folder(), 'endless-sky/source'),
+        os.path.join(path_to_build_folder(), 'endless-sky/source/text'),
     ]),
     extra_compile_args=extra_compile_args,
     extra_link_args=extra_link_args,

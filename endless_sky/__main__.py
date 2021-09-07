@@ -33,8 +33,6 @@ elif not args.version and not args.subcommand:
     parser.print_help()
     sys.exit(0)
 
-
-
 # when analyzing a save game file, you can only use installed plugins
 # if the saved game is in the save game folder!
 
