@@ -24,24 +24,23 @@ C++ classes are exposed to Python pretty directly; for documentation, see
 ```
 >>> from endless_sky.parser import load_data
 >>> es = load_data(resources="/Users/tomb/endless-sky")
->>> es.Ship
-<class 'endless_sky.bindings.Ship'>
 >>> ships = es.GameData.Ships() # these objects correspond to 
 >>> ships.<tab><tab>
 ships.Find(  ships.Has(   ships.size(
->>> ships.Find("Shuttle")
-<endless_sky.bindings.Ship object at 0x1087391b0>
 >>> shuttle = ships.Find("Shuttle")
->>> shuttle.<tab><tab>
-shuttle.Attributes(      shuttle.Cost(            shuttle.FlightCheck(     shuttle.Place(
-shuttle.BaseAttributes(  shuttle.Description(     shuttle.ModelName(       shuttle.Recharge(
-shuttle.ChassisCost(     shuttle.FinishLoading(   shuttle.Name(            shuttle.SetName(
->>> shuttle.Attributes().Attributes()
+<endless_sky.bindings.Ship object at 0x1087391b0>
+>>> ship = es.Ship(shuttle)  # make a copy to avoid modifying the template
+>>> ship.<tab><tab>
+ship.Acceleration(          ship.Hull(                  ship.Mass(
+ship.AddCrew(               ship.HyperdriveFuel(        ship.MaxReverseVelocity(
+ship.Attributes(            ship.IdleHeat(              ship.MaxVelocity(
+ship.BaseAttributes(        ship.IsBoarding(            ship.MaximumHeat(
+... and many more, see header files for documentation
+>>> ship.Attributes().Attributes()
 <endless_sky.bindings.Dictionary object at 0x1087392f0>
->>> dict(shuttle.Attributes().Attributes())
+>>> dict(ship.Attributes().Attributes())
 {'bunks': 6.0, 'cargo space': 20.0, 'drag': 1.7000000000000002, ...}
->>> shuttle.SetName("Summer Breeze"...)
->>> x = ships.Find("Shuttle")
+>>> ship.SetName("Summer Breeze")
 >>> x.Name()
 'Summer Breeze'
 ```

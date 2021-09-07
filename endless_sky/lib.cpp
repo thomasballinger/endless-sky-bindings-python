@@ -147,22 +147,139 @@ PYBIND11_MODULE(bindings, m) {
     // source/Ship
     py::class_<Ship, std::shared_ptr<Ship>>(m, "Ship")
         .def(py::init<>())
+        .def(py::init<Ship const &>())
         .def(py::init<const DataNode&>())
+
+        .def("Load", &Ship::Load)
+        .def("FinishLoading", &Ship::FinishLoading)
+        .def("IsValid", &Ship::IsValid)
+//        .def("Save", &Ship::Save)
+
+        .def("UUID", &Ship::UUID)
+        .def("SetUUID", &Ship::SetUUID)
+
         .def("Name", &Ship::Name)
+
+        .def("SetModelName", &Ship::ModelName)
         .def("ModelName", &Ship::ModelName)
+        .def("PluralModelName", &Ship::ModelName)
+        .def("VariantName", &Ship::VariantName)
+        .def("Noun", &Ship::Noun)
         .def("Description", &Ship::Description)
+//        .def("Thumbnail", &Ship::Thumbnail)
         .def("Cost", &Ship::Cost)
         .def("ChassisCost", &Ship::ChassisCost)
-        .def("Attributes", &Ship::Attributes)
-        .def("BaseAttributes", &Ship::BaseAttributes)
-        .def("Recharge", &Ship::Recharge)
 
+        .def("FlightCheck", &Ship::FlightCheck)
+
+        .def("SetPosition", &Ship::SetPosition)
         .def("Place", &Ship::Place)
         .def("SetName", &Ship::SetName)
+//        .def("SetSystem", &Ship::SetSystem)
+//        .def("SetPlanet", &Ship::SetPlanet)
+//        .def("SetGovernment", &Ship::SetGovernment)
+//        .def("SetIsSpecial", &Ship::SetIsSpecial)
+        .def("IsSpecial", &Ship::IsSpecial)
 
-        .def("FinishLoading", &Ship::FinishLoading)
+        .def("SetIsYours", &Ship::SetIsYours)
+        .def("IsYours", &Ship::IsYours)
+        .def("SetIsParked", &Ship::SetIsParked)
+        .def("IsParked", &Ship::IsParked)
+        .def("SetDeployOrder", &Ship::SetDeployOrder)
+        .def("HasDeployOrder", &Ship::HasDeployOrder)
 
-        .def("FlightCheck", &Ship::FlightCheck);
+//        .def("Personality", &Ship::Personality)
+//        .def("SetPersonality", &Ship::SetPersonality)
+//        .def("SetHail", &Ship::SetPersonality)
+//        .def("GetHail", &Ship::GetHail)
+
+//        .def("SetCommands", &Ship::SetCommands)
+//        .def("Command", &Ship::Command)
+//        .def("Move", &Ship::Move)
+//        .def("DoGeneration", &Ship::DoGeneration)
+//        .def("Launch", &Ship::Launch)
+//        .def("Board", &Ship::Board)
+//        .def("Scan", &Ship::Scan)
+//        .def("CargoScanFraction", &Ship::CargoScanFraction)
+//        .def("OutfitScanFraction", &Ship::OutfitScanFraction)
+
+//        .def("Fire", &Ship::Fire)
+//        .def("FireAntiMissile", &Ship::FireAntiMissile)
+
+//        .def("GetSystem", &Ship::GetSystem)
+//        .def("GetPlanet", &Ship::GetPlanet)
+
+	.def("IsCapturable", &Ship::IsCapturable)
+	.def("IsTargetable", &Ship::IsTargetable)
+	.def("IsOverheated", &Ship::IsOverheated)
+	.def("IsDisabled", &Ship::IsDisabled)
+	.def("IsBoarding", &Ship::IsBoarding)
+	.def("IsLanding", &Ship::IsLanding)
+	.def("CanLand", &Ship::CanLand)
+	.def("CannotAct", &Ship::CannotAct)
+	.def("Cloaking", &Ship::Cloaking)
+	.def("IsEnteringHyperspace", &Ship::IsEnteringHyperspace)
+	.def("IsHyperspacing", &Ship::IsHyperspacing)
+	.def("IsUsingJumpDrive", &Ship::IsUsingJumpDrive)
+	.def("IsReadyToJump", &Ship::IsReadyToJump)
+	.def("CustomSwizzle", &Ship::CustomSwizzle)
+
+	.def("IsThrusting", &Ship::IsThrusting)
+	.def("IsReversing", &Ship::IsReversing)
+	.def("IsSteering", &Ship::IsSteering)
+	.def("SteeringDirection", &Ship::SteeringDirection)
+//	.def("EnginePoints", &Ship::EnginePoints)
+//	.def("ReverseEnginePoints", &Ship::ReverseEnginePoints)
+//	.def("SteeringEnginePoints", &Ship::SteeringEnginePoints)
+
+        .def("Disable", &Ship::Disable)
+        .def("Destroy", &Ship::Destroy)
+        .def("SelfDestruct", &Ship::SelfDestruct)
+        .def("Restore", &Ship::Restore)
+        .def("IsDestroyed", &Ship::IsDestroyed)
+        .def("Recharge", &Ship::Recharge)
+        .def("CanRefuel", &Ship::CanRefuel)
+        .def("TransferFuel", &Ship::TransferFuel)
+//        .def("WasCaptured", &Ship::WasCaptured)
+
+        .def("Shields", &Ship::Shields)
+        .def("Hull", &Ship::Hull)
+        .def("Fuel", &Ship::Fuel)
+        .def("Energy", &Ship::Energy)
+        .def("Heat", &Ship::Heat)
+        .def("Health", &Ship::Health)
+        .def("DisabledHull", &Ship::DisabledHull)
+        .def("JumpsRemaining", &Ship::JumpsRemaining)
+//        .def("JumpFuel", &Ship::JumpFuel)
+        .def("JumpRange", &Ship::JumpRange)
+        .def("HyperdriveFuel", &Ship::HyperdriveFuel)
+        .def("JumpDriveFuel", &Ship::JumpDriveFuel)
+        .def("JumpFuelMissing", &Ship::JumpFuelMissing)
+        .def("IdleHeat", &Ship::IdleHeat)
+        .def("HeatDissipation", &Ship::HeatDissipation)
+        .def("MaximumHeat", &Ship::MaximumHeat)
+        .def("CoolingEfficiency", &Ship::CoolingEfficiency)
+
+        .def("Crew", &Ship::Crew)
+        .def("RequiredCrew", &Ship::RequiredCrew)
+        .def("AddCrew", &Ship::AddCrew)
+        .def("CanBeFlagship", &Ship::CanBeFlagship)
+
+        .def("Mass", &Ship::Mass)
+        .def("TurnRate", &Ship::TurnRate)
+        .def("Acceleration", &Ship::Acceleration)
+        .def("MaxVelocity", &Ship::MaxVelocity)
+        .def("MaxReverseVelocity", &Ship::MaxReverseVelocity)
+
+        // there are about 40 more to fill in
+
+        .def("Attributes", &Ship::Attributes)
+        .def("BaseAttributes", &Ship::BaseAttributes)
+        .def("Recharge", &Ship::Recharge);
+
+
+        // Custom helpers could go here (in lowercase)
+
 
     // source/main
     m.def("main", [](std::vector<std::string> argVec) {
