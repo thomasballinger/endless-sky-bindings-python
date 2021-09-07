@@ -65,8 +65,6 @@ def test_GameData_simple(empty_resources_dir, empty_config_dir):
 
     (empty_resources_dir / "data" / "simple.txt").write_text('ship Canoe\n\tdescription "A boat."')
     es1 = make_es()
-    es2 = make_es()
-    assert es1 is not es2
 
     es1.GameData.BeginLoad([
         "progname",
@@ -75,8 +73,15 @@ def test_GameData_simple(empty_resources_dir, empty_config_dir):
     ])
     ships = es1.GameData.Ships();
     assert list(ships) == [("Canoe", ships.Find("Canoe"))]
+    id1 = id(es1)
+    del es1
+
+    es2 = make_es()
+    assert id1 != id(es2)
+    #assert es1 is not es2
 
     (empty_resources_dir / "data" / "simple.txt").write_text('ship Kayak\n\tdescription "A sleeker boat for only one."')
+    print(repr(open(str(empty_resources_dir / "data" / "simple.txt")).read()))
     es2.GameData.BeginLoad([
         "progname",
         "--resources", str(empty_resources_dir),
