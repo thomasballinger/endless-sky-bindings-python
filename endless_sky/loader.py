@@ -3,8 +3,10 @@ Context managers for creating loading filesystems for Endless Sky code.
 """
 
 import os
+import atexit
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from contextlib import contextmanager
 
 from . import bindings as es
 
@@ -20,13 +22,31 @@ class AlreadyLoadedError(Exception):
     """
 
 def load_string_data(s, *, resources=None, config=None):
+    """Load data and wait to clean up temporary directories until Python exits"""
+    context = LoadedStringData(s, resources=resources, config=config)
+    es = context.__enter__()
+    atexit.register(context.__exit__)
+    return es
+
+def load_data(path=None, *, resources=None, config=None):
+    """Load data and wait to clean up temporary directories until Python exits"""
+    context = LoadedData(path, resources=resources, config=config)
+    es = context.__enter__()
+    atexit.register(context.__exit__)
+    return es
+
+@contextmanager
+def LoadedStringData(s, *, resources=None, config=None):
     with TemporaryDirectory() as tmpdir:
         tmpfile = os.path.join(tmpdir, 'mydata.txt')
         with open(tmpfile, 'w') as f:
             f.write(s)
-        return load_data(tmpfile, resources=resources, config=config)
+        yield load_data(tmpfile, resources=resources, config=config)
 
-def load_data(path=None, *, resources=None, config=None):
+#TODO something special with the errors.txt file in config - offer to send to stderr?
+
+@contextmanager
+def LoadedData(path=None, *, resources=None, config=None):
     """
     Load a file or folder of files, data files in resources, global
     plugins (the plugins folder in resources), and local plugins
@@ -82,7 +102,7 @@ def load_data(path=None, *, resources=None, config=None):
                 else:
                     raise
             LOADED = True
-            return es
+            yield es
 
 class ResourcesDir:
     def __init__(self, path=None):
