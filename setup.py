@@ -191,11 +191,14 @@ pybind_extension = Pybind11Extension("endless_sky.bindings", [
             ] if platform.system() == 'Linux' else [
                 './dev64/include'
             ] if platform.system() == 'Windows' else crash())) + [
+        # for normal builds
         os.path.join(path_to_build_folder(), 'endless-sky/tests/include'),
+        # for source (AKA devel AKA -e) builds
+        os.path.join('endless_sky/endless-sky/tests/include'),
 
         # These two are almost certainly not needed
         os.path.join(path_to_build_folder(), 'endless-sky/source'),
-        os.path.join(path_to_build_folder(), 'endless-sky/source/text'),
+        os.path.join('endless_sky/endless-sky/source/text'),
     ]),
     extra_compile_args=extra_compile_args,
     extra_link_args=extra_link_args,
