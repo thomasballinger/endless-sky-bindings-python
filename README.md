@@ -19,12 +19,13 @@ $ python -m endless_sky parse --resources ~/endless-sky myData.txt# only parses 
 ```
 >>> from endless_sky.parser import parse_ships
 >>> from pprint import pprint
->>> ships = parse_ships(resources='/Users/tomb/endless-sky/']
+>>> ships = parse_ships(resources='/Users/tomb/endless-sky/')
 >>> pprint(ships['Shuttle'])
 {'bunks': 6.0,
  'cargo space': 20.0,
  'drag': 1.7000000000000002,
  ...
+>>> from endless_sky import bindings
 ```
 
 Warning: endless_sky.bindings contains non-resetable singletons like GameData, so once you load some data (say with a parser) you can't unload that data without exiting Python.

@@ -18,9 +18,9 @@ subparsers = parser.add_subparsers(title='subcommands',
 
 parse_parser = subparsers.add_parser('parse')
 parse_parser.add_argument("file")
-parse_parser.add_argument("--format", default='pretty', help='pretty (default), json, or dict')
 parse_parser.add_argument("--resources", required=True)
 parse_parser.add_argument("--config", required=False, default=None)
+parse_parser.add_argument("--format", default='pretty', help='pretty (default), json, or dict')
 
 subparsers.add_parser('version')
 

@@ -3,27 +3,39 @@ Context managers for creating loading filesystems for Endless Sky code.
 """
 
 import os
-from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from . import bindings as es
 
-@contextmanager
-def LoadedStringData(s, *, resources_path=None, config_path=None):
+LOADED = False
+
+class AlreadyLoadedError(Exception):
+    """
+    Endless Sky resources and plugins can only be loaded once.
+    Restart Python to load a new set of plugins and resources.
+
+    Endless Sky GameData is a singleton, and the bad kind. It has global
+    (static class members in C++) state that can't even properly be reset.
+    """
+
+def LoadStringData(s, *, resources_path=None, config_path=None):
     with TemporaryDirectory() as tmpdir:
         tmpfile = os.path.join(tmpdir, 'mydata.txt')
         with open(tmpfile, 'w') as f:
             f.write(s)
-        with LoadedData(tmpfile, resources_path=resources_path, config_path=config_path) as es:
-            yield es
+        return LoadData(tmpfile, resources_path=resources_path, config_path=config_path)
 
-@contextmanager
-def LoadedData(path, *, resources_path=None, config_path=None):
+def LoadData(path=None, *, resources_path=None, config_path=None):
     """
-    Load a file or folder of files, along with all data files in
-    resources, global plugins (the plugins folder in resources), and
-    local plugins (the plugins folder in config).
+    Load a file or folder of files, data files in resources, global
+    plugins (the plugins folder in resources), and local plugins
+    (the plugins folder in config).
+
+    All three of path, resources_path, and config_path my be omitted.
+
+    Returns a reference to the endless_sky.bindings module, but you can
+    ignore this return value and import it directly instead if you want.
 
     Unless the files are already in the config path specified, the file
     or directory is temporarily symlinked in it with the name zzzTemp.
@@ -32,13 +44,15 @@ def LoadedData(path, *, resources_path=None, config_path=None):
     resources_path defaults to a temporary, empty (but valid) resources directory.
     config_path defaults to a temporary, tempty (but valid) config directory.
     """
+    global LOADED
 
-    if not os.path.exists(path):
+    if LOADED:
+        raise AlreadyLoadedError("Data already loaded, restart Python to load again.")
+
+    if path and not os.path.exists(path):
         raise ValueError("Can't find the path "+repr(path))
 
-    if resources_path is None:
-        raise ValueError("not specifying a resources path is not yet tested")
-    elif not os.path.exists(resources_path):
+    if resources_path and not os.path.exists(resources_path):
         raise ValueError("Nonexistent resource path "+repr(resources_path))
 
     if config_path is None:
@@ -54,14 +68,24 @@ def LoadedData(path, *, resources_path=None, config_path=None):
 
     with ResourcesDir(resources_path) as resources:
         with ConfigDir(None) as config:
-            config.link_plugin(path)
-            es.GameData.BeginLoad(['foo', '--resources', resources.name, '--config', config.name])
-            yield es
+            if path:
+                config.link_plugin(path)
+            args = ['foo', '--resources', resources.name, '--config', config.name]
+            try:
+                es.GameData.BeginLoad(args)
+            except RuntimeError as e:
+                if 'Unable to find the resource directories' in str(e):
+                    print(args)
+                    print(resources.name, os.listdir(resources.name))
+                    print(config.name, os.listdir(config.name))
+                    raise
+                else:
+                    raise
+            LOADED = True
+            return es
 
 class ResourcesDir:
     def __init__(self, path=None):
-        if path is None:
-            raise ValueError("TempResourcesDir without an existing path is not tested")
         self.path = path
 
     @property
@@ -80,7 +104,7 @@ class ResourcesDir:
         self.data_path = os.path.join(path, 'data')
         self.images_path = os.path.join(path, 'images')
         self.sounds_path = os.path.join(path, 'sounds')
-        self.credits_path = os.path.join(path, 'credits')
+        self.credits_path = os.path.join(path, 'credits.txt')
 
         if self.temp:
             os.mkdir(self.data_path)
