@@ -139,12 +139,12 @@ class ConfigDir:
         os.mkdir(self.temp_plugin_path)
         self.to_remove.append(self.temp_plugin_path)
         if os.path.isdir(path):
-            os.symlink(path, self.temp_plugin_data_path)
+            os.symlink(os.path.abspath(path), self.temp_plugin_data_path, target_is_directory=True)
             self.to_remove.append(self.temp_plugin_data_path)
         else:
             os.mkdir(self.temp_plugin_data_path)
             self.to_remove.append(self.temp_plugin_data_path)
             symlink_path = os.path.join(self.temp_plugin_data_path, os.path.basename(path))
-            os.symlink(path, symlink_path)
+            os.symlink(os.path.abspath(path), symlink_path, target_is_directory=False)
             self.to_remove.append(symlink_path)
         self.plugin_linked = True

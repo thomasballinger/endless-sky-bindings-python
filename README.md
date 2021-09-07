@@ -6,8 +6,13 @@ This library does not include the Endless Sky data, so you'll need to find that 
 
 ## Command line use
 
-% echo -e 'ship Rocket\n\tattributes\n\t\tcategory "Transport"\n' > myData.txt
-$ python -m endless_sky parse myData.txt  # only parses ships atm
+```
+% echo -e 'ship Rocket\n\tattributes\n\t\tdrag 10' > myData.txt
+$ python -m endless_sky parse --resources ~/endless-sky myData.txt# only parses ships atm
+...
+ 'Rocket': {'drag': 10.0, 'gun ports': 0.0, 'turret mounts': 0.0},
+...
+```
 
 ## Library
 
