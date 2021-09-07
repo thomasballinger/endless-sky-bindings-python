@@ -13,7 +13,7 @@ def parse_ships(path, format='dict', *, resources_path=None, config_path=None):
         ships = es.GameData.Ships()
         for name, ship in ships:
             ship.FinishLoading(True)
-        all_ship_data = {name: dict(ship.Attributes().Attributes()) for name, ship in dict(ships)}
+        all_ship_data = {name: dict(ship.Attributes().Attributes()) for name, ship in list(ships)}
         if format == 'json':
             return json.dumps(all_ship_data)
         elif format == 'dict':

@@ -22,6 +22,8 @@ $ python -m endless_sky parse myData.txt  # only parses ships atm
  ...
 ```
 
+Warning: endless_sky.bindings contains non-resetable singletons like GameData, so once you load some data (say, with a parser) you can't unload that data without exiting Python.
+
 # Installation
 
 ## Mac

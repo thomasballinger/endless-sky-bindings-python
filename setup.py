@@ -18,15 +18,16 @@ __version__ = re.search(
 ).group(1)
 
 endless_sky_version = "2fd9f8883ccc4bcfcd62e9aa12194f0941572543"
+submodule_version = None
 try:
     submodule_version = open('.git/modules/endless_sky/endless-sky/HEAD').read().strip()
 except FileNotFoundError:
-    pass
+    print('Skipping submodule version == endless_sky_version check because no git repo found')
 if submodule_version and submodule_version != endless_sky_version:
     msg = "endless_sky_version "+endless_sky_version+" does not match submodule "+submodule_version
     warnings.warn(msg)
     if (os.environ.get('GITHUB_REPOSITORY') or '').endswith("endless-sky-bindings-python"):
-        # Prevent doing a release without updating this
+        # todo: prevent doing a release without updating this? currently doesn't run
         raise ValueError(msg)
 
 ParallelCompile(needs_recompile=naive_recompile).install()

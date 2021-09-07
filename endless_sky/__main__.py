@@ -20,6 +20,7 @@ parse_parser = subparsers.add_parser('parse')
 parse_parser.add_argument("file")
 parse_parser.add_argument("--format", default='pretty', help='pretty (default), json, or dict')
 parse_parser.add_argument("--resources", required=True)
+parse_parser.add_argument("--config", required=False, default=None)
 
 subparsers.add_parser('version')
 
@@ -48,5 +49,9 @@ if args.subcommand == 'parse':
     if not os.path.exists(args.file):
         print("that file does not exist!")
         exit(1)
-    output = parse_ships(args.file, format=args.format)
+    output = parse_ships(
+            args.file,
+            format=args.format,
+            resources_path=args.resources,
+            config_path=args.config)
     print(output)

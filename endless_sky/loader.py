@@ -1,9 +1,13 @@
+"""
+Context managers for creating loading filesystems for Endless Sky code.
+"""
+
 import os
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from .module_instance_hack import make_es
+from . import bindings as es
 
 @contextmanager
 def LoadedStringData(s, *, resources_path=None, config_path=None):
@@ -33,7 +37,7 @@ def LoadedData(path, *, resources_path=None, config_path=None):
         raise ValueError("Can't find the path "+repr(path))
 
     if resources_path is None:
-        raise ValueError("not specifying a config path is not yet tested")
+        raise ValueError("not specifying a resources path is not yet tested")
     elif not os.path.exists(resources_path):
         raise ValueError("Nonexistent resource path "+repr(resources_path))
 
@@ -51,7 +55,6 @@ def LoadedData(path, *, resources_path=None, config_path=None):
     with ResourcesDir(resources_path) as resources:
         with ConfigDir(None) as config:
             config.link_plugin(path)
-            es = make_es()
             es.GameData.BeginLoad(['foo', '--resources', resources.name, '--config', config.name])
             yield es
 
@@ -114,6 +117,7 @@ class ConfigDir:
         self.saves_path = os.path.join(self.tempdir.name, 'saves')
         self.plugins_path = os.path.join(self.tempdir.name, 'plugins')
         self.temp_plugin_path = os.path.join(self.plugins_path, 'zzzTemp')
+        self.temp_plugin_data_path = os.path.join(self.plugins_path, 'zzzTemp', 'data')
         os.mkdir(self.saves_path)
         os.mkdir(self.plugins_path)
         return self
@@ -122,7 +126,7 @@ class ConfigDir:
         if self.temp:
             self.tempdir.cleanup()
         else:
-            for path in self.to_remove:
+            for path in reversed(self.to_remove):
                 if os.path.isdir(path):
                     os.rmdir(path)
                 else:
@@ -132,13 +136,15 @@ class ConfigDir:
         """Symlink a path or create a folder and a symlink in that folder."""
         if self.plugin_linked:
             raise ValueError("Already linked a plugin")
+        os.mkdir(self.temp_plugin_path)
+        self.to_remove.append(self.temp_plugin_path)
         if os.path.isdir(path):
-            os.symlink(path, self.temp_plugin_path)
-            self.to_remove.append(self.temp_plugin_path)
+            os.symlink(path, self.temp_plugin_data_path)
+            self.to_remove.append(self.temp_plugin_data_path)
         else:
-            os.mkdir(self.temp_plugin_path)
-            symlink_path = os.path.join(self.temp_plugin_path, os.path.basename(path))
+            os.mkdir(self.temp_plugin_data_path)
+            self.to_remove.append(self.temp_plugin_data_path)
+            symlink_path = os.path.join(self.temp_plugin_data_path, os.path.basename(path))
             os.symlink(path, symlink_path)
             self.to_remove.append(symlink_path)
-            self.to_remove.append(self.temp_plugin_path)
         self.plugin_linked = True
