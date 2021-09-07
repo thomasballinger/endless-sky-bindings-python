@@ -9,6 +9,8 @@
 // some specific "opaque" types for which e.g. .append() actually updates both sides
 //#include <pybind11/stl_bind.h>
 
+int main(int argc, char *argv[]);
+
 #include "endless-sky/source/Angle.h"
 #include "endless-sky/source/DataNode.h"
 #include "endless-sky/source/GameData.h"
@@ -161,6 +163,18 @@ PYBIND11_MODULE(bindings, m) {
         .def("FinishLoading", &Ship::FinishLoading)
 
         .def("FlightCheck", &Ship::FlightCheck);
+
+    // source/main
+    m.def("main", [](std::vector<std::string> argVec) {
+        // pybind11 doesn't do double pointers, so convert
+        std::vector<char *> cstrs;
+        cstrs.reserve(argVec.size() + 1);
+        for (auto &s : argVec) {
+            cstrs.push_back(const_cast<char *>(s.c_str()));
+        }
+        cstrs.push_back(NULL);
+        return main(argVec.size(), cstrs.data());
+    });
 
 
 #ifdef VERSION_INFO
