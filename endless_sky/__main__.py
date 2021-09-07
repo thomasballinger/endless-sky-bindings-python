@@ -16,11 +16,14 @@ subparsers = parser.add_subparsers(title='subcommands',
                                    help='additional help',
                                    dest="subcommand")
 
-parse_parser = subparsers.add_parser('parse')
+parse_parser = subparsers.add_parser('parse', description='Parse a set of data files')
 parse_parser.add_argument("file")
 parse_parser.add_argument("--resources", required=True)
 parse_parser.add_argument("--config", required=False, default=None)
 parse_parser.add_argument("--format", default='pretty', help='pretty (default), json, or dict')
+
+run_parser = subparsers.add_parser('run', description='Run endless sky (this pip-installed one) passing arguments through')
+run_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
 subparsers.add_parser('version')
 
@@ -53,3 +56,6 @@ if args.subcommand == 'parse':
             resources=args.resources,
             config=args.config)
     print(output)
+elif args.subcommand == 'run':
+    from endless_sky import bindings
+    bindings.main(['progname'] + args.rest)

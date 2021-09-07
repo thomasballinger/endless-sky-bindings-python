@@ -48,10 +48,9 @@ shuttle.ChassisCost(     shuttle.FinishLoading(   shuttle.Name(            shutt
 Warning: endless_sky.bindings contains non-resetable singletons like GameData, so once you load some data (directly with GameData.BeginLoad(), with a load_data, or indirectly with a parser function) you can't unload that data without exiting Python.
 
 ## Run the game
-```
->>> from endless_sky import bindings
->>> bindings.main(['asdf', '--resources', '/Users/tomb/endless-sky'])
 
+```
+python -m endless_sky run -- --resources /Users/tomb/endless-sky
 ```
 
 # Notes
