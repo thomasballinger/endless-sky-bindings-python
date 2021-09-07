@@ -15,6 +15,7 @@ int maine(int argc, char *argv[]);
 #include "endless-sky/source/DataNode.h"
 #include "endless-sky/source/GameData.h"
 #include "endless-sky/source/Outfit.h"
+#include "endless-sky/source/PlayerInfo.h"
 #include "endless-sky/source/Point.h"
 #include "endless-sky/source/Random.h"
 #include "endless-sky/source/Set.h"
@@ -128,6 +129,11 @@ PYBIND11_MODULE(bindings, m) {
         .def("Load", &Outfit::Load)
         .def("Name", &Outfit::Name)
         .def("Attributes", &Outfit::Attributes);
+
+    // source/PlayerInfo
+    py::class_<PlayerInfo>(m, "PlayerInfo")
+        .def("Ships", &PlayerInfo::Ships)
+        .def_static("CurrentPlayer", &PlayerInfo::CurrentPlayer);
 
     // source/Point
     py::class_<Point>(m, "Point")
@@ -293,6 +299,19 @@ PYBIND11_MODULE(bindings, m) {
         return maine(argVec.size(), cstrs.data());
     });
 
+    m.def("main_no_GIL", [](std::vector<std::string> argVec) {
+        // pybind11 doesn't do double pointers, so convert
+        std::vector<char *> cstrs;
+        cstrs.reserve(argVec.size() + 1);
+        for (auto &s : argVec) {
+            cstrs.push_back(const_cast<char *>(s.c_str()));
+        }
+        cstrs.push_back(NULL);
+        py::gil_scoped_release release;
+        auto ret = maine(argVec.size(), cstrs.data());
+        py::gil_scoped_acquire acquire;
+        return ret;
+    });
 
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
