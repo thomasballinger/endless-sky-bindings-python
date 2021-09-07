@@ -111,7 +111,7 @@ jobs:
       run: pytest
 
     - name: Upload wheels
-      if: ${{ ! (matrix.os == 'macos-latest' && matrix.include-libraries == 'system') }}
+      if: ${{ ! ((matrix.os == 'macos-latest' && matrix.include-libraries == 'system') || matrix.os == 'ubuntu-latest') }}
       uses: actions/upload-artifact@v2
       with:
         path: dist/*.whl
