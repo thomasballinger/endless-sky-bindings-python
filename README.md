@@ -27,7 +27,7 @@ $ python -m endless_sky parse --resources ~/endless-sky myData.txt# only parses 
  ...
 ```
 
-Warning: endless_sky.bindings contains non-resetable singletons like GameData, so once you load some data (say, with a parser) you can't unload that data without exiting Python.
+Warning: endless_sky.bindings contains non-resetable singletons like GameData, so once you load some data (say with a parser) you can't unload that data without exiting Python.
 
 # Installation
 
