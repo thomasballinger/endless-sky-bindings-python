@@ -58,7 +58,7 @@ index f7254903..2e878e02 100644
  		
  		// MAYBE: Reading in lots of images in a 32-bit process gets really hairy using the standard approach due to
 diff --git a/source/PlayerInfo.cpp b/source/PlayerInfo.cpp
-index eed3493d..4fa84e06 100644
+index eed3493d..7e526283 100644
 --- a/source/PlayerInfo.cpp
 +++ b/source/PlayerInfo.cpp
 @@ -48,7 +48,9 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
@@ -72,30 +72,44 @@ index eed3493d..4fa84e06 100644
  
  // Completely clear all loaded information, to prepare for loading a file or
  // creating a new pilot.
-@@ -330,7 +332,7 @@ bool PlayerInfo::LoadRecent()
- 
- 
- // Save this player. The file name is based on the player's name.
--void PlayerInfo::Save() const
-+void PlayerInfo::Save()
- {
- 	// Don't save dead players or players that are not fully created.
- 	if(!CanBeSaved())
-@@ -359,9 +361,11 @@ void PlayerInfo::Save() const
- 	}
- 		
- 	Save(filePath);
--}
- 
+@@ -305,6 +307,8 @@ void PlayerInfo::Load(const string &path)
+ 	// will count as non-depreciated.
+ 	if(!depreciation.IsLoaded())
+ 		depreciation.Init(ships, date.DaysSinceEpoch());
++	
 +	currentPlayer = this;
-+}
+ }
  
+ 
+@@ -361,7 +365,7 @@ void PlayerInfo::Save() const
+ 	Save(filePath);
+ }
+ 
+-
 +PlayerInfo *PlayerInfo::CurrentPlayer() { return currentPlayer; }
  
  // Get the base file name for the player, without the ".txt" extension. This
  // will usually be "<first> <last>", but may be different if multiple players
+@@ -1113,6 +1117,8 @@ int64_t PlayerInfo::GetBasis(const string &commodity, int tons) const
+ // ships, check for mission completion, and apply fines for contraband.
+ void PlayerInfo::Land(UI *ui)
+ {
++	currentPlayer = this;
++	
+ 	// This can only be done while landed.
+ 	if(!system || !planet)
+ 		return;
+@@ -1235,6 +1241,8 @@ void PlayerInfo::Land(UI *ui)
+ // which case a message will be returned.
+ bool PlayerInfo::TakeOff(UI *ui)
+ {
++	currentPlayer = this;
++	
+ 	// This can only be done while landed.
+ 	if(!system || !planet)
+ 		return false;
 diff --git a/source/PlayerInfo.h b/source/PlayerInfo.h
-index 7b8e914d..ae63b9b9 100644
+index 7b8e914d..cfa22450 100644
 --- a/source/PlayerInfo.h
 +++ b/source/PlayerInfo.h
 @@ -59,6 +59,8 @@ public:
@@ -107,15 +121,6 @@ index 7b8e914d..ae63b9b9 100644
  	
  	// Reset the player to an "empty" state, i.e. no player is loaded.
  	void Clear();
-@@ -72,7 +74,7 @@ public:
- 	// Load the most recently saved player. If no save could be loaded, returns false.
- 	bool LoadRecent();
- 	// Save this player (using the Identifier() as the file name).
--	void Save() const;
-+	void Save();
- 	
- 	// Get the root filename used for this player's saved game files. (If there
- 	// are multiple pilots with the same name it may have a digit appended.)
 diff --git a/source/SpriteQueue.cpp b/source/SpriteQueue.cpp
 index 1149c668..0827ddf0 100644
 --- a/source/SpriteQueue.cpp
