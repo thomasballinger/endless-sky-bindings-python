@@ -8,11 +8,20 @@ This library does not include the Endless Sky data, so you'll need to find that 
 
 ```
 % echo -e 'ship Rocket\n\tattributes\n\t\tdrag 10' > myData.txt
-$ python -m endless_sky parse --resources ~/endless-sky myData.txt  # only prints ships atm
-...
- 'Rocket': {'drag': 10.0, 'gun ports': 0.0, 'turret mounts': 0.0},
-...
+$ python -m endless_sky parse --empty-resources myData.txt  # only prints ships atm
+'Rocket': {'drag': 10.0, 'gun ports': 0.0, 'turret mounts': 0.0},
 $ python -m endless_sky run -- --resources ~/endless-sky
+{'Aerie': {'bunks': 28.0,
+           'capture attack': 1.8000000000000003,
+           'capture defense': 2.4000000000000004,
+           'cargo space': 50.0,
+...
+$ # In order to parse a file with vanilla outfits defined, use --resources
+$ python -m endless_sky parse --resources ~/endless-sky myData.txt
+{'Aerie': {'bunks': 28.0,
+...
+<'Rocket' is somewhere in here>
+...
 ```
 
 ## Library

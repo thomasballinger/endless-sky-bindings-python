@@ -25,14 +25,14 @@ def load_string_data(s, *, resources=None, config=None):
     """Load data and wait to clean up temporary directories until Python exits"""
     context = LoadedStringData(s, resources=resources, config=config)
     es = context.__enter__()
-    atexit.register(context.__exit__)
+    atexit.register(lambda: context.__exit__(None, None, None))
     return es
 
 def load_data(path=None, *, resources=None, config=None):
     """Load data and wait to clean up temporary directories until Python exits"""
     context = LoadedData(path, resources=resources, config=config)
     es = context.__enter__()
-    atexit.register(context.__exit__)
+    atexit.register(lambda: context.__exit__(None, None, None))
     return es
 
 @contextmanager
@@ -44,6 +44,34 @@ def LoadedStringData(s, *, resources=None, config=None):
         yield load_data(tmpfile, resources=resources, config=config)
 
 #TODO something special with the errors.txt file in config - offer to send to stderr?
+
+@contextmanager
+def FilesystemPrepared(path=None, *, resources=None, config=None):
+    """
+    Ready the filesystem with path, resources, and config.
+    """
+    if path and not os.path.exists(path):
+        raise ValueError("Can't find the path "+repr(path))
+
+    if resources and not os.path.exists(resources):
+        raise ValueError("Nonexistent resource path "+repr(resources))
+
+    if config is None:
+        pass
+    else:
+        raise ValueError("specifying a config path is not yet tested")
+        if os.path.exists(config):
+            raise ValueError("Nonexistent resource path "+repr(resources))
+
+    # TODO check that the path is not in the resources/data, images, or sounds
+    # TODO check that path is not in the specified global plugins folder
+    # TODO check if the path is not in the specified local plugins folder
+
+    with ResourcesDir(resources) as r:
+        with ConfigDir(None) as c:
+            if path:
+                c.link_plugin(path)
+            yield (r.name, c.name)
 
 @contextmanager
 def LoadedData(path=None, *, resources=None, config=None):
@@ -69,40 +97,20 @@ def LoadedData(path=None, *, resources=None, config=None):
     if LOADED:
         raise AlreadyLoadedError("Data already loaded, restart Python to load again.")
 
-    if path and not os.path.exists(path):
-        raise ValueError("Can't find the path "+repr(path))
-
-    if resources and not os.path.exists(resources):
-        raise ValueError("Nonexistent resource path "+repr(resources))
-
-    if config is None:
-        pass
-    else:
-        raise ValueError("specifying a config path is not yet tested")
-        if os.path.exists(config):
-            raise ValueError("Nonexistent resource path "+repr(resources))
-
-    # TODO check that the path is not in the resources/data, images, or sounds
-    # TODO check that path is not in the specified global plugins folder
-    # TODO check if the path is not in the specified local plugins folder
-
-    with ResourcesDir(resources) as r:
-        with ConfigDir(None) as c:
-            if path:
-                c.link_plugin(path)
-            args = ['foo', '--resources', r.name, '--config', c.name]
-            try:
-                es.GameData.BeginLoad(args)
-            except RuntimeError as e:
-                if 'Unable to find the resource directories' in str(e):
-                    print(args)
-                    print(r.name, os.listdir(r.name))
-                    print(c.name, os.listdir(c.name))
-                    raise
-                else:
-                    raise
-            LOADED = True
-            yield es
+    with FilesystemPrepared(path=path, resources=resources, config=config) as (resources_path, config_path):
+        args = ['foo', '--resources', resources_path, '--config', config_path]
+        try:
+            es.GameData.BeginLoad(args)
+        except RuntimeError as e:
+            if 'Unable to find the resource directories' in str(e):
+                print(args)
+                print(r.name, os.listdir(r.name))
+                print(c.name, os.listdir(c.name))
+                raise
+            else:
+                raise
+        LOADED = True
+        yield es
 
 class ResourcesDir:
     def __init__(self, path=None):

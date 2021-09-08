@@ -312,7 +312,7 @@ index e8005f21..f69bf719 100644
  	
  	// These sprites must be unloaded to reclaim GPU memory.
 diff --git a/source/main.cpp b/source/main.cpp
-index ddd2db4c..7c4a2f55 100644
+index ddd2db4c..ced1816e 100644
 --- a/source/main.cpp
 +++ b/source/main.cpp
 @@ -61,7 +61,7 @@ void InitConsole();
@@ -324,7 +324,36 @@ index ddd2db4c..7c4a2f55 100644
  {
  	// Handle command-line arguments
  #ifdef _WIN32
-@@ -159,6 +159,10 @@ int main(int argc, char *argv[])
+@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
+ 		InitConsole();
+ #endif
+ 	Conversation conversation;
++	bool noCatch = false;
+ 	bool debugMode = false;
+ 	bool loadOnly = false;
+ 	string testToRunName = "";
+@@ -92,6 +93,8 @@ int main(int argc, char *argv[])
+ 			debugMode = true;
+ 		else if(arg == "-p" || arg == "--parse-save")
+ 			loadOnly = true;
++		else if(arg == "--no-catch")
++			noCatch = true;
+ 		else if(arg == "--test" && *++it)
+ 			testToRunName = *it;
+ 	}
+@@ -142,8 +145,10 @@ int main(int argc, char *argv[])
+ 	catch(const runtime_error &error)
+ 	{
+ 		Audio::Quit();
+-		bool doPopUp = testToRunName.empty();
++		bool doPopUp = testToRunName.empty() && !noCatch;
+ 		GameWindow::ExitWithError(error.what(), doPopUp);
++		if (noCatch)
++			throw error;
+ 		return 1;
+ 	}
+ 	
+@@ -159,6 +164,10 @@ int main(int argc, char *argv[])
  	return 0;
  }
  
