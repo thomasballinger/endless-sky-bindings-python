@@ -19,6 +19,7 @@ def test_DataNode():
     assert d.Token(0) == "ship"
     assert d.Token(1) == "hello"
     assert [x.Token(0) for x in list(d)] == ["key"]
+    assert d.Tokens() == ["ship", "hello"]
 
 def test_Dictionary():
     d = m.Dictionary()
