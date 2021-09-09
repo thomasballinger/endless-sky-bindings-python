@@ -108,7 +108,7 @@ PYBIND11_MODULE(bindings, m) {
     py::class_<DataNode>(m, "DataNode")
         .def(py::init<DataNode*>())
         .def("Size", &DataNode::Size)
-        .def("Tokens", &DataNode::Token)
+        .def("Tokens", &DataNode::Tokens)
         .def("Token", &DataNode::Token)
         .def("Value", py::overload_cast<int>(&DataNode::Value, py::const_))
         .def("IsNumber", py::overload_cast<int>(&DataNode::IsNumber, py::const_))
