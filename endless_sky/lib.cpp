@@ -11,6 +11,7 @@
 
 int maine(int argc, char *argv[]);
 
+#include <SDL2/SDL.h>
 #include "endless-sky/source/Angle.h"
 #include "endless-sky/source/DataNode.h"
 #include "endless-sky/source/GameData.h"
@@ -67,6 +68,15 @@ PYBIND11_MODULE(bindings, m) {
         Subtract two numbers
         Some other explanation about the subtract function.
     )pbdoc");
+
+    m.def("saves_directory", []() {
+        // memory leak because we dont' SDL_free() this str
+        return SDL_GetPrefPath("endless-sky", "saves");
+    });
+    m.def("plugins_directory", []() {
+        // memory leak because we dont' SDL_free() this str
+        return SDL_GetPrefPath("endless-sky", "plugins");
+    });
 
     // test/src/helpers/datanode-factory
     m.def("AsDataNode", &AsDataNode);
