@@ -3,10 +3,42 @@ import json
 import os
 import sys
 import logging
+from pathlib import Path
 
 import endless_sky
+import endless_sky.bindings as es
 from endless_sky.parser import parse_ships
 from endless_sky.console import run_with_console
+
+class StoreDefaultConfig(argparse.Action):
+    def __init__(self, option_strings, dest, nargs=None, **kwargs):
+        if nargs is not None:
+            raise ValueError("nargs not allowed")
+        super().__init__(option_strings, dest, nargs=0, **kwargs)
+    def __call__(self, parser, namespace, values, option_string=None):
+        saves = es.saves_directory()  # creating saves directory as a side effect
+        path = str(Path(saves).parent)
+        setattr(namespace, self.dest, path)
+
+def exists(path):
+    if path is None:
+        return path
+    if not os.path.exists(path):
+        raise ValueError("path %r does not exist" % path)
+
+def add_file_resources_and_config(parser):
+    """Require some resources arg, default config to None, and default file to None."""
+    parser.add_argument("file", nargs="?", type=exists, help="data file or directory of data files")
+
+    resources_group = parser.add_mutually_exclusive_group(required=True)
+    resources_group.add_argument('--resources')
+    resources_group.add_argument('--empty-resources', action='store_const', const=None, dest='resources')
+
+    config_group = parser.add_mutually_exclusive_group(required=False)
+    # empty config is the default
+    config_group.add_argument("--config", default=None)
+    config_group.add_argument("--empty-config", action='store_const', const=None, dest='config')
+    config_group.add_argument("--default-config", action=StoreDefaultConfig, dest='config')
 
 parser = argparse.ArgumentParser(
     prog='python -m mymodule',
@@ -18,14 +50,6 @@ subparsers = parser.add_subparsers(title='subcommands',
                                    description='valid subcommands',
                                    help='additional help',
                                    dest="subcommand")
-
-def add_file_resources_and_config(parser):
-    """Require some resources arg, default config to None, and default file to None."""
-    parser.add_argument("file", nargs="?", help="data file or directory of data files")
-    resources_group = parser.add_mutually_exclusive_group(required=True)
-    resources_group.add_argument('--resources')
-    resources_group.add_argument('--empty-resources', action='store_const', const=None)
-    parser.add_argument("--config", required=False, default=None)
 
 load_parser = subparsers.add_parser('load', description='Parse a set of data files')
 add_file_resources_and_config(load_parser)

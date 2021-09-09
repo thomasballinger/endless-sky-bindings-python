@@ -60,7 +60,7 @@ def run_with_console(path=None, *, resources=None, config=None, extra_args=None)
         try:
             es.main_no_GIL(args)
         except RuntimeError as e:
-            logging.warning('caught exception thrown while running main():', e)
+            logging.warning('caught exception (in C++ code) while running main(): %s', e)
         finally:
             game_has_quit = True
             if (repl_is_running):

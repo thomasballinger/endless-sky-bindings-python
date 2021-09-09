@@ -58,7 +58,7 @@ def FilesystemPrepared(path=None, *, resources=None, config=None):
         raise ValueError("Nonexistent resource path "+repr(resources))
 
     if config is not None and not os.path.exists(config):
-            raise ValueError("Nonexistent resource path "+repr(resources))
+        raise ValueError("Nonexistent config path "+repr(config))
 
     # TODO check that the path is not in the resources/data, images, or sounds
     # TODO check that path is not in the specified global plugins folder
