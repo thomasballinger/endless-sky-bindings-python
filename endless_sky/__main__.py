@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import sys
+import logging
 
 import endless_sky
 from endless_sky.parser import parse_ships
@@ -12,7 +13,7 @@ parser = argparse.ArgumentParser(
     description="Endless Sky utilities powered by the actual Endless Sky codebase."
 )
 parser.add_argument('--version', action='store_true')
-parser.add_argument('--verbose', action='store_true')
+parser.add_argument('--verbose', '-v', action='count', default=0)
 subparsers = parser.add_subparsers(title='subcommands',
                                    description='valid subcommands',
                                    help='additional help',
@@ -37,8 +38,11 @@ run_parser.add_argument('rest', nargs=argparse.REMAINDER, help='extra command li
 subparsers.add_parser('version')
 
 args = parser.parse_args()
-if args.verbose:
-    print(args)
+
+# Default logging level is WARN, -v kicks it to INFO, -vv to DEBUG
+level = [logging.WARN, logging.INFO, logging.DEBUG][args.verbose]
+logging.basicConfig(stream=sys.stdout, level=level)
+
 if args.version or args.subcommand == "version":
     print(endless_sky.version)
     sys.exit(0)
@@ -62,11 +66,11 @@ elif not args.version and not args.subcommand:
 if args.subcommand == 'load':
 # TODO use add_mutually_exclusive_group() for this instead
     if args.file is not None and not os.path.exists(args.file):
-        print("that file does not exist!")
+        logging.error("that file does not exist!")
         exit(1)
     if args.file:
-        print("parsing custom file or directory:", args.file)
-        print("by symlinking to it from a temporary config directory")
+        logging.info("parsing custom file or directory %s", args.file)
+        logging.info("by symlinking to it from a temporary config directory")
     output = parse_ships(
         args.file,
         format=args.format,

@@ -1,4 +1,6 @@
-import code                                                  
+import code
+import sys
+import logging
 import threading
 
 try:
@@ -9,19 +11,22 @@ except ImportError:
     readline = None
     pass
 
+def p(*args):
+    print(*args, file=sys.stderr)
+
 from .loader import FilesystemPrepared
 from . import bindings as es
 
-
-
+banner = """Welcome to the sky!
+Try dir(es) or use dir on a class like dir(es.GameData) to see what you can do."""
 
 def run_with_console(path=None, *, resources=None, config=None, extra_args=None):
     if extra_args is None: extra_args = []
 
     ns = {'es': es}
     if readline:
-        readline.set_completer(rlcompleter.Completer(ns).complete) 
-        readline.parse_and_bind("tab: complete")                     
+        readline.set_completer(rlcompleter.Completer(ns).complete)
+        readline.parse_and_bind("tab: complete")
 
     game_has_quit = False
     repl_is_running = False
@@ -29,10 +34,10 @@ def run_with_console(path=None, *, resources=None, config=None, extra_args=None)
     def repl():
         nonlocal repl_is_running
         repl_is_running = True
-        code.InteractiveConsole(ns).interact(banner='Welcome to the sky!')
+        code.InteractiveConsole(ns).interact(banner=banner)
         if not game_has_quit:
-            print("you've exited the Interactive Console, but Endless Sky is still running")
-            print("TODO make it quit when this happens")
+            p("you've exited the Interactive Console, but Endless Sky is still running")
+            p("TODO make it quit when this happens")
         repl_is_running = False
 
     console_thread = threading.Thread(target=repl)
@@ -45,24 +50,25 @@ def run_with_console(path=None, *, resources=None, config=None, extra_args=None)
             '--resources', resources_path,
             '--config', config_path,
         ] + extra_args
-        print("running main() with args:", args)
+        logging.warning("running main() with args: %s", args)
         if '--resources' in extra_args:
-            print('WARNING: extra --resource flag will override')
+            logging.warning('WARNING: extra --resource flag will override')
         if '--config' in extra_args:
-            print('WARNING: extra --resource flag will override')
+            logging.warning('WARNING: extra --resource flag will override')
 
         console_thread.start()
         try:
             es.main_no_GIL(args)
         except RuntimeError as e:
-            print('caught exception thrown while running main():', e)
+            logging.warning('caught exception thrown while running main():', e)
         finally:
             game_has_quit = True
             if (repl_is_running):
-                print('main() finished running.')
-                print("You can keep interacting with es objects if you want.")
-                print("Don't call main() again, that'd be weird.")
-                print("")
-                print('Type exit() and hit enter or use ctrl-D (mac/linux only maybe?) to delete temporary files and quit.')
+                p('main() finished running.')
+                p("You can keep interacting with es objects if you want.")
+                p("Don't call main() again, that'd be weird.")
+                p("")
+                p('Type exit() and hit enter or use ctrl-D (mac/linux only maybe?) to delete temporary files and quit.')
             console_thread.join()
-    print('finished cleanup')
+    p('finished cleanup')
+    logging.info('finished cleanup')
