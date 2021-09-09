@@ -1,5 +1,6 @@
 from glob import glob
 import os
+from pathlib import Path
 import platform
 import re
 from setuptools import setup
@@ -216,7 +217,8 @@ setup(
     author_email="thomasballinger@gmail.com",
     url="https://github.com/thomasballinger/endless-sky-bindings-python",
     description="Python bindings for Endless Sky C++ code",
-    long_description="",
+    long_description=(Path(__file__).parent / "README.md").read_text(),
+    long_description_content_type='text/markdown',
     ext_modules = [pybind_extension],
     packages=['endless_sky'],
     package_data={
