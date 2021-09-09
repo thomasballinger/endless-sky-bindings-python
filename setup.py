@@ -17,7 +17,7 @@ __version__ = re.search(
     open('endless_sky/__init__.py', encoding='utf_8_sig').read()
 ).group(1)
 
-endless_sky_version = "439387647c27869017ef357c4097d2907a7d6d21"
+endless_sky_version = "84ddce4a2247572eb56c65dcd78ceb70e2c5bf1b"
 submodule_version = None
 try:
     submodule_version = open('.git/modules/endless_sky/endless-sky/HEAD').read().strip()
