@@ -2,15 +2,16 @@ Endless Sky bindings for Python
 
 $ pip install endless-sky-bindings
 
-This library does not include the Endless Sky data, so you'll need to find that on your system or clone the [Endless Sky repo](https://github.com/endless-sky/endless-sky) to get it.
+This library does not include the Endless Sky data, so you'll need to find that on your system or clone the [Endless Sky repo](https://github.com/endless-sky/endless-sky) to get it. The code samples below assume a checkout of endless-sky at ~/endless-sky.
 
 ## Command line use
 
+Loading data files:
 ```
 % echo -e 'ship Rocket\n\tattributes\n\t\tdrag 10' > myData.txt
 $ python -m endless_sky load --empty-resources myData.txt  # only prints ships atm
 'Rocket': {'drag': 10.0, 'gun ports': 0.0, 'turret mounts': 0.0},
-$ python -m endless_sky run -- --resources ~/endless-sky
+$ python -m endless_sky load -- --resources ~/endless-sky
 {'Aerie': {'bunks': 28.0,
            'capture attack': 1.8000000000000003,
            'capture defense': 2.4000000000000004,
@@ -22,6 +23,11 @@ $ python -m endless_sky load --resources ~/endless-sky myData.txt
 ...
 <'Rocket' is somewhere in here>
 ...
+```
+
+Runing the game and a Python interpreter at the same time:
+```
+$ python -m endless_sky run --resources ~/endless-sky --default-config
 ```
 
 ## Library
@@ -55,11 +61,6 @@ ship.BaseAttributes(        ship.IsBoarding(            ship.MaximumHeat(
 ```
 
 Warning: endless_sky.bindings contains non-resetable singletons like GameData, so once you load some data (directly with GameData.BeginLoad(), with a load_data, or indirectly with a parser function) you can't unload that data without exiting Python.
-
-# Notes
-
-- You can only load once!
-- Loading takes a lot of memory: 600MB for vanilla data! (this could be optimized)
 
 # Installation
 
