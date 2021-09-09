@@ -14,6 +14,7 @@ int maine(int argc, char *argv[]);
 #include <SDL2/SDL.h>
 #include "endless-sky/source/Angle.h"
 #include "endless-sky/source/DataNode.h"
+#include "endless-sky/source/DataFile.h"
 #include "endless-sky/source/GameData.h"
 #include "endless-sky/source/Outfit.h"
 #include "endless-sky/source/PlayerInfo.h"
@@ -93,6 +94,15 @@ PYBIND11_MODULE(bindings, m) {
         .def("Degrees", &Angle::Degrees)
         .def("Rotate", &Angle::Rotate);
     // TODO why does -= (removed) give a warning?
+
+    // source/DataFile
+    py::class_<DataFile>(m, "DataFile")
+        .def(py::init<>())
+        .def(py::init<std::string&>())
+        .def("Load", py::overload_cast<const std::string&>(&DataFile::Load))
+        .def("__iter__", [](DataFile &f) {
+            return py::make_iterator(f.begin(), f.end());
+        }, py::keep_alive<0, 1>()); // TODO is this keep_alive policy right?
 
     // source/DataNode
     py::class_<DataNode>(m, "DataNode")
