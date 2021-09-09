@@ -8,7 +8,7 @@ This library does not include the Endless Sky data, so you'll need to find that 
 
 ```
 % echo -e 'ship Rocket\n\tattributes\n\t\tdrag 10' > myData.txt
-$ python -m endless_sky parse --empty-resources myData.txt  # only prints ships atm
+$ python -m endless_sky load --empty-resources myData.txt  # only prints ships atm
 'Rocket': {'drag': 10.0, 'gun ports': 0.0, 'turret mounts': 0.0},
 $ python -m endless_sky run -- --resources ~/endless-sky
 {'Aerie': {'bunks': 28.0,
@@ -17,7 +17,7 @@ $ python -m endless_sky run -- --resources ~/endless-sky
            'cargo space': 50.0,
 ...
 $ # In order to parse a file with vanilla outfits defined, use --resources
-$ python -m endless_sky parse --resources ~/endless-sky myData.txt
+$ python -m endless_sky load --resources ~/endless-sky myData.txt
 {'Aerie': {'bunks': 28.0,
 ...
 <'Rocket' is somewhere in here>
@@ -31,7 +31,7 @@ C++ classes are exposed to Python pretty directly; for documentation, see
 [the header files in Endless Sky](https://github.com/endless-sky/endless-sky/tree/master/source).
 
 ```
->>> from endless_sky.parser import load_data
+>>> from endless_sky.loader import load_data
 >>> es = load_data(resources="/Users/tomb/endless-sky")
 >>> ships = es.GameData.Ships() # these objects correspond to 
 >>> ships.<tab><tab>

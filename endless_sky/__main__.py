@@ -18,19 +18,21 @@ subparsers = parser.add_subparsers(title='subcommands',
                                    help='additional help',
                                    dest="subcommand")
 
-parse_parser = subparsers.add_parser('parse', description='Parse a set of data files')
-parse_parser.add_argument("file", nargs="?", help="data file or directory of data files")
-parse_parser.add_argument("--resources", default=None)
-parse_parser.add_argument("--empty-resources", action="store_true")
-parse_parser.add_argument("--config", required=False, default=None)
-parse_parser.add_argument("--format", default='pretty', help='pretty (default), json, or dict')
+def add_file_resources_and_config(parser):
+    """Require some resources arg, default config to None, and default file to None."""
+    parser.add_argument("file", nargs="?", help="data file or directory of data files")
+    resources_group = parser.add_mutually_exclusive_group(required=True)
+    resources_group.add_argument('--resources')
+    resources_group.add_argument('--empty-resources', action='store_const', const=None)
+    parser.add_argument("--config", required=False, default=None)
+
+load_parser = subparsers.add_parser('load', description='Parse a set of data files')
+add_file_resources_and_config(load_parser)
+load_parser.add_argument("--format", default='pretty', help='pretty (default), json, or dict')
 
 run_parser = subparsers.add_parser('run', description='Run endless sky (this pip-installed one) passing arguments through')
-run_parser.add_argument("file", nargs="?", help="data file or directory of data files")
-run_parser.add_argument("--resources", default=None)
-run_parser.add_argument("--empty-resources", action="store_true")
-run_parser.add_argument("--config", required=False, default=None)
-run_parser.add_argument('rest', nargs=argparse.REMAINDER)
+add_file_resources_and_config(run_parser)
+run_parser.add_argument('rest', nargs=argparse.REMAINDER, help='extra command line args to pass to main()')
 
 subparsers.add_parser('version')
 
@@ -53,20 +55,12 @@ elif not args.version and not args.subcommand:
 # Where do these get downloaded to? I dunno, where does nltk put its datasets?
 # Maybe a .endless-sky-python-assets in home? Maybe use config dir logic?
 
-# TODO use add_mutually_exclusive_group() for this instead
 # TODO add autodiscovery of resources
 # --find-resources
 # --use-cached-resources (or maybe this is the default?)
-def check_resources(args):
-    """Check that --resources and --empty-resources args were used sensibly"""
-    if not args.resources and not args.empty_resources:
-        print("Either specify --resources PATH or use --empty-resources to use an empty resources directory")
-        sys.exit(1)
-    if args.resources and args.empty_resources:
-        print("Don't specify both --resources PATH and --empty-resources")
-    return args.resources
 
-if args.subcommand == 'parse':
+if args.subcommand == 'load':
+# TODO use add_mutually_exclusive_group() for this instead
     if args.file is not None and not os.path.exists(args.file):
         print("that file does not exist!")
         exit(1)
@@ -76,16 +70,15 @@ if args.subcommand == 'parse':
     output = parse_ships(
         args.file,
         format=args.format,
-        resources=check_resources(args),
+        resources=args.resources,
         config=args.config
     )
     print(output)
 
 elif args.subcommand == 'run':
-    resources = check_resources(args)
     run_with_console(
         args.file,
-        resources=check_resources(args),
+        resources=args.resources,
         config=args.config,
         extra_args=args.rest
     )

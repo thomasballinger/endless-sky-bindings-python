@@ -1,8 +1,13 @@
 import code                                                  
-import readline
-import rlcompleter
 import threading
 
+try:
+    import readline
+    import rlcompleter
+except ImportError:
+    # Windows doens't have readline
+    readline = None
+    pass
 
 from .loader import FilesystemPrepared
 from . import bindings as es
@@ -14,8 +19,9 @@ def run_with_console(path=None, *, resources=None, config=None, extra_args=None)
     if extra_args is None: extra_args = []
 
     ns = {'es': es}
-    readline.set_completer(rlcompleter.Completer(ns).complete) 
-    readline.parse_and_bind("tab: complete")                     
+    if readline:
+        readline.set_completer(rlcompleter.Completer(ns).complete) 
+        readline.parse_and_bind("tab: complete")                     
 
     game_has_quit = False
     repl_is_running = False
@@ -30,8 +36,6 @@ def run_with_console(path=None, *, resources=None, config=None, extra_args=None)
         repl_is_running = False
 
     console_thread = threading.Thread(target=repl)
-    console_thread.start()
-
 
     # Run game stuff on the main thread
     with FilesystemPrepared(path=path, resources=resources, config=config) as (resources_path, config_path):
@@ -47,6 +51,7 @@ def run_with_console(path=None, *, resources=None, config=None, extra_args=None)
         if '--config' in extra_args:
             print('WARNING: extra --resource flag will override')
 
+        console_thread.start()
         try:
             es.main_no_GIL(args)
         except RuntimeError as e:
@@ -60,4 +65,4 @@ def run_with_console(path=None, *, resources=None, config=None, extra_args=None)
                 print("")
                 print('Type exit() and hit enter or use ctrl-D (mac/linux only maybe?) to delete temporary files and quit.')
             console_thread.join()
-    print('Finished cleanup')
+    print('finished cleanup')
