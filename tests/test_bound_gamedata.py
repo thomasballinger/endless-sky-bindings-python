@@ -12,26 +12,8 @@ import platform
 import os
 
 import endless_sky.bindings as m
-from helpers import icky_global_state
+from helpers import icky_global_state, empty_resources_dir, empty_config_dir
 
-@pytest.fixture
-def empty_resources_dir(tmp_path):
-    r = tmp_path / "resources"
-    r.mkdir()
-    data = r / "data"; data.mkdir()
-    images = r / "images"; images.mkdir()
-    sounds = r / "sounds"; sounds.mkdir()
-    p = r / "credits.txt"
-    p.write_text("some awesome folks\n")
-    return r
-
-@pytest.fixture
-def empty_config_dir(tmp_path):
-    r = tmp_path / "config"
-    r.mkdir()
-    saves = r / "saves"
-    saves.mkdir()
-    return r
 
 @icky_global_state
 def test_GameData_simple(empty_resources_dir, empty_config_dir):

@@ -4,6 +4,7 @@ Context managers for creating loading filesystems for Endless Sky code.
 
 import os
 import atexit
+import logging
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from contextlib import contextmanager
@@ -56,11 +57,7 @@ def FilesystemPrepared(path=None, *, resources=None, config=None):
     if resources and not os.path.exists(resources):
         raise ValueError("Nonexistent resource path "+repr(resources))
 
-    if config is None:
-        pass
-    else:
-        raise ValueError("specifying a config path is not yet tested")
-        if os.path.exists(config):
+    if config is not None and not os.path.exists(config):
             raise ValueError("Nonexistent resource path "+repr(resources))
 
     # TODO check that the path is not in the resources/data, images, or sounds
@@ -68,7 +65,7 @@ def FilesystemPrepared(path=None, *, resources=None, config=None):
     # TODO check if the path is not in the specified local plugins folder
 
     with ResourcesDir(resources) as r:
-        with ConfigDir(None) as c:
+        with ConfigDir(config) as c:
             if path:
                 c.link_plugin(path)
             yield (r.name, c.name)
@@ -99,6 +96,7 @@ def LoadedData(path=None, *, resources=None, config=None):
 
     with FilesystemPrepared(path=path, resources=resources, config=config) as (resources_path, config_path):
         args = ['foo', '--resources', resources_path, '--config', config_path]
+        logging.warn('BeginLoad(%s)', args)
         try:
             es.GameData.BeginLoad(args)
         except RuntimeError as e:
@@ -147,8 +145,6 @@ class ResourcesDir:
 
 class ConfigDir:
     def __init__(self, path=None):
-        if path is not None:
-            raise ValueError("TempConfig with an existing path is not tested")
         self.path = path
         self.to_remove = []
         self.plugin_linked = False
@@ -166,12 +162,14 @@ class ConfigDir:
             self.tempdir = TemporaryDirectory()
 
         path = self.tempdir.name if self.temp else self.path
-        self.saves_path = os.path.join(self.tempdir.name, 'saves')
-        self.plugins_path = os.path.join(self.tempdir.name, 'plugins')
+        self.saves_path = os.path.join(self.name, 'saves')
+        self.plugins_path = os.path.join(self.name, 'plugins')
         self.temp_plugin_path = os.path.join(self.plugins_path, 'zzzTemp')
         self.temp_plugin_data_path = os.path.join(self.plugins_path, 'zzzTemp', 'data')
-        os.mkdir(self.saves_path)
-        os.mkdir(self.plugins_path)
+
+        if self.temp:
+            os.mkdir(self.saves_path)
+            os.mkdir(self.plugins_path)
         return self
 
     def __exit__(self, type, value, traceback):
@@ -182,7 +180,7 @@ class ConfigDir:
                 if os.path.isdir(path):
                     os.rmdir(path)
                 else:
-                    os.path.remove(path)
+                    os.remove(path)
 
     def link_plugin(self, path):
         """Symlink a path or create a folder and a symlink in that folder."""
