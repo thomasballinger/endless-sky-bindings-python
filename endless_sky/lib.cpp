@@ -16,12 +16,15 @@ int maine(int argc, char *argv[]);
 #include "endless-sky/source/DataNode.h"
 #include "endless-sky/source/DataFile.h"
 #include "endless-sky/source/GameData.h"
+#include "endless-sky/source/Government.h"
 #include "endless-sky/source/Outfit.h"
+#include "endless-sky/source/Planet.h"
 #include "endless-sky/source/PlayerInfo.h"
 #include "endless-sky/source/Point.h"
 #include "endless-sky/source/Random.h"
 #include "endless-sky/source/Set.h"
 #include "endless-sky/source/Ship.h"
+#include "endless-sky/source/System.h"
 #include "endless-sky/tests/include/datanode-factory.h"
 
 #define STRINGIFY(x) #x
@@ -143,12 +146,95 @@ PYBIND11_MODULE(bindings, m) {
 	.def_static("CheckReferences", &GameData::CheckReferences)
 	.def_static("Ships", &GameData::Ships);
 
+    // source/Government
+    py::class_<Government>(m, "Government")
+        .def(py::init<>())
+        .def("Load", &Government::Load)
+        .def("GetName", &Government::GetName)
+        .def("SetName", &Government::SetName)
+        .def("GetTrueName", &Government::GetTrueName)
+        .def("GetSwizzle", &Government::GetSwizzle)
+        .def("GetColor", &Government::GetColor)
+
+        .def("AttitudeToward", &Government::AttitudeToward)
+        .def("InitialPlayerReputation", &Government::InitialPlayerReputation)
+        .def("PenaltyFor", &Government::PenaltyFor)
+        .def("GetBribeFraction", &Government::GetBribeFraction)
+        .def("GetFineFraction", &Government::GetFineFraction)
+
+        .def("CanEnforce", py::overload_cast<const System*>(&Government::CanEnforce, py::const_))
+        .def("CanEnforce", py::overload_cast<const Planet*>(&Government::CanEnforce, py::const_))
+        .def("DeathSentence", &Government::DeathSentence)
+
+        .def("GetHail", &Government::GetHail)
+        .def("Language", &Government::Language)
+        .def("RaidFleet", &Government::RaidFleet)
+
+        .def("IsEnemy", py::overload_cast<const Government*>(&Government::IsEnemy, py::const_))
+        .def("IsEnemy", py::overload_cast<>(&Government::IsEnemy, py::const_ ))
+        .def("IsPlayer", &Government::IsPlayer)
+        .def("Offend", &Government::Offend)
+        .def("Bribe", &Government::Bribe)
+        .def("GetHail", &Government::GetHail)
+        .def("Fine", &Government::Fine)
+        .def("Reputation", &Government::Reputation)
+        .def("SetReputation", &Government::SetReputation)
+        .def("CrewAttack", &Government::CrewAttack)
+        .def("CrewDefense", &Government::CrewDefense);
+
     // source/Outfit
     py::class_<Outfit>(m, "Outfit")
         .def(py::init<>())
         .def("Load", &Outfit::Load)
         .def("Name", &Outfit::Name)
         .def("Attributes", &Outfit::Attributes);
+
+    // source/Planet
+    py::class_<Planet>(m, "Planet")
+        // TODO add a constructor that takes data?
+        .def("Load", &Planet::Load)
+        .def("IsValid", &Planet::IsValid)
+        .def("Name", &Planet::Name)
+        .def("SetName", &Planet::SetName)
+        .def("TrueName", &Planet::TrueName)
+        .def("Description", &Planet::Description)
+//        .def("Landscape", &Planet::Landscape)
+        .def("MusicName", &Planet::MusicName)
+        .def("Attributes", &Planet::Attributes)
+        .def("Noun", &Planet::Noun)
+
+        .def("HasSpaceport", &Planet::HasSpaceport)
+        .def("SpaceportDescription", &Planet::SpaceportDescription)
+        .def("HasShipyard", &Planet::HasShipyard)
+        .def("Shipyard", &Planet::Shipyard)
+        .def("Outfitter", &Planet::Outfitter)
+
+//        .def("Government", &Planet::Government)
+        .def("RequiredReputation", &Planet::RequiredReputation)
+        .def("GetBribeFraction", &Planet::GetBribeFraction)
+        .def("Security", &Planet::Security)
+
+        .def("GetSystem", &Planet::GetSystem)
+        .def("IsInSystem", &Planet::IsInSystem)
+        .def("SetSystem", &Planet::SetSystem)
+        .def("RemoveSystem", &Planet::RemoveSystem)
+
+        .def("IsWormhole", &Planet::IsWormhole)
+        .def("WormholeSource", &Planet::WormholeSource)
+        .def("WormholeDestination", &Planet::WormholeDestination)
+        .def("WormholeSystems", &Planet::WormholeSystems)
+
+        .def("IsAccessible", &Planet::IsAccessible)
+        .def("IsUnrestricted", &Planet::IsUnrestricted)
+
+        .def("HasFuelFor", &Planet::HasFuelFor)
+//        .def("CanLand", &Planet::CanLand)
+        .def("CanUseServices", &Planet::CanUseServices)
+        .def("Bribe", &Planet::Bribe)
+
+        .def("DemandTribute", &Planet::DemandTribute)
+        .def("DeployDefense", &Planet::DeployDefense)
+        .def("ResetDefense", &Planet::ResetDefense);
 
     // source/PlayerInfo
     py::class_<PlayerInfo>(m, "PlayerInfo")
@@ -232,8 +318,8 @@ PYBIND11_MODULE(bindings, m) {
 //        .def("Fire", &Ship::Fire)
 //        .def("FireAntiMissile", &Ship::FireAntiMissile)
 
-//        .def("GetSystem", &Ship::GetSystem)
-//        .def("GetPlanet", &Ship::GetPlanet)
+        .def("GetSystem", &Ship::GetSystem)
+        .def("GetPlanet", &Ship::GetPlanet)
 
 	.def("IsCapturable", &Ship::IsCapturable)
 	.def("IsTargetable", &Ship::IsTargetable)
@@ -306,6 +392,57 @@ PYBIND11_MODULE(bindings, m) {
 
         // Custom helpers could go here (in lowercase)
 
+    // source/System
+    py::class_<System>(m, "System")
+        .def("Load", &System::Load)
+        .def("UpdateSystem", &System::UpdateSystem)
+
+        .def("Link", &System::Link)
+        .def("Unlink", &System::Unlink)
+
+        .def("IsValid", &System::IsValid)
+        .def("Name", &System::Name)
+        .def("SetName", &System::SetName)
+        .def("Position", &System::Position)
+//        .def("Government", &System::Government)
+        .def("MusicName", &System::MusicName)
+
+        .def("Attributes", &System::Attributes)
+
+        .def("Links", &System::Links)
+        .def("JumpNeighbors", &System::JumpNeighbors)
+        .def("Hidden", &System::Hidden)
+        .def("ExtraHyperArrivalDistance", &System::ExtraHyperArrivalDistance)
+        .def("ExtraJumpArrivalDistance", &System::ExtraJumpArrivalDistance)
+        .def("VisibleNeighbors", &System::VisibleNeighbors)
+
+        .def("SetDate", &System::SetDate)
+//        .def("Objects", &System::Objects)
+//        .def("FindStellar", &System::SetDate)
+        .def("HabitableZone", &System::HabitableZone)
+        .def("AsteroidBelt", &System::AsteroidBelt)
+        .def("JumpRange", &System::JumpRange)
+        .def("SolarPower", &System::SolarPower)
+        .def("SolarWind", &System::SolarWind)
+        .def("IsInhabited", &System::IsInhabited)
+        .def("HasFuelFor", &System::HasFuelFor)
+        .def("HasShipyard", &System::HasShipyard)
+        .def("HasOutfitter", &System::HasOutfitter)
+
+        .def("Asteroids", &System::Asteroids)
+//        .def("Haze", &System::Haze)
+
+        .def("Trade", &System::Trade)
+        .def("HasTrade", &System::HasTrade)
+
+        .def("StepEconomy", &System::StepEconomy)
+        .def("SetSupply", &System::SetSupply)
+        .def("Supply", &System::Supply)
+        .def("Exports", &System::Exports)
+
+//        .def("Fleets", &System::Fleets)
+//        .def("Hazards", &System::Hazards)
+        .def("Danger", &System::Danger);
 
     // source/main
     m.def("main", [](std::vector<std::string> argVec) {
