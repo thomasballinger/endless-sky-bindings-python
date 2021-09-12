@@ -15,6 +15,7 @@ int maine(int argc, char *argv[]);
 #include "endless-sky/source/Angle.h"
 #include "endless-sky/source/DataNode.h"
 #include "endless-sky/source/DataFile.h"
+#include "endless-sky/source/DataWriter.h"
 #include "endless-sky/source/GameData.h"
 #include "endless-sky/source/Government.h"
 #include "endless-sky/source/Outfit.h"
@@ -22,6 +23,7 @@ int maine(int argc, char *argv[]);
 #include "endless-sky/source/PlayerInfo.h"
 #include "endless-sky/source/Point.h"
 #include "endless-sky/source/Random.h"
+#include "endless-sky/source/SavedGame.h"
 #include "endless-sky/source/Set.h"
 #include "endless-sky/source/Ship.h"
 #include "endless-sky/source/System.h"
@@ -106,6 +108,28 @@ PYBIND11_MODULE(bindings, m) {
         .def("__iter__", [](DataFile &f) {
             return py::make_iterator(f.begin(), f.end());
         }, py::keep_alive<0, 1>()); // TODO is this keep_alive policy right?
+
+    // source/DataWriter
+    py::class_<DataWriter>(m, "DataWriter")
+        .def(py::init<std::string&>())
+        .def("Write", [](DataWriter &w, const DataNode &node) {
+            return w.Write(node);
+        })
+        .def("Write", [](DataWriter &w) {
+            return w.Write();
+        })
+
+        .def("BeginChild", &DataWriter::BeginChild)
+        .def("WriteComment", &DataWriter::WriteComment)
+        .def("WriteToken", [](DataWriter &w, const double &a) {
+            return w.WriteToken(a);
+        })
+        .def("WriteToken", [](DataWriter &w, const int &a) {
+            return w.WriteToken(a);
+        })
+        .def("WriteToken", [](DataWriter &w, const std::string &a) {
+            return w.WriteToken(a);
+        });
 
     // source/DataNode
     py::class_<DataNode>(m, "DataNode")
@@ -228,7 +252,8 @@ PYBIND11_MODULE(bindings, m) {
         .def("IsUnrestricted", &Planet::IsUnrestricted)
 
         .def("HasFuelFor", &Planet::HasFuelFor)
-//        .def("CanLand", &Planet::CanLand)
+        .def("CanLand", py::overload_cast<>(&Planet::CanLand, py::const_))
+        .def("CanLand", py::overload_cast<const Ship&>(&Planet::CanLand, py::const_))
         .def("CanUseServices", &Planet::CanUseServices)
         .def("Bribe", &Planet::Bribe)
 
@@ -255,6 +280,24 @@ PYBIND11_MODULE(bindings, m) {
     // source/Set
     std::string a = std::string("Ship");
     declare_set<Ship>(m, a);
+
+    // source/SavedGame
+    py::class_<SavedGame, std::shared_ptr<SavedGame>>(m, "SavedGame")
+        .def(py::init<>())
+        .def(py::init<const std::string&>())
+        .def("Load", &SavedGame::Load)
+        .def("Path", &SavedGame::Path)
+        .def("IsLoaded", &SavedGame::IsLoaded)
+        .def("Clear", &SavedGame::Clear)
+        .def("Name", &SavedGame::Name)
+        .def("Credits", &SavedGame::Credits)
+
+        .def("GetSystem", &SavedGame::GetSystem)
+        .def("GetPlanet", &SavedGame::GetPlanet)
+        .def("GetPlayTime", &SavedGame::GetPlayTime)
+
+//        .def("ShipSprite", &SavedGame::ShipSprite)
+        .def("ShipName", &SavedGame::ShipName);
 
     // source/Ship
     py::class_<Ship, std::shared_ptr<Ship>>(m, "Ship")
@@ -287,10 +330,10 @@ PYBIND11_MODULE(bindings, m) {
         .def("SetPosition", &Ship::SetPosition)
         .def("Place", &Ship::Place)
         .def("SetName", &Ship::SetName)
-//        .def("SetSystem", &Ship::SetSystem)
-//        .def("SetPlanet", &Ship::SetPlanet)
-//        .def("SetGovernment", &Ship::SetGovernment)
-//        .def("SetIsSpecial", &Ship::SetIsSpecial)
+        .def("SetSystem", &Ship::SetSystem)
+        .def("SetPlanet", &Ship::SetPlanet)
+        .def("SetGovernment", &Ship::SetGovernment)
+        .def("SetIsSpecial", &Ship::SetIsSpecial)
         .def("IsSpecial", &Ship::IsSpecial)
 
         .def("SetIsYours", &Ship::SetIsYours)
@@ -310,10 +353,10 @@ PYBIND11_MODULE(bindings, m) {
 //        .def("Move", &Ship::Move)
 //        .def("DoGeneration", &Ship::DoGeneration)
 //        .def("Launch", &Ship::Launch)
-//        .def("Board", &Ship::Board)
-//        .def("Scan", &Ship::Scan)
-//        .def("CargoScanFraction", &Ship::CargoScanFraction)
-//        .def("OutfitScanFraction", &Ship::OutfitScanFraction)
+        .def("Board", &Ship::Board)
+        .def("Scan", &Ship::Scan)
+        .def("CargoScanFraction", &Ship::CargoScanFraction)
+        .def("OutfitScanFraction", &Ship::OutfitScanFraction)
 
 //        .def("Fire", &Ship::Fire)
 //        .def("FireAntiMissile", &Ship::FireAntiMissile)
@@ -362,7 +405,7 @@ PYBIND11_MODULE(bindings, m) {
         .def("Health", &Ship::Health)
         .def("DisabledHull", &Ship::DisabledHull)
         .def("JumpsRemaining", &Ship::JumpsRemaining)
-//        .def("JumpFuel", &Ship::JumpFuel)
+        .def("JumpFuel", &Ship::JumpFuel)
         .def("JumpRange", &Ship::JumpRange)
         .def("HyperdriveFuel", &Ship::HyperdriveFuel)
         .def("JumpDriveFuel", &Ship::JumpDriveFuel)
