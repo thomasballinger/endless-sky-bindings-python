@@ -203,6 +203,7 @@ jobs:
         python-version: ["3.9"]
         include-libraries: [include]
 
+    steps:
     - name: Download wheel
       uses: actions/download-artifact@v2
       with:
