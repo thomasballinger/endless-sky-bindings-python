@@ -9,10 +9,10 @@ def list_files(startpath):
     for root, dirs, files in os.walk(startpath):
         level = root.replace(startpath, '').count(os.sep)
         indent = ' ' * 4 * (level)
-        print('{}{}/'.format(indent, os.path.basename(root)))
+        print('{1}{1}/'.format(indent, os.path.basename(root)))
         subindent = ' ' * 4 * (level + 1)
         for f in files:
-            print('{}{}'.format(subindent, f))
+            print('{1}{1}'.format(subindent, f))
 
 shutil.rmtree('endless_sky/include', ignore_errors=True)
 shutil.rmtree('endless_sky/lib', ignore_errors=True)
