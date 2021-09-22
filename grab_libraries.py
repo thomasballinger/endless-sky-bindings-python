@@ -32,7 +32,7 @@ if platform.system() == 'Darwin':
 
 elif platform.system() == 'Linux':
     #assert False, "don't know how to harvest linux libs yet"
-    list_files('/usr/lib')
+    list_files('/lib')
     pass
 
 elif platform.system() == 'Windows':
