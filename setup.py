@@ -114,6 +114,7 @@ extra_compile_args=[
         '-Wno-deprecated-declarations', # ignore mac OpenGL deprecation warnings
             #'-v',  # for debugging an include
             #'-H',  # for debugging an include
+            #'-mmacosx-version-min=10.15', # see if this helps us choose the right dylibs?
         ] if platform.system() == "Darwin" else [
             '-DES_NO_THREADS',
             #'-v',  # for debugging an include
@@ -124,6 +125,8 @@ extra_compile_args=[
             '-DES_NO_THREADS',  # Windows is the only platform that actually
                                 # needs the threadless build, but we do it
                                 # everywhere for consistency.
+            '-static-libgcc',     # Trying static because mplcairo does it
+            '-static-libstdc++',  # https://github.com/matplotlib/mplcairo/blob/master/setup.py
         ]
 
 extra_link_args = ([

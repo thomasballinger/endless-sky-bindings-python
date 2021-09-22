@@ -13,27 +13,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, windows-latest]
         python-version: ["3.8", "3.9"]
           #python-version: ["3.9"]
         include-libraries: [include]
         threading: ["no-threads"]
-        exclude:
-          - os: ubuntu-latest
-            include-libraries: include
-            python-version: "3.8"
-          - os: ubuntu-latest
-            include-libraries: include
-            python-version: "3.9"
         include:
-          - os: ubuntu-latest
-            python-version: "3.8"
-            include-libraries: system
-            threading: no-threads
-          - os: ubuntu-latest
-            python-version: "3.9"
-            include-libraries: system
-            threading: no-threads
           - os: macos-latest
             python-version: "3.9"
             include-libraries: system
@@ -91,7 +76,7 @@ jobs:
 
     - name: Copy libraries from OS into lib and include
       if: matrix.include-libraries == 'include'
-      run: python grab_libraries.py
+      run: python3 grab_libraries.py
 
     - name: Add requirements
       # TODO I don't know that we need half of these, like wheel
@@ -124,6 +109,46 @@ jobs:
       with:
         path: dist/*.whl
 
+  wheel_manylinux:
+    runs-on: ubuntu-latest
+
+    env:
+      ES_SETUP_INCLUDE_LIBRARIES: include
+
+    steps: 
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: patch to make threadless
+      working-directory: ./endless_sky/endless-sky
+      shell: bash
+      run: patch -p1 < ../../patch.diff
+
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.9
+
+    - name: Add requirements
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install twine wheel setuptools pytest pybind11 build
+
+    - name: 
+      uses: RalfG/python-wheels-manylinux-build@v0.3.4-manylinux2014_x86_64
+      with:
+        python-versions: 'cp38-cp38 cp39-cp39'
+        build-requirements: 'pybind11'
+        system-packages: 'gcc-c++ SDL2-devel libpng-devel libjpeg-turbo-devel mesa-libGL-devel glew-devel openal-soft-devel libmad-devel libuuid-devel'
+        pre-build-command: 'python grab_libraries.py'
+        pip-wheel-args: '-w ./dist --no-deps'
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v2
+      with:
+        path: dist/*-manylinux*.whl
+
   sdist:
     name: Build SDist
     runs-on: ubuntu-latest
@@ -152,7 +177,7 @@ jobs:
 
   upload_all:
     name: Upload if release
-    needs: [wheel, sdist]
+    needs: [wheel, wheel_manylinux, sdist]
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
 
@@ -168,3 +193,60 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
+
+  test_wheel:
+    name: Test wheels
+    needs: [wheel, wheel_manylinux]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        python-version: ["3.8", "3.9"]
+        include-libraries: [include]
+    runs-on: ${{ matrix.os }}
+
+    env:
+      PY_ID: ${{ matrix.python-version == '3.8' && '38' || '39' }}
+
+    steps:
+    - name: Download wheel
+      uses: actions/download-artifact@v2
+      with:
+        name: artifact
+        path: dist
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Add test requirements
+      run: python -m pip install pytest
+
+    - name: Install Mac runtime dependencies
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew update
+        brew install libmad libpng SDL2
+
+    - name: Install mac wheel
+      if: matrix.os == 'macos-latest'
+      run: python -m pip install dist/endless_sky_bindings*-cp${{ env.PY_ID }}-cp${{ env.PY_ID }}-*macosx*.whl
+
+    - name: Install linux wheel
+      if: matrix.os == 'ubuntu-latest'
+      run: python -m pip install dist/endless_sky_bindings*-cp${{ env.PY_ID }}-cp${{ env.PY_ID }}-*manylinux*.whl
+
+    - name: Install windows wheel
+      if: matrix.os == 'windows-latest'
+      shell: bash
+      run: python -m pip install dist/endless_sky_bindings*-cp${{ env.PY_ID }}-cp${{ env.PY_ID }}-*win*.whl
+
+    - uses: actions/checkout@v2
+      with:
+        path: 'just_for_tests'
+        submodules: recursive
+
+    - name: Test
+      run: |
+        rm just_for_tests/endless_sky/__init__.py  # be sure to use installed copy
+        cd just_for_tests; pytest
