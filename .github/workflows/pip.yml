@@ -76,7 +76,7 @@ jobs:
 
     - name: Copy libraries from OS into lib and include
       if: matrix.include-libraries == 'include'
-      run: python grab_libraries.py
+      run: python3 grab_libraries.py
 
     - name: Add requirements
       # TODO I don't know that we need half of these, like wheel
