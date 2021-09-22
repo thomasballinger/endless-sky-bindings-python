@@ -168,3 +168,32 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
+
+
+      fail-fast: false
+      matrix:
+
+
+  test_wheel:
+    name: 
+    needs: [wheel, sdist]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        python-version: ["3.8", "3.9"]
+
+    - name: Download wheel
+      if: ${{ matrix.include-libraries != 'system' }}
+      uses: actions/download-artifact@v2
+      with:
+        path: dist/*.whl
+
+    - name: Install
+      if: ${{ matrix.include-libraries != 'system' }}
+      run: ls dist/*.whl
+
+    - name: Test
+      if: ${{ matrix.include-libraries != 'system' }}
+      run: pytest
+
