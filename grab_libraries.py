@@ -31,7 +31,9 @@ if platform.system() == 'Darwin':
     copy_tree('/usr/local/opt/openal-soft/include/', 'endless_sky/include/')
 
 elif platform.system() == 'Linux':
-    assert False, "don't know how to harvest linux libs yet"
+    #assert False, "don't know how to harvest linux libs yet"
+    list_files('/usr/lib')
+    pass
 
 elif platform.system() == 'Windows':
     assert os.path.exists('dev64'), "download MCO's Windows dev dependencies from https://endless-sky.github.io/win64-dev.zip"

@@ -140,6 +140,7 @@ jobs:
         python-versions: 'cp38-cp38 cp39-cp39'
         build-requirements: 'pybind'
         system-packages: 'gcc-c++ SDL2-devel libpng-devel libjpeg-turbo-devel mesa-libGL-devel glew-devel openal-soft-devel libmad-devel libuuid-devel'
+        pre-build-command: 'python grab_libraries.py'
         pip-wheel-args: '-w ./dist --no-deps'
 
     - name: Upload wheels
