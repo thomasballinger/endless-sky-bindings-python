@@ -213,19 +213,26 @@ jobs:
         path: dist
 
     - name: Add test requirements
-      run: python -m pip install pytest
+      run: python3 -m pip install pytest
 
     - name: Install mac wheel
       if: matrix.os == 'macos-latest'
-      run: python -m pip install dist/endless_sky_bindings-*-cp${{ matrix.python-version }}-cp${{ matrix.python-version }}-*macosx*.whl
+      run: python3 -m pip install dist/endless_sky_bindings-*-cp${{ matrix.python-version }}-cp${{ matrix.python-version }}-*macosx*.whl
 
     - name: Install linux wheel
       if: matrix.os == 'ubuntu-latest'
-      run: python -m pip install dist/endless_sky_bindings-*-cp${{ matrix.python-version }}-cp${{ matrix.python-version }}-*manylinux*.whl
+      run: python3 -m pip install dist/endless_sky_bindings-*-cp${{ matrix.python-version }}-cp${{ matrix.python-version }}-*manylinux*.whl
 
     - name: Install windows wheel
       if: matrix.os == 'windows-latest'
-      run: python -m pip install dist/endless_sky_bindings-*-cp${{ matrix.python-version }}-cp${{ matrix.python-version }}-*win*.whl
+      run: python3 -m pip install dist/endless_sky_bindings-*-cp${{ matrix.python-version }}-cp${{ matrix.python-version }}-*win*.whl
+
+    - uses: actions/checkout@v2
+      with:
+        path: 'just_for_tests'
+        submodules: recursive
 
     - name: Test
-      run: pytest
+      run: |
+        rm just_for_tests/endless_sky/__init__.py  # be sure to use installed copy
+        cd just_for_tests; pytest
