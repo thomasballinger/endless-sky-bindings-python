@@ -168,7 +168,11 @@ PYBIND11_MODULE(bindings, m) {
             return GameData::BeginLoad(cstrs.data());
         })
 	.def_static("CheckReferences", &GameData::CheckReferences)
-	.def_static("Ships", &GameData::Ships);
+	.def_static("Ships", &GameData::Ships)
+	.def_static("Governments", &GameData::Governments)
+	.def_static("Outfits", &GameData::Outfits)
+	.def_static("Planets", &GameData::Planets)
+	.def_static("Systems", &GameData::Systems);
 
     // source/Government
     py::class_<Government>(m, "Government")
@@ -278,8 +282,16 @@ PYBIND11_MODULE(bindings, m) {
     m.def("RandomInt", py::overload_cast<uint32_t>(&Random::Int));
 
     // source/Set
-    std::string a = std::string("Ship");
-    declare_set<Ship>(m, a);
+    std::string shipString = std::string("Ship");
+    declare_set<Ship>(m, shipString);
+    std::string governmentString = std::string("Government");
+    declare_set<Government>(m, governmentString);
+    std::string outfitString = std::string("Outfit");
+    declare_set<Outfit>(m, outfitString);
+    std::string planetString = std::string("Planet");
+    declare_set<Planet>(m, planetString);
+    std::string systemString = std::string("System");
+    declare_set<System>(m, systemString);
 
     // source/SavedGame
     py::class_<SavedGame, std::shared_ptr<SavedGame>>(m, "SavedGame")
@@ -447,7 +459,7 @@ PYBIND11_MODULE(bindings, m) {
         .def("Name", &System::Name)
         .def("SetName", &System::SetName)
         .def("Position", &System::Position)
-//        .def("Government", &System::Government)
+        .def("Government", &System::GetGovernment)
         .def("MusicName", &System::MusicName)
 
         .def("Attributes", &System::Attributes)
