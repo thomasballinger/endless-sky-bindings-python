@@ -124,6 +124,8 @@ extra_compile_args=[
             '-DES_NO_THREADS',  # Windows is the only platform that actually
                                 # needs the threadless build, but we do it
                                 # everywhere for consistency.
+            '-static-libgcc',     # Trying static because mplcairo does it
+            '-static-libstdc++',  # https://github.com/matplotlib/mplcairo/blob/master/setup.py
         ]
 
 extra_link_args = ([

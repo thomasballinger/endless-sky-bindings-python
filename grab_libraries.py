@@ -6,6 +6,9 @@ import os
 
 def list_files(startpath):
     print(os.path.abspath(startpath))
+    if not os.path.exists(startpath):
+        print('...does not exist')
+        return
     for root, dirs, files in os.walk(startpath):
         level = root.replace(startpath, '').count(os.sep)
         indent = ' ' * 4 * (level)
@@ -32,8 +35,24 @@ if platform.system() == 'Darwin':
 
 elif platform.system() == 'Linux':
     #assert False, "don't know how to harvest linux libs yet"
-    list_files('/lib')
-    pass
+    list_files('/usr/local/lib')
+    list_files('/usr/local/lib64')
+    list_files('/usr/lib')
+    list_files('/usr/lib64')
+    #shutil.copy('/usr/local/opt/jpeg-turbo/lib/libjpeg.dylib', 'endless_sky/lib/')
+
+    # statically linked:
+    # gcc-c++
+
+    # SDL2-devel
+    # libpng-devel
+    # libjpeg-turbo-devel
+    # mesa-libGL-devel
+    # glew-devel
+    # openal-soft-devel
+    # libmad-devel
+    # libuuid-devel
+
 
 elif platform.system() == 'Windows':
     assert os.path.exists('dev64'), "download MCO's Windows dev dependencies from https://endless-sky.github.io/win64-dev.zip"
