@@ -202,6 +202,7 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
         python-version: ["3.9"]
         include-libraries: [include]
+    runs-on: ${{ matrix.os }}
 
     steps:
     - name: Download wheel
