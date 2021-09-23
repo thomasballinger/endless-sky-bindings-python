@@ -116,8 +116,8 @@ extra_compile_args=[
             #'-H',  # for debugging an include
         ] if platform.system() == "Darwin" else [
             '-DES_NO_THREADS',
-            #'-v',  # for debugging an include
-            #'-H',  # for debugging an include
+            '-v',  # for debugging an include
+            '-H',  # for debugging an include
             '-fvisibility=hidden',
             '-g0',
         ] if platform.system() == "Windows" else [
