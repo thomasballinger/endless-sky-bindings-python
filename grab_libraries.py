@@ -27,20 +27,34 @@ if platform.system() == 'Darwin':
 
     # homebrew installs here
     assert os.path.exists('/usr/local/opt/jpeg-turbo'), 'brew install jpeg-turbo'
-    shutil.copy('/usr/local/opt/jpeg-turbo/lib/libjpeg.dylib', 'endless_sky/lib/')
+    src = '/usr/local/opt/jpeg-turbo/lib/libjpeg.dylib'
+    dest = 'endless_sky/lib/'
+    print(src, '->', dest)
+    shutil.copy(src, dest)
     copy_tree('/usr/local/opt/jpeg-turbo/include/', 'endless_sky/include/')
     # .dylib files contain metadata stating where they ought to be found!
     check_call(['install_name_tool', '-id', '@loader_path/lib/libjpeg.dylib', 'endless_sky/lib/libjpeg.dylib'])
 
     assert os.path.exists('/usr/local/opt/openal-soft'), 'brew install openal-soft'
-    shutil.copy('/usr/local/opt/openal-soft/lib/libopenal.dylib', 'endless_sky/lib/')
+    src = '/usr/local/opt/openal-soft/lib/libopenal.dylib'
+    dest = 'endless_sky/lib/'
+    print(src, '->', dest)
+    shutil.copy(src, dest)
     copy_tree('/usr/local/opt/openal-soft/include/', 'endless_sky/include/')
     check_call(['install_name_tool', '-id', '@loader_path/lib/libopenal.dylib', 'endless_sky/lib/libopenal.dylib'])
 
-    # TODO to get this to requiring zero brew dependencies, need to add:
-    # -libmad
-    # -libpng
-    # -SDL2
+    def grab_linked(path, brew=''):
+        # for brew-linked libraries, headers are already in the include path
+        assert os.path.exists(path), 'brew install '+brew
+        libname = os.path.basename(path)
+        dest = 'endless_sky/lib'
+        print(path, '->', dest)
+        shutil.copy(path, dest)
+        check_call(['install_name_tool', '-id', '@loader_path/lib/'+libname, 'endless_sky/lib/'+libname])
+
+    grab_linked('/usr/local/opt/sdl2/lib/libSDL2.dylib', 'SDL2')
+    grab_linked('/usr/local/opt/libpng/lib/libpng.dylib', 'libpng')
+    grab_linked('/usr/local/opt/mad/lib/libmad.dylib', 'libmad')
 
 elif platform.system() == 'Linux':
     #assert False, "don't know how to harvest linux libs yet"
