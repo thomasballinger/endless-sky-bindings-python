@@ -71,3 +71,33 @@ def test_GameData_full(empty_config_dir):
     ])
     # This might use a lot of memory (if sprites get loaded)
     assert len(m.GameData.Ships()) > 100
+
+    ships = m.GameData.Ships();
+    ships = dict(ships)
+    s = ships['Shuttle']
+    del ships
+    del s
+
+    govts = m.GameData.Governments();
+    govts = dict(govts)
+    g = govts['Republic']
+    del govts
+    del g
+
+    outfits = m.GameData.Outfits();
+    outfits = dict(outfits)
+    o = outfits['Hyperdrive']
+    del outfits
+    del o
+
+    planets = m.GameData.Planets();
+    planets = dict(planets)
+    p = planets['Earth']
+    del planets
+    del p
+
+    systems = m.GameData.Systems();
+    systems = dict(systems)
+    s = systems['Sol']
+    del systems
+    del s

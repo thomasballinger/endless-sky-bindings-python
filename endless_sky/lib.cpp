@@ -12,11 +12,19 @@
 int maine(int argc, char *argv[]);
 
 #include <SDL2/SDL.h>
+#include "endless-sky/source/Account.h"
 #include "endless-sky/source/Angle.h"
+#include "endless-sky/source/CaptureOdds.h"
+#include "endless-sky/source/Color.h"
+#include "endless-sky/source/ConditionSet.h"
+#include "endless-sky/source/Conversation.h"
+#include "endless-sky/source/CoreStartData.h"
 #include "endless-sky/source/DataNode.h"
 #include "endless-sky/source/DataFile.h"
 #include "endless-sky/source/DataWriter.h"
+#include "endless-sky/source/Date.h"
 #include "endless-sky/source/GameData.h"
+#include "endless-sky/source/Galaxy.h"
 #include "endless-sky/source/Government.h"
 #include "endless-sky/source/Outfit.h"
 #include "endless-sky/source/Planet.h"
@@ -87,6 +95,32 @@ PYBIND11_MODULE(bindings, m) {
     // test/src/helpers/datanode-factory
     m.def("AsDataNode", &AsDataNode);
 
+    // source/Account
+    py::class_<Account>(m, "Account")
+        .def(py::init<>())
+        .def("Load", &Account::Load)
+        .def("Save", &Account::Save)
+        .def("Credits", &Account::Credits)
+        .def("AddCredits", &Account::AddCredits)
+        .def("PayExtra", &Account::PayExtra)
+
+        .def("Step", &Account::Step)
+        .def("SalariesOwed", &Account::SalariesOwed)
+        .def("PaySalaries", &Account::PaySalaries)
+        .def("MaintenanceDue", &Account::MaintenanceDue)
+        .def("PayMaintenance", &Account::PayMaintenance)
+
+        //.def("Mortgages", &Account::Mortgages)
+        .def("AddMortgage", &Account::AddMortgage)
+        .def("AddFine", &Account::AddFine)
+        .def("Prequalify", &Account::Prequalify)
+        .def("NetWorth", &Account::NetWorth)
+
+        .def("CreditScore", &Account::CreditScore)
+        .def("TotalDebt", &Account::TotalDebt);
+
+    // source/AI
+
     // source/Angle
     py::class_<Angle>(m, "Angle")
         .def(py::init<>())
@@ -100,6 +134,46 @@ PYBIND11_MODULE(bindings, m) {
         .def("Rotate", &Angle::Rotate);
     // TODO why does -= (removed) give a warning?
 
+    // source/Armament
+    // source/AsteroidField
+    // source/Audio
+
+    // source/CaptureOdds
+    py::class_<CaptureOdds>(m, "CaptureOdds")
+        .def(py::init<Ship&, Ship&>())
+        .def("Odds", &CaptureOdds::Odds)
+        .def("AttackerCasualties", &CaptureOdds::AttackerCasualties)
+        .def("DefenderCasualties", &CaptureOdds::DefenderCasualties)
+        .def("AttackerPower", &CaptureOdds::AttackerPower)
+        .def("DefenderPower", &CaptureOdds::DefenderPower);
+
+    // source/CargoHold
+
+    // source/Color
+    py::class_<Color>(m, "Color")
+        .def(py::init<float,float>())
+        .def(py::init<float,float,float,float>())
+        .def("Load", &Color::Load)
+        .def("Get", &Color::Get)
+        .def("Opaque", &Color::Opaque)
+        .def("Transparent", &Color::Transparent)
+        .def("Additive", &Color::Additive)
+        .def("Combine", &Color::Combine);
+
+    // source/Command
+
+    // source/ConditionSet
+    py::class_<ConditionSet>(m, "ConditionSet");
+    // missing many methods
+
+    // source/Conversation
+    py::class_<Conversation>(m, "Conversation");
+    // missing many methods
+
+    // source/CoreStartData
+    py::class_<CoreStartData>(m, "CoreStartData");
+    // missing many methods
+
     // source/DataFile
     py::class_<DataFile>(m, "DataFile")
         .def(py::init<>())
@@ -108,6 +182,21 @@ PYBIND11_MODULE(bindings, m) {
         .def("__iter__", [](DataFile &f) {
             return py::make_iterator(f.begin(), f.end());
         }, py::keep_alive<0, 1>()); // TODO is this keep_alive policy right?
+
+    // source/DataNode
+    py::class_<DataNode>(m, "DataNode")
+        .def(py::init<DataNode*>())
+        .def("Size", &DataNode::Size)
+        .def("Tokens", &DataNode::Tokens)
+        .def("Token", &DataNode::Token)
+        .def("Value", py::overload_cast<int>(&DataNode::Value, py::const_))
+        .def("IsNumber", py::overload_cast<int>(&DataNode::IsNumber, py::const_))
+        .def("HasChildren", &DataNode::HasChildren)
+        .def("PrintTrace", &DataNode::PrintTrace)
+        .def("__len__", [](const DataNode &n) { return n.Size(); })
+        .def("__iter__", [](DataNode &n) {
+            return py::make_iterator(n.begin(), n.end());
+        }, py::keep_alive<0, 1>());
 
     // source/DataWriter
     py::class_<DataWriter>(m, "DataWriter")
@@ -131,20 +220,27 @@ PYBIND11_MODULE(bindings, m) {
             return w.WriteToken(a);
         });
 
-    // source/DataNode
-    py::class_<DataNode>(m, "DataNode")
-        .def(py::init<DataNode*>())
-        .def("Size", &DataNode::Size)
-        .def("Tokens", &DataNode::Tokens)
-        .def("Token", &DataNode::Token)
-        .def("Value", py::overload_cast<int>(&DataNode::Value, py::const_))
-        .def("IsNumber", py::overload_cast<int>(&DataNode::IsNumber, py::const_))
-        .def("HasChildren", &DataNode::HasChildren)
-        .def("PrintTrace", &DataNode::PrintTrace)
-        .def("__len__", [](const DataNode &n) { return n.Size(); })
-        .def("__iter__", [](DataNode &n) {
-            return py::make_iterator(n.begin(), n.end());
-        }, py::keep_alive<0, 1>());
+    // source/Date
+    py::class_<Date>(m, "Date")
+        .def(py::init<>())
+        .def(py::init<int,int,int>())
+        .def("LongString", &Date::LongString)
+        .def("inc", [](Date &d) { d++; })
+        .def(py::self + int())
+        .def(py::self - py::self)
+        .def(py::self < py::self)
+        .def(py::self <= py::self)
+        .def(py::self > py::self)
+        .def(py::self >= py::self)
+        .def(py::self == py::self)
+        .def(py::self != py::self)
+        .def("DaysSinceEpoch", &Date::DaysSinceEpoch)
+        .def("Day", &Date::Day)
+        .def("Month", &Date::Month)
+        .def("Year", &Date::Year);
+
+    // source/Depreciation
+    // source/Dialog
 
     // source/Dictionary
     py::class_<Dictionary>(m, "Dictionary")
@@ -154,6 +250,17 @@ PYBIND11_MODULE(bindings, m) {
         }, py::keep_alive<0, 1>())
         .def("Get", py::overload_cast<const std::string&>(&Dictionary::Get, py::const_))
         .def("__getitem__", py::overload_cast<const std::string&>(&Dictionary::Get, py::const_));
+
+    // source/Engine
+    // source/Files
+    // source/Fleet
+    // source/Engine
+    // source/Galaxy
+    py::class_<Galaxy>(m, "Galaxy")
+        .def(py::init<>())
+        .def("Load", &Galaxy::Load)
+        .def("Position", &Galaxy::Position);
+        //.def("load", &Galaxy::GetSprite)
 
     // source/GameData
     py::class_<GameData>(m, "GameData")
@@ -174,8 +281,11 @@ PYBIND11_MODULE(bindings, m) {
 	.def_static("Planets", &GameData::Planets)
 	.def_static("Systems", &GameData::Systems);
 
+    // source/GameEvent
+    // source/GameWindow
+
     // source/Government
-    py::class_<Government>(m, "Government")
+    py::class_<Government, std::shared_ptr<Government>>(m, "Government")
         .def(py::init<>())
         .def("Load", &Government::Load)
         .def("GetName", &Government::GetName)
@@ -210,15 +320,63 @@ PYBIND11_MODULE(bindings, m) {
         .def("CrewAttack", &Government::CrewAttack)
         .def("CrewDefense", &Government::CrewDefense);
 
+    // source/Hardpoint
+    // source/Hazard
+    // source/LocationFilter
+
+    // source/main
+    m.def("main", [](std::vector<std::string> argVec) {
+        // pybind11 doesn't do double pointers, so convert
+        std::vector<char *> cstrs;
+        cstrs.reserve(argVec.size() + 1);
+        for (auto &s : argVec) {
+            cstrs.push_back(const_cast<char *>(s.c_str()));
+        }
+        cstrs.push_back(NULL);
+        return maine(argVec.size(), cstrs.data());
+    });
+
+    m.def("main_no_GIL", [](std::vector<std::string> argVec) {
+        // pybind11 doesn't do double pointers, so convert
+        std::vector<char *> cstrs;
+        cstrs.reserve(argVec.size() + 1);
+        for (auto &s : argVec) {
+            cstrs.push_back(const_cast<char *>(s.c_str()));
+        }
+        cstrs.push_back(NULL);
+        py::gil_scoped_release release;
+        auto ret = maine(argVec.size(), cstrs.data());
+        py::gil_scoped_acquire acquire;
+        return ret;
+    });
+
+    // source/Messages
+    // source/Minable
+    // source/Mission
+    // source/MissionAction
+    // source/Mortgage
+    // source/News
+    // source/NPC
+
     // source/Outfit
-    py::class_<Outfit>(m, "Outfit")
+    py::class_<Outfit, std::shared_ptr<Outfit>>(m, "Outfit")
         .def(py::init<>())
         .def("Load", &Outfit::Load)
         .def("Name", &Outfit::Name)
         .def("Attributes", &Outfit::Attributes);
 
+    // source/Person
+    // source/Personality
+    // source/Phrase
+    py::class_<Phrase>(m, "Phrase")
+        .def(py::init<>())
+        .def("Load", &Phrase::Load)
+        .def("IsEmpty", &Phrase::IsEmpty)
+        .def("Name", &Phrase::Name)
+        .def("Get", &Phrase::Get);
+
     // source/Planet
-    py::class_<Planet>(m, "Planet")
+    py::class_<Planet, std::shared_ptr<Planet>>(m, "Planet")
         // TODO add a constructor that takes data?
         .def("Load", &Planet::Load)
         .def("IsValid", &Planet::IsValid)
@@ -266,9 +424,10 @@ PYBIND11_MODULE(bindings, m) {
         .def("ResetDefense", &Planet::ResetDefense);
 
     // source/PlayerInfo
-    py::class_<PlayerInfo>(m, "PlayerInfo")
+    py::class_<PlayerInfo, std::shared_ptr<PlayerInfo>>(m, "PlayerInfo")
         .def("Ships", &PlayerInfo::Ships)
         .def_static("CurrentPlayer", &PlayerInfo::CurrentPlayer);
+    // lots of missing methods
 
     // source/Point
     py::class_<Point>(m, "Point")
@@ -277,9 +436,17 @@ PYBIND11_MODULE(bindings, m) {
         .def_property_readonly("Y", py::overload_cast<>(&Point::Y, py::const_))
         .def("Unit", &Point::Unit);
 
+    // source/Politics
+    // source/Preferences
+    // source/Projectile
+    // source/Radar
+
+    // source/Random
     m.def("RandomSeed", &Random::Seed);
     m.def("RandomInt", py::overload_cast<>(&Random::Int));
     m.def("RandomInt", py::overload_cast<uint32_t>(&Random::Int));
+
+    // source/Sale
 
     // source/Set
     std::string shipString = std::string("Ship");
@@ -447,8 +614,15 @@ PYBIND11_MODULE(bindings, m) {
 
         // Custom helpers could go here (in lowercase)
 
+    // source/ShipEvent
+    // source/ShipInfoDisplay
+    // source/Sound
+    // source/Sprite
+    // source/StartConditions
+    // source/StellarObject
+
     // source/System
-    py::class_<System>(m, "System")
+    py::class_<System, std::shared_ptr<System>>(m, "System")
         .def("Load", &System::Load)
         .def("UpdateSystem", &System::UpdateSystem)
 
@@ -473,7 +647,7 @@ PYBIND11_MODULE(bindings, m) {
 
         .def("SetDate", &System::SetDate)
 //        .def("Objects", &System::Objects)
-//        .def("FindStellar", &System::SetDate)
+        .def("FindStellar", &System::SetDate)
         .def("HabitableZone", &System::HabitableZone)
         .def("AsteroidBelt", &System::AsteroidBelt)
         .def("JumpRange", &System::JumpRange)
@@ -499,31 +673,13 @@ PYBIND11_MODULE(bindings, m) {
 //        .def("Hazards", &System::Hazards)
         .def("Danger", &System::Danger);
 
-    // source/main
-    m.def("main", [](std::vector<std::string> argVec) {
-        // pybind11 doesn't do double pointers, so convert
-        std::vector<char *> cstrs;
-        cstrs.reserve(argVec.size() + 1);
-        for (auto &s : argVec) {
-            cstrs.push_back(const_cast<char *>(s.c_str()));
-        }
-        cstrs.push_back(NULL);
-        return maine(argVec.size(), cstrs.data());
-    });
+    // source/Test
+    // source/TestData
+    // source/Trade
+    // source/Sysasdftem
+    // source/Weapon
+    // source/Weather
 
-    m.def("main_no_GIL", [](std::vector<std::string> argVec) {
-        // pybind11 doesn't do double pointers, so convert
-        std::vector<char *> cstrs;
-        cstrs.reserve(argVec.size() + 1);
-        for (auto &s : argVec) {
-            cstrs.push_back(const_cast<char *>(s.c_str()));
-        }
-        cstrs.push_back(NULL);
-        py::gil_scoped_release release;
-        auto ret = maine(argVec.size(), cstrs.data());
-        py::gil_scoped_acquire acquire;
-        return ret;
-    });
 
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
