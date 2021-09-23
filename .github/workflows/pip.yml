@@ -218,22 +218,21 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-        python_
 
     - name: Add test requirements
-      run: python3 -m pip install pytest
+      run: python -m pip install pytest
 
     - name: Install mac wheel
       if: matrix.os == 'macos-latest'
-      run: python3 -m pip install dist/endless_sky_bindings*-cp${{ env.PY_ID }}-cp${{ env.PY_ID }}-*macosx*.whl
+      run: python -m pip install dist/endless_sky_bindings*-cp${{ env.PY_ID }}-cp${{ env.PY_ID }}-*macosx*.whl
 
     - name: Install linux wheel
       if: matrix.os == 'ubuntu-latest'
-      run: python3 -m pip install dist/endless_sky_bindings*-cp${{ env.PY_ID }}-cp${{ env.PY_ID }}-*manylinux*.whl
+      run: python -m pip install dist/endless_sky_bindings*-cp${{ env.PY_ID }}-cp${{ env.PY_ID }}-*manylinux*.whl
 
     - name: Install windows wheel
       if: matrix.os == 'windows-latest'
-      run: python3 -m pip install dist/endless_sky_bindings*-cp${{ env.PY_ID }}-cp${{ env.PY_ID }}-*win*.whl
+      run: python -m pip install dist/endless_sky_bindings*-cp${{ env.PY_ID }}-cp${{ env.PY_ID }}-*win*.whl
 
     - uses: actions/checkout@v2
       with:
