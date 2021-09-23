@@ -112,13 +112,14 @@ extra_compile_args=[
                             # patched with patch.diff, adding the option to
                             # build this code without threads.
         '-Wno-deprecated-declarations', # ignore mac OpenGL deprecation warnings
-            #'-v',  # for debugging an include
-            #'-H',  # for debugging an include
-        '-mmacosx-version-min=10.15', # see if this helps us choose the right dylibs?
-        ] if platform.system() == "Darwin" else [
-            '-DES_NO_THREADS',
             '-v',  # for debugging an include
             '-H',  # for debugging an include
+            '-Wl,--trace', # for debugging the wrong library path being linked!
+            '-mmacosx-version-min=10.15', # see if this helps us choose the right dylibs?
+        ] if platform.system() == "Darwin" else [
+            '-DES_NO_THREADS',
+            #'-v',  # for debugging an include
+            #'-H',  # for debugging an include
             '-fvisibility=hidden',
             '-g0',
         ] if platform.system() == "Windows" else [
