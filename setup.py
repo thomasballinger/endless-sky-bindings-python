@@ -71,7 +71,7 @@ print('LIBRARIES_INCLUDED:', LIBRARIES_INCLUDED)
 if INCLUDE_LIBRARIES:
     assert LIBRARIES_INCLUDED, "can't include libraries if endless_sky/lib/ does not exist. Run ./grab_libraries.py to harvest libs from the OS."
 
-assert os.path.exists('endless_sky/endless-sky/sources'), "endless-sky sources not present. Did you not git clone --recursive?"
+assert os.path.exists('endless_sky/endless-sky/source'), "endless-sky sources not present. Did you not git clone --recursive?"
 
 # https://stackoverflow.com/questions/63804883/including-and-distributing-third-party-libraries-with-a-python-c-extension
 # TODO does this work correctly for source builds?
