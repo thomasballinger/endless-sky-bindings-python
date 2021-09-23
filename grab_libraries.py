@@ -30,12 +30,12 @@ if platform.system() == 'Darwin':
     shutil.copy('/usr/local/opt/jpeg-turbo/lib/libjpeg.dylib', 'endless_sky/lib/')
     copy_tree('/usr/local/opt/jpeg-turbo/include/', 'endless_sky/include/')
     # .dylib files contain metadata stating where they ought to be found!
-    check_call(['install_name_tool', '-id', 'lib/libjpeg.dylib', 'endless_sky/lib/libjpeg.dylib'])
+    check_call(['install_name_tool', '-id', '@loader_path/lib/libjpeg.dylib', 'endless_sky/lib/libjpeg.dylib'])
 
     assert os.path.exists('/usr/local/opt/openal-soft'), 'brew install openal-soft'
     shutil.copy('/usr/local/opt/openal-soft/lib/libopenal.dylib', 'endless_sky/lib/')
     copy_tree('/usr/local/opt/openal-soft/include/', 'endless_sky/include/')
-    check_call(['install_name_tool', '-id', 'lib/libopenal.dylib', 'endless_sky/lib/libopenal.dylib'])
+    check_call(['install_name_tool', '-id', '@loader_path/lib/libopenal.dylib', 'endless_sky/lib/libopenal.dylib'])
 
 elif platform.system() == 'Linux':
     #assert False, "don't know how to harvest linux libs yet"
