@@ -18,7 +18,12 @@ from .loader import FilesystemPrepared
 from . import bindings as es
 
 banner = """Welcome to the sky!
-Try dir(es) or use dir on a class like dir(es.GameData) to see what you can do."""
+Try dir(es) or use dir on a class like dir(es.GameData) to see what you can do.
+You can get a reference you your ship with:
+your_ship = es.PlayerInfo.CurrentPlayer().Ships()[0]
+You can get a dictionary of all ship templates with:
+ships = dict(es.GameData.Ships())
+"""
 
 def run_with_console(path=None, *, resources=None, config=None, extra_args=None):
     if extra_args is None: extra_args = []
