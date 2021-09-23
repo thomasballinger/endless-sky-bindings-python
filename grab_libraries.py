@@ -52,8 +52,8 @@ if platform.system() == 'Darwin':
         shutil.copy(path, dest)
         check_call(['install_name_tool', '-id', '@loader_path/lib/'+libname, 'endless_sky/lib/'+libname])
 
-    grab_linked('/usr/local/opt/sdl2/lib/libSDL2-2.0.0.dylib', 'SDL2')
-    grab_linked('/usr/local/opt/libpng/lib/libpng16.dylib', 'libpng')
+    grab_linked('/usr/local/opt/sdl2/lib/libSDL2.dylib', 'SDL2')
+    grab_linked('/usr/local/opt/libpng/lib/libpng.dylib', 'libpng')
     grab_linked('/usr/local/opt/mad/lib/libmad.dylib', 'libmad')
 
 elif platform.system() == 'Linux':

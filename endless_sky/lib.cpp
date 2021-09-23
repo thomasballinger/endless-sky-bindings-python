@@ -182,6 +182,8 @@ PYBIND11_MODULE(bindings, m) {
         .def("__iter__", [](DataFile &f) {
             return py::make_iterator(f.begin(), f.end());
         }, py::keep_alive<0, 1>()); // TODO is this keep_alive policy right?
+                                    // It means "keep this (the DataFile) alive for
+                                    // at least as long as the return value (the iterator)
 
     // source/DataNode
     py::class_<DataNode>(m, "DataNode")
