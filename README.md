@@ -1,34 +1,10 @@
-Endless Sky bindings for Python
+# Endless Sky bindings for Python
 
-$ pip install endless-sky-bindings
+Play with the Endless Sky C++ classes from Python or interact with the game as it runs.
 
-This library does not include the Endless Sky data, so you'll need to find that on your system or clone the [Endless Sky repo](https://github.com/endless-sky/endless-sky) to get it. The code samples below assume a checkout of endless-sky at ~/endless-sky.
+    pip install endless-sky-bindings
 
-## Command line use
-
-Loading data files:
-```
-% echo -e 'ship Rocket\n\tattributes\n\t\tdrag 10' > myData.txt
-$ python -m endless_sky load --empty-resources myData.txt  # only prints ships atm
-'Rocket': {'drag': 10.0, 'gun ports': 0.0, 'turret mounts': 0.0},
-$ python -m endless_sky load -- --resources ~/endless-sky
-{'Aerie': {'bunks': 28.0,
-           'capture attack': 1.8000000000000003,
-           'capture defense': 2.4000000000000004,
-           'cargo space': 50.0,
-...
-$ # In order to parse a file with vanilla outfits defined, use --resources
-$ python -m endless_sky load --resources ~/endless-sky myData.txt
-{'Aerie': {'bunks': 28.0,
-...
-<'Rocket' is somewhere in here>
-...
-```
-
-Runing the game and a Python interpreter at the same time:
-```
-$ python -m endless_sky run --resources ~/endless-sky --default-config
-```
+This library does not include the Endless Sky data, so to load that data you'll need to find the installed copy on your system or clone the [Endless Sky repo](https://github.com/endless-sky/endless-sky) to get it. The code samples below assume a checkout of endless-sky at ~/endless-sky.
 
 ## Library
 
@@ -62,26 +38,30 @@ ship.BaseAttributes(        ship.IsBoarding(            ship.MaximumHeat(
 
 Warning: endless_sky.bindings contains non-resetable singletons like GameData, so once you load some data (directly with GameData.BeginLoad(), with a load_data, or indirectly with a parser function) you can't unload that data without exiting Python.
 
-# Installation
+## Command line use
 
-## Mac
-
+Loading data files:
 ```
-brew install libmad libpng SDL2
-pip install endless-sky-bindings
+% echo -e 'ship Rocket\n\tattributes\n\t\tdrag 10' > myData.txt
+$ python -m endless_sky load --empty-resources myData.txt  # only prints ships atm
+'Rocket': {'drag': 10.0, 'gun ports': 0.0, 'turret mounts': 0.0},
+$ python -m endless_sky load -- --resources ~/endless-sky
+{'Aerie': {'bunks': 28.0,
+           'capture attack': 1.8000000000000003,
+           'capture defense': 2.4000000000000004,
+           'cargo space': 50.0,
+...
+$ # In order to parse a file with vanilla outfits defined, use --resources
+$ python -m endless_sky load --resources ~/endless-sky myData.txt
+{'Aerie': {'bunks': 28.0,
+...
+<'Rocket' is somewhere in here>
+...
 ```
 
-## Linux
-
+Runing the game and a Python interpreter at the same time:
 ```
-sudo apt-get install libsdl2-dev libpng-dev libjpeg-turbo8-dev libopenal-dev libmad0-dev libglew-dev libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev uuid-dev
-pip install endless-sky-bindings
-```
-
-## Windows
-
-```
-pip install endless-sky-bindings
+$ python -m endless_sky run --resources ~/endless-sky --default-config
 ```
 
 # Building from source
