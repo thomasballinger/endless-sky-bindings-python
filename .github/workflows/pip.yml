@@ -206,7 +206,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      PY_ID: ${{ matrix.python-version == "3.8" && "38" || "39" }}
+      PY_ID: ${{ matrix.python-version == '3.8' && '38' || '39' }}
 
     steps:
     - name: Download wheel
