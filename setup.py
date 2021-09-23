@@ -71,7 +71,7 @@ print('LIBRARIES_INCLUDED:', LIBRARIES_INCLUDED)
 if INCLUDE_LIBRARIES:
     assert LIBRARIES_INCLUDED, "can't include libraries if endless_sky/lib/ does not exist. Run ./grab_libraries.py to harvest libs from the OS."
 
-assert os.path.exists('endless_sky/endless-sky/'), "endless-sky sources not present. Did you not git clone --recursive?"
+assert os.path.exists('endless_sky/endless-sky/sources'), "endless-sky sources not present. Did you not git clone --recursive?"
 
 # https://stackoverflow.com/questions/63804883/including-and-distributing-third-party-libraries-with-a-python-c-extension
 # TODO does this work correctly for source builds?
@@ -94,13 +94,12 @@ if platform.system() == "Windows":
 # then a wheel is optionally created based on that sdist. (I think.)
 # All necessary dylib/so/DLL files need to be included in the sdist OR
 # instructions about how to install them need to be included in the README.
-# This seems hard on Windows, so the goal here is to not require anything else
-# to be installed on that platform.
-# So Windows DLLs will be included in the sdist, but mac and linux libs needn't
-# be since on those platform telling someone to install libraries isn't so bad.
-# We do including libpeg-turbo and openal-soft in the mac build, and maybe we
-# could include more libraries here too?
-# Whether any libraries are linked depends on the INCLUDE_LIBRARIES env variable.
+# Installing stuff is hard, so our goal is not to require it.
+# So for each platform, most DLL/dylib/so files will be included in the source
+# distribution.
+# This is sort of weird, and it produces sdists that don't make much sense.
+# So including these dynamic libraries in the package sdist requires the
+# INCLUDE_LIBRARIES env variable.
 
 def crash(msg=''):
     raise AssertionError((msg or 'TODO') + ' on platform ' + platform.system())
@@ -125,6 +124,7 @@ extra_compile_args=[
             '-DES_NO_THREADS',  # Windows is the only platform that actually
                                 # needs the threadless build, but we do it
                                 # everywhere for consistency.
+            # probably this should only happen when LIBRARIES_INCLUDED
             '-static-libgcc',     # Trying static because mplcairo does it
             '-static-libstdc++',  # https://github.com/matplotlib/mplcairo/blob/master/setup.py
         ]
