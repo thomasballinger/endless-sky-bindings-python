@@ -101,3 +101,16 @@ def test_GameData_full(empty_config_dir):
     s = systems['Sol']
     del systems
     del s
+
+
+# This segfaults!
+@icky_global_state
+def test_GameData_full(empty_config_dir):
+    m.GameData.BeginLoad([
+        "progname",
+        "--resources", "./endless_sky/endless-sky",
+        "--config", str(empty_config_dir),
+    ])
+    earth = m.GameData.Planets().Find("Earth")
+    sol = m.GameData.Systems().Find("Sol")
+    earth.IsInSystem(sol)
