@@ -114,7 +114,6 @@ extra_compile_args=[
         '-Wno-deprecated-declarations', # ignore mac OpenGL deprecation warnings
             '-v',  # for debugging an include
             '-H',  # for debugging an include
-            '-Wl,--trace', # for debugging the wrong library path being linked!
             '-mmacosx-version-min=10.15', # see if this helps us choose the right dylibs?
         ] if platform.system() == "Darwin" else [
             '-DES_NO_THREADS',
