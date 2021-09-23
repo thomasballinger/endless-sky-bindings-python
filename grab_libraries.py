@@ -37,6 +37,11 @@ if platform.system() == 'Darwin':
     copy_tree('/usr/local/opt/openal-soft/include/', 'endless_sky/include/')
     check_call(['install_name_tool', '-id', '@loader_path/lib/libopenal.dylib', 'endless_sky/lib/libopenal.dylib'])
 
+    # TODO to get this to requiring zero brew dependencies, need to add:
+    # -libmad
+    # -libpng
+    # -SDL2
+
 elif platform.system() == 'Linux':
     #assert False, "don't know how to harvest linux libs yet"
     list_files('/usr/local/lib')
@@ -45,9 +50,14 @@ elif platform.system() == 'Linux':
     list_files('/usr/lib64')
     #shutil.copy('/usr/local/opt/jpeg-turbo/lib/libjpeg.dylib', 'endless_sky/lib/')
 
+    # TODO somehow, this seems to be enough already?
+    # Does manylinux take care of including depenencies somehow?
+    # check out one of these wheels
+
     # statically linked:
     # gcc-c++
 
+    # not yet included
     # SDL2-devel
     # libpng-devel
     # libjpeg-turbo-devel
