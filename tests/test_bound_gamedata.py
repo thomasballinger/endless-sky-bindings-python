@@ -10,6 +10,7 @@ import subprocess
 import sys
 import platform
 import os
+import gc
 
 import endless_sky.bindings as m
 from helpers import icky_global_state, empty_resources_dir, empty_config_dir
@@ -76,34 +77,44 @@ def test_GameData_full(empty_config_dir):
     ships = dict(ships)
     s = ships['Shuttle']
     del ships
+    gc.collect()
     del s
+    gc.collect()
 
     govts = m.GameData.Governments();
     govts = dict(govts)
     g = govts['Republic']
     del govts
+    gc.collect()
     del g
+    gc.collect()
 
     outfits = m.GameData.Outfits();
     outfits = dict(outfits)
     o = outfits['Hyperdrive']
     del outfits
+    gc.collect()
     del o
+    gc.collect()
 
     planets = m.GameData.Planets();
     planets = dict(planets)
     p = planets['Earth']
     del planets
+    gc.collect()
     del p
+    gc.collect()
 
     systems = m.GameData.Systems();
     systems = dict(systems)
     s = systems['Sol']
     del systems
+    gc.collect()
     del s
+    gc.collect()
 
 
-# This segfaults!
+# This used to segfault
 @icky_global_state
 def test_GameData_full(empty_config_dir):
     m.GameData.BeginLoad([
@@ -114,3 +125,4 @@ def test_GameData_full(empty_config_dir):
     earth = m.GameData.Planets().Find("Earth")
     sol = m.GameData.Systems().Find("Sol")
     earth.IsInSystem(sol)
+    gc.collect()
