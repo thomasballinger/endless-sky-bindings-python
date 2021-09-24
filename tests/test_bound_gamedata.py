@@ -82,6 +82,7 @@ def test_GameData_full(empty_config_dir):
     gc.collect()
 
     govts = m.GameData.Governments();
+    print(govts)
     govts = dict(govts)
     g = govts['Republic']
     del govts
@@ -122,7 +123,19 @@ def test_GameData_full(empty_config_dir):
         "--resources", "./endless_sky/endless-sky",
         "--config", str(empty_config_dir),
     ])
-    earth = m.GameData.Planets().Get("Earth")
-    sol = m.GameData.Systems().Get("Sol")
-    earth.IsInSystem(sol)
-    gc.collect()
+    system = m.GameData.Systems()['Sol']
+    government = system.GetGovernment()
+    del government
+
+    humans = []
+
+    for planet_name, planet in m.GameData.Planets():
+        system = planet.GetSystem()
+        if not system:
+            continue
+        system_name = system.Name()
+        name = planet_name + ' ' + system_name
+        if planet.GetSystem().GetGovernment().GetName() in ['Republic']:
+            humans.append(name)
+
+    assert len(humans) > 10

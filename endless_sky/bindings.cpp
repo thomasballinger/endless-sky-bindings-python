@@ -398,14 +398,11 @@ PYBIND11_MODULE(bindings, m) {
         .def("Shipyard", &Planet::Shipyard)
         .def("Outfitter", &Planet::Outfitter)
 
-//        .def("Government", &Planet::Government)
+        .def("Government", &Planet::GetGovernment, py::return_value_policy::reference)
         .def("RequiredReputation", &Planet::RequiredReputation)
         .def("GetBribeFraction", &Planet::GetBribeFraction)
         .def("Security", &Planet::Security)
-
-        .def("GetSystem", [](Planet &p) { return std::make_shared<System> (*p.GetSystem()); })
-        .def("GetSystemOrig", &Planet::GetSystem)
-
+        .def("GetSystem", &Planet::GetSystem, py::return_value_policy::reference)
         .def("IsInSystem", [](Planet &p, const System *s) { return p.IsInSystem(s); } )
         .def("IsInSystemOrig", &Planet::IsInSystem)
         .def("SetSystem", &Planet::SetSystem)
@@ -639,7 +636,7 @@ PYBIND11_MODULE(bindings, m) {
         .def("Name", &System::Name)
         .def("SetName", &System::SetName)
         .def("Position", &System::Position)
-        .def("Government", &System::GetGovernment)
+        .def("GetGovernment", &System::GetGovernment, py::return_value_policy::reference)
         .def("MusicName", &System::MusicName)
 
         .def("Attributes", &System::Attributes)
