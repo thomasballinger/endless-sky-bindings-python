@@ -57,8 +57,9 @@ void declare_set(py::module &m, std::string &typestr) {
         .def("__iter__", [](Class &s) {
             return py::make_iterator(s.begin(), s.end());
         }, py::keep_alive<0, 1>())
-        .def("Find", &Class::Find, py::return_value_policy::reference)
-        .def("__getitem__", &Class::Find, py::return_value_policy::reference)
+        .def("Get", py::overload_cast<const std::string&>(&Class::Get, py::const_), py::return_value_policy::reference)
+        .def("__getitem__", py::overload_cast<const std::string&>(&Class::Get, py::const_), py::return_value_policy::reference)
+        .def("Get_mutable", py::overload_cast<const std::string&>(&Class::Get))
         .def("Has", &Class::Has);
 }
 
@@ -277,11 +278,11 @@ PYBIND11_MODULE(bindings, m) {
             return GameData::BeginLoad(cstrs.data());
         })
 	.def_static("CheckReferences", &GameData::CheckReferences)
-	.def_static("Ships", &GameData::Ships)
-	.def_static("Governments", &GameData::Governments)
-	.def_static("Outfits", &GameData::Outfits)
-	.def_static("Planets", &GameData::Planets)
-	.def_static("Systems", &GameData::Systems);
+	.def_static("Ships", &GameData::Ships, py::return_value_policy::reference)
+	.def_static("Governments", &GameData::Governments, py::return_value_policy::reference)
+	.def_static("Outfits", &GameData::Outfits, py::return_value_policy::reference)
+	.def_static("Planets", &GameData::Planets, py::return_value_policy::reference)
+	.def_static("Systems", &GameData::Systems, py::return_value_policy::reference);
 
     // source/GameEvent
     // source/GameWindow
@@ -402,8 +403,11 @@ PYBIND11_MODULE(bindings, m) {
         .def("GetBribeFraction", &Planet::GetBribeFraction)
         .def("Security", &Planet::Security)
 
-        .def("GetSystem", &Planet::GetSystem)
-        .def("IsInSystem", &Planet::IsInSystem)
+        .def("GetSystem", [](Planet &p) { return std::make_shared<System> (*p.GetSystem()); })
+        .def("GetSystemOrig", &Planet::GetSystem)
+
+        .def("IsInSystem", [](Planet &p, const System *s) { return p.IsInSystem(s); } )
+        .def("IsInSystemOrig", &Planet::IsInSystem)
         .def("SetSystem", &Planet::SetSystem)
         .def("RemoveSystem", &Planet::RemoveSystem)
 

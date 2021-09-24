@@ -67,7 +67,7 @@ $ python -m endless_sky run --resources ~/endless-sky --default-config
 # Building from source
 
 ```
-git clone git@github.com:thomasballinger/endless-sky-bindings-python.git
+git clone --recursive git@github.com:thomasballinger/endless-sky-bindings-python.git
 cd endless-sky-bindings-python
 ```
 
