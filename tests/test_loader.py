@@ -33,7 +33,7 @@ def test_ships():
 
     es = load_string_data(sailboat_data, resources='endless_sky/endless-sky')
     ships = es.GameData.Ships()
-    sailboat = ships.Find("Sailboat")
+    sailboat = ships.Get("Sailboat")
     sailboat.FinishLoading(True)
     print(list(sailboat.Attributes().Attributes()))
     assert sailboat.Attributes().Attributes()['scram drive'] == 0.2
@@ -53,8 +53,8 @@ def test_load_with_existing_config(empty_resources_dir, empty_config_dir, sailbo
             path=str(sailboat),
             resources=str(empty_resources_dir),
             config=str(empty_config_dir)) as es:
-        assert es.GameData.Ships().Find("Sailboat")
-        assert es.GameData.Ships().Find("Paddleboard")
+        assert es.GameData.Ships().Get("Sailboat")
+        assert es.GameData.Ships().Get("Paddleboard")
 
     # make sure existing plugins don't accidentally get deleted
     assert (empty_config_dir / "plugins" / "myplugin" / "data" / "lakeships.txt").read_text() == paddleboard_data

@@ -25,7 +25,7 @@ def test_GameData_simple(empty_resources_dir, empty_config_dir):
         "--config", str(empty_config_dir),
     ])
     ships = m.GameData.Ships();
-    assert list(ships) == [("Canoe", ships.Find("Canoe"))]
+    assert list(ships) == [("Canoe", ships.Get("Canoe"))]
 
 @icky_global_state
 def test_GameData_simple1(empty_resources_dir, empty_config_dir):
@@ -36,7 +36,7 @@ def test_GameData_simple1(empty_resources_dir, empty_config_dir):
         "--config", str(empty_config_dir),
     ])
     ships = m.GameData.Ships();
-    assert list(ships) == [("Canoe", ships.Find("Canoe"))]
+    assert list(ships) == [("Canoe", ships.Get("Canoe"))]
 
 @icky_global_state
 def test_GameData_simple2(empty_resources_dir, empty_config_dir):
@@ -47,7 +47,7 @@ def test_GameData_simple2(empty_resources_dir, empty_config_dir):
         "--config", str(empty_config_dir),
     ])
     ships = m.GameData.Ships();
-    assert list(ships) == [("Kayak", ships.Find("Kayak"))]
+    assert list(ships) == [("Kayak", ships.Get("Kayak"))]
 
 @icky_global_state
 def test_GameData_ownership(empty_resources_dir, empty_config_dir):
@@ -58,8 +58,8 @@ def test_GameData_ownership(empty_resources_dir, empty_config_dir):
         "--config", str(empty_config_dir),
     ])
     ships = m.GameData.Ships();
-    canoe = ships.Find("Canoe")
-    del canoe  # segfault if Find used the default return value policy
+    canoe = ships.Get("Canoe")
+    del canoe  # segfault if Get used the default return value policy
 
 # This library does not ship with vanilla data, but it's always present in the
 # build enviroment so we might as well use it.
@@ -122,7 +122,7 @@ def test_GameData_full(empty_config_dir):
         "--resources", "./endless_sky/endless-sky",
         "--config", str(empty_config_dir),
     ])
-    earth = m.GameData.Planets().Find("Earth")
-    sol = m.GameData.Systems().Find("Sol")
+    earth = m.GameData.Planets().Get("Earth")
+    sol = m.GameData.Systems().Get("Sol")
     earth.IsInSystem(sol)
     gc.collect()

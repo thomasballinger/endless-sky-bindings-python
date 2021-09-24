@@ -17,8 +17,8 @@ C++ classes are exposed to Python pretty directly; for documentation, see
 >>> es = load_data(resources="/Users/tomb/endless-sky")
 >>> ships = es.GameData.Ships() # these objects correspond to 
 >>> ships.<tab><tab>
-ships.Find(  ships.Has(   ships.size(
->>> shuttle = ships.Find("Shuttle")
+ships.Get(   ships.Has(   ships.size(
+>>> shuttle = ships.Get("Shuttle")
 <endless_sky.bindings.Ship object at 0x1087391b0>
 >>> ship = es.Ship(shuttle)  # make a copy to avoid modifying the template
 >>> ship.<tab><tab>
