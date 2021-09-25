@@ -9,6 +9,7 @@ import endless_sky
 import endless_sky.bindings as es
 from endless_sky.parser import parse_ships
 from endless_sky.console import run_with_console
+from endless_sky.resources import cached_resources, find_resources
 
 class StoreDefaultConfig(argparse.Action):
     def __init__(self, option_strings, dest, nargs=None, **kwargs):
@@ -26,6 +27,9 @@ def exists(path):
     if not os.path.exists(path):
         raise ValueError("path %r does not exist" % path)
 
+CACHED = object()
+FIND = object()
+
 def add_file_resources_and_config(parser):
     """Require some resources arg, default config to None, and default file to None."""
     parser.add_argument("file", nargs="?", type=exists, help="data file or directory of data files")
@@ -33,6 +37,8 @@ def add_file_resources_and_config(parser):
     resources_group = parser.add_mutually_exclusive_group(required=True)
     resources_group.add_argument('--resources')
     resources_group.add_argument('--empty-resources', action='store_const', const=None, dest='resources')
+    resources_group.add_argument('--find-resources', action='store_const', const=FIND, dest='resources')
+    resources_group.add_argument('--cached-resources', action='store_const', const=CACHED, dest='resources')
 
     config_group = parser.add_mutually_exclusive_group(required=False)
     # empty config is the default
@@ -86,6 +92,11 @@ elif not args.version and not args.subcommand:
 # TODO add autodiscovery of resources
 # --find-resources
 # --use-cached-resources (or maybe this is the default?)
+
+if args.resources == FIND:
+    args.resources = find_resources()
+elif args.resources == CACHED:
+    args.resources = cached_resources()
 
 if args.subcommand == 'load':
 # TODO use add_mutually_exclusive_group() for this instead

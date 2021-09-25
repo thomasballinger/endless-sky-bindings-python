@@ -96,14 +96,14 @@ def LoadedData(path=None, *, resources=None, config=None):
 
     with FilesystemPrepared(path=path, resources=resources, config=config) as (resources_path, config_path):
         args = ['foo', '--resources', resources_path, '--config', config_path]
-        logging.warn('BeginLoad(%s)', args)
+        logging.info('BeginLoad(%s)', args)
         try:
             es.GameData.BeginLoad(args)
         except RuntimeError as e:
             if 'Unable to find the resource directories' in str(e):
                 print(args)
-                print(r.name, os.listdir(r.name))
-                print(c.name, os.listdir(c.name))
+                print(resources_path, os.listdir(resources_path))
+                print(config_path, os.listdir(config_path))
                 raise
             else:
                 raise

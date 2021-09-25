@@ -1,3 +1,8 @@
+## 0.0.15
+
+- add --cached-resources to download resources from endless-sky repo
+- add --find-resources for resource folder discovery
+
 ## 0.0.5 - September 7 2020
 
 - add main()

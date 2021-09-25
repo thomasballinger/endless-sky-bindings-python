@@ -17,8 +17,11 @@ __version__ = re.search(
     r'__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
     open('endless_sky/__init__.py', encoding='utf_8_sig').read()
 ).group(1)
+endless_sky_version = re.search(
+    r'endless_sky_version\s*=\s*[\'"]([^\'"]*)[\'"]',
+    open('endless_sky/__init__.py', encoding='utf_8_sig').read()
+).group(1)
 
-endless_sky_version = "84ddce4a2247572eb56c65dcd78ceb70e2c5bf1b"
 submodule_version = None
 try:
     submodule_version = open('.git/modules/endless_sky/endless-sky/HEAD').read().strip()
@@ -239,6 +242,7 @@ setup(
         ] if INCLUDE_LIBRARIES else [])
     },
     extras_require={"test": "pytest"},
+    install_requires=["platformdirs"],
     cmdclass={"build_ext": build_ext},
     zip_safe=False,
 )
