@@ -6,6 +6,8 @@ Play with the Endless Sky C++ classes from Python or interact with the game as i
 
 This library does not include the Endless Sky data, so to load that data you'll need to find the installed copy on your system or clone the [Endless Sky repo](https://github.com/endless-sky/endless-sky) to get it. The code samples below assume a checkout of endless-sky at ~/endless-sky.
 
+See also [JavaScript bindings](https://github.com/thomasballinger/endless-sky-bindings) for working with Endless Sky objects in node or on the web.
+
 ## Library
 
 Once you get a handle on the endless_sky.bindings module (bound to 'es' variable here),
