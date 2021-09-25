@@ -2,7 +2,7 @@ import os
 import pytest
 import tempfile
 
-from endless_sky.parser import parse_ships
+from endless_sky.parser import parse
 
 from helpers import icky_global_state
 
@@ -26,7 +26,7 @@ def subaru(tmp_path):
 def test_parse_ships(subaru):
     assert os.path.exists('endless_sky/endless-sky'), 'meant to be run in build environment'
 
-    d = parse_ships(str(subaru), format='dict', resources='endless_sky/endless-sky')
+    d = parse('ships', str(subaru), format='dict', resources='endless_sky/endless-sky')
     subaru = d['Subaru']
     print(subaru)
     assert subaru['drag'] == 5.0
@@ -34,7 +34,7 @@ def test_parse_ships(subaru):
 
 @icky_global_state
 def test_parse_ships_with_undefined_outfits(subaru):
-    d = parse_ships(str(subaru), format='dict')
+    d = parse('ships', str(subaru), format='dict')
     subaru = d['Subaru']
     print(subaru)
     assert subaru['drag'] == 5.0

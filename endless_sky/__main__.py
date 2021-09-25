@@ -7,7 +7,7 @@ from pathlib import Path
 
 import endless_sky
 import endless_sky.bindings as es
-from endless_sky.parser import parse_ships
+from endless_sky.parser import parse
 from endless_sky.console import run_with_console
 from endless_sky.resources import cached_resources, find_resources
 
@@ -106,7 +106,8 @@ if args.subcommand == 'load':
     if args.file:
         logging.info("parsing custom file or directory %s", args.file)
         logging.info("by symlinking to it from a temporary config directory")
-    output = parse_ships(
+    output = parse(
+        'ships',
         args.file,
         format=args.format,
         resources=args.resources,
