@@ -59,9 +59,28 @@ void declare_set(py::module &m, std::string &typestr) {
         }, py::keep_alive<0, 1>())
         .def("Get", py::overload_cast<const std::string&>(&Class::Get, py::const_), py::return_value_policy::reference)
         .def("__getitem__", py::overload_cast<const std::string&>(&Class::Get, py::const_), py::return_value_policy::reference)
+        .def("Get_mutable", py::overload_cast<const std::string&>(&Class::Get), py::return_value_policy::reference)
+        .def("Has", &Class::Has);
+}
+
+// Ship has std::enable_shared_from_this, so we can use real shared_ptr on it.
+template<typename T>
+void declare_set_of_shared_ptrs(py::module &m, std::string &typestr) {
+    using Class = Set<T>;
+    std::string pyclass_name = std::string("SetOf") + typestr + std::string("s");
+    py::class_<Class>(m, pyclass_name.c_str())
+        .def(py::init<>())
+        .def("size", &Class::size)
+        .def("__len__", [](const Class &s) { return s.size(); })
+        .def("__iter__", [](Class &s) {
+            return py::make_iterator(s.begin(), s.end());
+        }, py::keep_alive<0, 1>())
+        .def("Get", py::overload_cast<const std::string&>(&Class::Get, py::const_))
+        .def("__getitem__", py::overload_cast<const std::string&>(&Class::Get, py::const_))
         .def("Get_mutable", py::overload_cast<const std::string&>(&Class::Get))
         .def("Has", &Class::Has);
 }
+
 
 PYBIND11_MODULE(bindings, m) {
     m.doc() = R"pbdoc(
@@ -288,7 +307,7 @@ PYBIND11_MODULE(bindings, m) {
     // source/GameWindow
 
     // source/Government
-    py::class_<Government, std::shared_ptr<Government>>(m, "Government")
+    py::class_<Government>(m, "Government")
         .def(py::init<>())
         .def("Load", &Government::Load)
         .def("GetName", &Government::GetName)
@@ -362,7 +381,7 @@ PYBIND11_MODULE(bindings, m) {
     // source/NPC
 
     // source/Outfit
-    py::class_<Outfit, std::shared_ptr<Outfit>>(m, "Outfit")
+    py::class_<Outfit>(m, "Outfit")
         .def(py::init<>())
         .def("Load", &Outfit::Load)
         .def("Name", &Outfit::Name)
@@ -379,7 +398,7 @@ PYBIND11_MODULE(bindings, m) {
         .def("Get", &Phrase::Get);
 
     // source/Planet
-    py::class_<Planet, std::shared_ptr<Planet>>(m, "Planet")
+    py::class_<Planet>(m, "Planet")
         // TODO add a constructor that takes data?
         .def("Load", &Planet::Load)
         .def("IsValid", &Planet::IsValid)
@@ -427,7 +446,7 @@ PYBIND11_MODULE(bindings, m) {
         .def("ResetDefense", &Planet::ResetDefense);
 
     // source/PlayerInfo
-    py::class_<PlayerInfo, std::shared_ptr<PlayerInfo>>(m, "PlayerInfo")
+    py::class_<PlayerInfo>(m, "PlayerInfo")
         .def("Ships", &PlayerInfo::Ships)
         .def_static("CurrentPlayer", &PlayerInfo::CurrentPlayer);
     // lots of missing methods
@@ -453,7 +472,7 @@ PYBIND11_MODULE(bindings, m) {
 
     // source/Set
     std::string shipString = std::string("Ship");
-    declare_set<Ship>(m, shipString);
+    declare_set_of_shared_ptrs<Ship>(m, shipString);
     std::string governmentString = std::string("Government");
     declare_set<Government>(m, governmentString);
     std::string outfitString = std::string("Outfit");
@@ -464,7 +483,7 @@ PYBIND11_MODULE(bindings, m) {
     declare_set<System>(m, systemString);
 
     // source/SavedGame
-    py::class_<SavedGame, std::shared_ptr<SavedGame>>(m, "SavedGame")
+    py::class_<SavedGame>(m, "SavedGame")
         .def(py::init<>())
         .def(py::init<const std::string&>())
         .def("Load", &SavedGame::Load)
@@ -482,7 +501,7 @@ PYBIND11_MODULE(bindings, m) {
         .def("ShipName", &SavedGame::ShipName);
 
     // source/Ship
-    py::class_<Ship>(m, "Ship")
+    py::class_<Ship, std::shared_ptr<Ship>>(m, "Ship")
         .def(py::init<>())
         .def(py::init<Ship const &>())
         .def(py::init<const DataNode&>())
@@ -625,7 +644,7 @@ PYBIND11_MODULE(bindings, m) {
     // source/StellarObject
 
     // source/System
-    py::class_<System, std::shared_ptr<System>>(m, "System")
+    py::class_<System>(m, "System")
         .def("Load", &System::Load)
         .def("UpdateSystem", &System::UpdateSystem)
 
