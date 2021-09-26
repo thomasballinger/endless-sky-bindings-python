@@ -482,7 +482,7 @@ PYBIND11_MODULE(bindings, m) {
         .def("ShipName", &SavedGame::ShipName);
 
     // source/Ship
-    py::class_<Ship, std::shared_ptr<Ship>>(m, "Ship")
+    py::class_<Ship>(m, "Ship")
         .def(py::init<>())
         .def(py::init<Ship const &>())
         .def(py::init<const DataNode&>())
